@@ -26,9 +26,7 @@ public class Shooter extends SubsystemBase {
     // Create the configs used to configure the devices in this mechanism
     shootermotorConfig = new TalonFXConfiguration();
     shootermotorConfig.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor);
-    shootermotorConfig
-        .MotorOutput
-        .withNeutralMode(NeutralModeValue.Coast);
+    shootermotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
     shootermotorConfig
         .CurrentLimits
         .withStatorCurrentLimitEnable(true)
