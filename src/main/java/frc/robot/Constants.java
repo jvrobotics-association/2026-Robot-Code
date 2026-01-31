@@ -31,5 +31,6 @@ public final class Constants {
 
   public final class shooterConstants {
     public static final int MOTOR = -1;
+    public static final int ENCODER = -1;
   }
 }
