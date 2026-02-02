@@ -22,7 +22,7 @@ import frc.robot.Constants.IntakeConstants;
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
   private static final TalonFX intakeMotor = new TalonFX(IntakeConstants.MOTOR, "rio");
-   private static final CANcoder encoder = new CANcoder(IntakeConstants.ENCODER, "rio");
+  private static final CANcoder encoder = new CANcoder(IntakeConstants.ENCODER, "rio");
   final TalonFXConfiguration intakeMotorConfig;
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
@@ -74,7 +74,7 @@ public class Intake extends SubsystemBase {
     }
     if (!motorStatus.isOK()) {
       System.out.println(
-          "Could not apply shooter motor config, error code: " + motorStatus.toString());
+          "Could not apply intake motor config, error code: " + motorStatus.toString());
     }
   }
 

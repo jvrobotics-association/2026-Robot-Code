@@ -21,7 +21,7 @@ import frc.robot.Constants.shooterConstants;
 
 public class Shooter extends SubsystemBase {
   private static final TalonFX shootermotor = new TalonFX(shooterConstants.MOTOR, "rio");
-   private static final CANcoder encoder = new CANcoder(shooterConstants.ENCODER, "rio");
+  private static final CANcoder encoder = new CANcoder(shooterConstants.ENCODER, "rio");
   final TalonFXConfiguration shootermotorConfig;
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
