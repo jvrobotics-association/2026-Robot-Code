@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ShooterCommands;
+import frc.robot.commands.IntakeCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -26,6 +27,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.intake.Intake;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -39,11 +41,13 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Shooter shooter = new Shooter();
+  private final Intake intake = new Intake();
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedNetworkNumber ShooterSpeed = new LoggedNetworkNumber("Shooter Speed", 0.25);
+  private final LoggedNetworkNumber ShooterSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
+  private final LoggedNetworkNumber IntakeSpeed = new LoggedNetworkNumber("Intake Speed", 0.0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -166,7 +170,12 @@ public class RobotContainer {
 
     controller
         .rightTrigger(0.25)
-        .whileTrue(new ShooterCommands(shooter, ShooterSpeed.getAsDouble()));
+        .whileTrue(ShooterCommands.runShooter(shooter, ShooterSpeed.getAsDouble()));
+
+    controller
+        .leftTrigger(0.25)
+        .whileTrue(IntakeCommands.runIntake(intake, IntakeSpeed.getAsDouble()));
+    
   }
 
   /**

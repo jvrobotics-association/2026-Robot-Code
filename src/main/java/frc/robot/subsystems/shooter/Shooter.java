@@ -87,10 +87,6 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  
-  public void setShooterMotor(double speed) {
-    shootermotor.setControl(m_manualRequest.withOutput(speed));
-  }
   public void setSpeed(double speed) {
     shootermotor.setControl(m_request.withVelocity(speed));
   }
