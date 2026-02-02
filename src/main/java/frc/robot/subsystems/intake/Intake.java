@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.shooter;
+package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Amps;
 import com.ctre.phoenix6.StatusCode;
@@ -17,23 +17,21 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.shooterConstants;
+import frc.robot.Constants.IntakeConstants;
 
-public class Shooter extends SubsystemBase {
-  private static final TalonFX shootermotor = new TalonFX(shooterConstants.MOTOR, "rio");
-   private static final CANcoder encoder = new CANcoder(shooterConstants.ENCODER, "rio");
+public class Intake extends SubsystemBase {
+  /** Creates a new Intake. */
+  private static final TalonFX shootermotor = new TalonFX(IntakeConstants.MOTOR, "rio");
+   private static final CANcoder encoder = new CANcoder(IntakeConstants.ENCODER, "rio");
   final TalonFXConfiguration shootermotorConfig;
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
 
-
-  /** Creates a new Shooter. */
-  public Shooter() {
-    // Create the configs used to configure the devices in this mechanism
+  public Intake() {
     shootermotorConfig = new TalonFXConfiguration();
     shootermotorConfig
     .Feedback
-    .withFeedbackRemoteSensorID(shooterConstants.ENCODER)
+    .withFeedbackRemoteSensorID(IntakeConstants.ENCODER)
     .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
     .withSensorToMechanismRatio(1)
     .withRotorToSensorRatio(1);
@@ -78,8 +76,6 @@ public class Shooter extends SubsystemBase {
       System.out.println(
           "Could not apply shooter motor config, error code: " + motorStatus.toString());
     }
-    // shootermotor.optimizeBusUtilization();
-
   }
 
   @Override
@@ -87,10 +83,10 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  
   public void setShooterMotor(double speed) {
     shootermotor.setControl(m_manualRequest.withOutput(speed));
   }
+
   public void setSpeed(double speed) {
     shootermotor.setControl(m_request.withVelocity(speed));
   }
