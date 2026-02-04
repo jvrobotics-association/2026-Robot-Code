@@ -38,12 +38,15 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
   // Subsystems
   private final Drive drive;
   private final Shooter shooter = new Shooter();
   private final Intake intake = new Intake();
+
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedNetworkNumber ShooterSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
@@ -158,15 +161,9 @@ public class RobotContainer {
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
+    controller.b()
+        .onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),drive)
+        .ignoringDisable(true));
 
     controller
         .rightTrigger(0.25)

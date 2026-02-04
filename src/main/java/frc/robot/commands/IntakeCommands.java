@@ -10,6 +10,7 @@ import frc.robot.subsystems.intake.Intake;
 
 
 public class IntakeCommands {
+  
   private IntakeCommands() {}
 
   public static Command runIntake(Intake intake, double speed){

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.shooter.Shooter;
 
 public class ShooterCommands{
+  
   private ShooterCommands() {}
   
   public static Command runShooter(Shooter shooter, double speed){
