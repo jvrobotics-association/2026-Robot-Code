@@ -54,21 +54,13 @@ public class Shooter extends SubsystemBase {
     if (!encoderStatus.isOK()) {
       System.out.println("Could not apply encoder config, error code: " + encoderStatus.toString());
     }
-    // Apply the shootermotor config, retry config apply up to 5 times, report if failure
-    StatusCode shootermotorStatus = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      shootermotorStatus = shootermotor.getConfigurator().apply(shootermotorConfig);
-      if (shootermotorStatus.isOK()) break;
-    }
-    if (!shootermotorStatus.isOK()) {
-      System.out.println(
-          "Could not apply shooter motor config, error code: " + shootermotorStatus.toString());
-    }
+    
 
     shootermotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0;
     shootermotorConfig.MotionMagic.MotionMagicAcceleration = 0.0;
     shootermotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     shootermotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+
     StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       motorStatus = shootermotor.getConfigurator().apply(shootermotorConfig);

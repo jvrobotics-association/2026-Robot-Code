@@ -41,4 +41,8 @@ public final class Constants {
     public static final int MOTOR = -1;
     public static final int ENCODER = -1;
   }
+  public final class intakeExtensionConstants {
+    public static final int MOTOR = -1;
+    public static final int ENCODER = -1;
+  }
 }

@@ -2,8 +2,8 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.shooter;
-import frc.robot.Constants.shooterPitchConstants;
+package frc.robot.subsystems.intake;
+import frc.robot.Constants.intakeExtensionConstants;
 import static edu.wpi.first.units.Units.Amps;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -19,60 +19,52 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ShooterPitch extends SubsystemBase {
-  private static final TalonFX shooterPitchMotor = new TalonFX(shooterPitchConstants.MOTOR, "rio");
-  private static final CANcoder encoder = new CANcoder(shooterPitchConstants.ENCODER, "rio");
-  final TalonFXConfiguration shooterPitchMotorConfig;
+public class IntakeExtension extends SubsystemBase {
+  private static final TalonFX intakeExtensionMotor = new TalonFX(intakeExtensionConstants.MOTOR, "rio");
+  private static final CANcoder encoder = new CANcoder(intakeExtensionConstants.ENCODER, "rio");
+  final TalonFXConfiguration intakeExtensionMotorConfig;
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   final public MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
 
-  /** Creates a new ShooterPitch. */
-  public ShooterPitch() {
-    shooterPitchMotorConfig = new TalonFXConfiguration();
-    shooterPitchMotorConfig
+  /** Creates a new IntakeExtension. */
+  public IntakeExtension() {
+    intakeExtensionMotorConfig = new TalonFXConfiguration();
+
+    intakeExtensionMotorConfig
     .Feedback
-    .withFeedbackRemoteSensorID(shooterPitchConstants.ENCODER)
+    .withFeedbackRemoteSensorID(intakeExtensionConstants.ENCODER)
     .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-    .withSensorToMechanismRatio(1)
-    .withRotorToSensorRatio(1);
-    shooterPitchMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
-    shooterPitchMotorConfig
+    .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
+    .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio
+    intakeExtensionMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+
+    intakeExtensionMotorConfig
         .CurrentLimits
         .withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(20));
      CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
      encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
 
-    // Apply the encoder config, retry config apply up to 5 times, report if failure
-    StatusCode encoderStatus = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      encoderStatus = encoder.getConfigurator().apply(encoderConfig);
-      if (encoderStatus.isOK()) break;
-    }
-    if (!encoderStatus.isOK()) {
-      System.out.println("Could not apply encoder config, error code: " + encoderStatus.toString());
-    }
-
-
-    shooterPitchMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0;
-    shooterPitchMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0;
-    shooterPitchMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
-    shooterPitchMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+    intakeExtensionMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; // TODO: Set Cruise Velocity
+    intakeExtensionMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; // TODO: Set Acceleration
+    intakeExtensionMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
+    intakeExtensionMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
 
     StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
 
     for (int i = 0; i < 5; ++i) {
-      motorStatus = shooterPitchMotor.getConfigurator().apply(shooterPitchMotorConfig);
+      motorStatus = intakeExtensionMotor.getConfigurator().apply(intakeExtensionMotorConfig);
       if (motorStatus.isOK()) break;
     }
+
     if (!motorStatus.isOK()) {
       System.out.println(
-          "Could not apply shooter pitch motor config, error code: " + motorStatus.toString());
+          "Could not apply Intake Extension motor config, error code: " + motorStatus.toString());
     }
     
     // Reset the position that the elevator currently is at to 0.
     // The physical elevator should be all the way down when this is set.
-    shooterPitchMotor.setPosition(0);
+    intakeExtensionMotor.setPosition(0);
     encoder.setPosition(0);
   }
 
@@ -82,7 +74,6 @@ public class ShooterPitch extends SubsystemBase {
   }
 
   public void setAngle(Angle position) {
-    shooterPitchMotor.setControl(m_request.withPosition(position));
+    intakeExtensionMotor.setControl(m_request.withPosition(position));
   }
-  
 }

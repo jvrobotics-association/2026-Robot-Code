@@ -52,21 +52,12 @@ public class Intake extends SubsystemBase {
     if (!encoderStatus.isOK()) {
       System.out.println("Could not apply encoder config, error code: " + encoderStatus.toString());
     }
-    // Apply the shootermotor config, retry config apply up to 5 times, report if failure
-    StatusCode intakeMotorStatus = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      intakeMotorStatus = intakeMotor.getConfigurator().apply(intakeMotorConfig);
-      if (intakeMotorStatus.isOK()) break;
-    }
-    if (!intakeMotorStatus.isOK()) {
-      System.out.println(
-          "Could not apply intake motor config, error code: " + intakeMotorStatus.toString());
-    }
 
     intakeMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0;
     intakeMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0;
     intakeMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     intakeMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+
     StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       motorStatus = intakeMotor.getConfigurator().apply(intakeMotorConfig);
