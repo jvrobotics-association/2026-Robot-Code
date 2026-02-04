@@ -9,13 +9,14 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterPitch extends SubsystemBase {
@@ -23,9 +24,11 @@ public class ShooterPitch extends SubsystemBase {
   private static final CANcoder encoder = new CANcoder(shooterPitchConstants.ENCODER, "rio");
   final TalonFXConfiguration shooterPitchMotorConfig;
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
-  final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
+  final public MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+
   /** Creates a new ShooterPitch. */
-  public ShooterPitch() {shooterPitchMotorConfig = new TalonFXConfiguration();
+  public ShooterPitch() {
+    shooterPitchMotorConfig = new TalonFXConfiguration();
     shooterPitchMotorConfig
     .Feedback
     .withFeedbackRemoteSensorID(shooterPitchConstants.ENCODER)
@@ -64,7 +67,9 @@ public class ShooterPitch extends SubsystemBase {
     shooterPitchMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0;
     shooterPitchMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     shooterPitchMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+
     StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
+
     for (int i = 0; i < 5; ++i) {
       motorStatus = shooterPitchMotor.getConfigurator().apply(shooterPitchMotorConfig);
       if (motorStatus.isOK()) break;
@@ -73,6 +78,11 @@ public class ShooterPitch extends SubsystemBase {
       System.out.println(
           "Could not apply shooter pitch motor config, error code: " + motorStatus.toString());
     }
+    
+    // Reset the position that the elevator currently is at to 0.
+    // The physical elevator should be all the way down when this is set.
+    shooterPitchMotor.setPosition(0);
+    encoder.setPosition(0);
   }
 
   @Override
@@ -80,7 +90,8 @@ public class ShooterPitch extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setSpeed(double speed) {
-    shooterPitchMotor.setControl(m_request.withVelocity(speed));
+  public void setAngle(Angle position) {
+    shooterPitchMotor.setControl(m_request.withPosition(position));
   }
+  
 }
