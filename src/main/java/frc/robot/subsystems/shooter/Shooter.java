@@ -22,6 +22,7 @@ import frc.robot.Constants.shooterConstants;
 public class Shooter extends SubsystemBase {
   private static final TalonFX shootermotor = new TalonFX(shooterConstants.MOTOR, "rio");
   private static final CANcoder encoder = new CANcoder(shooterConstants.ENCODER, "rio");
+  
   final TalonFXConfiguration shootermotorConfig;
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
@@ -31,19 +32,37 @@ public class Shooter extends SubsystemBase {
   public Shooter() {
     // Create the configs used to configure the devices in this mechanism
     shootermotorConfig = new TalonFXConfiguration();
+    
     shootermotorConfig
-    .Feedback
-    .withFeedbackRemoteSensorID(shooterConstants.ENCODER)
-    .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-    .withSensorToMechanismRatio(1)
-    .withRotorToSensorRatio(1);
+      .Feedback
+      .withFeedbackRemoteSensorID(shooterConstants.ENCODER)
+      .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+      .withSensorToMechanismRatio(1)
+      .withRotorToSensorRatio(1);
     shootermotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
     shootermotorConfig
-        .CurrentLimits
-        .withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(20));
-     CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
-     encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
+      .CurrentLimits
+      .withStatorCurrentLimitEnable(true)
+      .withStatorCurrentLimit(Amps.of(20));
+
+    shootermotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; //TODO: set this value
+    shootermotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; //TODO: set this value
+    shootermotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
+    shootermotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+    
+    // Apply the shooter motor config, retry config apply up to 5 times, report if failure
+    StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i) {
+      motorStatus = shootermotor.getConfigurator().apply(shootermotorConfig);
+      if (motorStatus.isOK()) break;
+    }
+    if (!motorStatus.isOK()) {
+      System.out.println("Could not apply shooter motor config, error code: " + motorStatus.toString());
+    }
+
+    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
+
+    encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
 
     // Apply the encoder config, retry config apply up to 5 times, report if failure
     StatusCode encoderStatus = StatusCode.StatusCodeNotInitialized;
@@ -54,24 +73,6 @@ public class Shooter extends SubsystemBase {
     if (!encoderStatus.isOK()) {
       System.out.println("Could not apply encoder config, error code: " + encoderStatus.toString());
     }
-    
-
-    shootermotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0;
-    shootermotorConfig.MotionMagic.MotionMagicAcceleration = 0.0;
-    shootermotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
-    shootermotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
-
-    StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      motorStatus = shootermotor.getConfigurator().apply(shootermotorConfig);
-      if (motorStatus.isOK()) break;
-    }
-    if (!motorStatus.isOK()) {
-      System.out.println(
-          "Could not apply shooter motor config, error code: " + motorStatus.toString());
-    }
-    // shootermotor.optimizeBusUtilization();
-
   }
 
   @Override

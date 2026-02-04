@@ -33,8 +33,8 @@ public class Intake extends SubsystemBase {
     .Feedback
     .withFeedbackRemoteSensorID(IntakeConstants.ENCODER)
     .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-    .withSensorToMechanismRatio(1)
-    .withRotorToSensorRatio(1);
+    .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
+    .withRotorToSensorRatio(1); //TODO: Set Rotor to Sensor Ratio
     intakeMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
     intakeMotorConfig
         .CurrentLimits
@@ -53,8 +53,8 @@ public class Intake extends SubsystemBase {
       System.out.println("Could not apply encoder config, error code: " + encoderStatus.toString());
     }
 
-    intakeMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0;
-    intakeMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0;
+    intakeMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; //TODO: Set Cruise Velocity
+    intakeMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; //TODO: Set Acceleration
     intakeMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     intakeMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
 

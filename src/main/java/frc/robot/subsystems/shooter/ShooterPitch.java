@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ShooterPitch extends SubsystemBase {
   private static final TalonFX shooterPitchMotor = new TalonFX(shooterPitchConstants.MOTOR, "rio");
   private static final CANcoder encoder = new CANcoder(shooterPitchConstants.ENCODER, "rio");
+  
   final TalonFXConfiguration shooterPitchMotorConfig;
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   final public MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
@@ -29,19 +30,38 @@ public class ShooterPitch extends SubsystemBase {
   /** Creates a new ShooterPitch. */
   public ShooterPitch() {
     shooterPitchMotorConfig = new TalonFXConfiguration();
+
     shooterPitchMotorConfig
     .Feedback
     .withFeedbackRemoteSensorID(shooterPitchConstants.ENCODER)
     .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-    .withSensorToMechanismRatio(1)
-    .withRotorToSensorRatio(1);
+    .withSensorToMechanismRatio(1) //TODO: Set Sensor to Mechanism Ratio
+    .withRotorToSensorRatio(1); //TODO: Set Rotor to Sensor Ratio
     shooterPitchMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
     shooterPitchMotorConfig
         .CurrentLimits
         .withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(20));
-     CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
-     encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
+
+    shooterPitchMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; //TODO: Set Cruise Velocity
+    shooterPitchMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; //TODO: Set Acceleration
+    shooterPitchMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
+    shooterPitchMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+
+    // Apply the motor config, retry config apply up to 5 times, report if failure
+    StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
+
+    for (int i = 0; i < 5; ++i) {
+      motorStatus = shooterPitchMotor.getConfigurator().apply(shooterPitchMotorConfig);
+      if (motorStatus.isOK()) break;
+    }
+    if (!motorStatus.isOK()) {
+      System.out.println("Could not apply shooter pitch motor config, error code: " + motorStatus.toString());
+    }
+    
+    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
+    
+    encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
 
     // Apply the encoder config, retry config apply up to 5 times, report if failure
     StatusCode encoderStatus = StatusCode.StatusCodeNotInitialized;
@@ -51,23 +71,6 @@ public class ShooterPitch extends SubsystemBase {
     }
     if (!encoderStatus.isOK()) {
       System.out.println("Could not apply encoder config, error code: " + encoderStatus.toString());
-    }
-
-
-    shooterPitchMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0;
-    shooterPitchMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0;
-    shooterPitchMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
-    shooterPitchMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
-
-    StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
-
-    for (int i = 0; i < 5; ++i) {
-      motorStatus = shooterPitchMotor.getConfigurator().apply(shooterPitchMotorConfig);
-      if (motorStatus.isOK()) break;
-    }
-    if (!motorStatus.isOK()) {
-      System.out.println(
-          "Could not apply shooter pitch motor config, error code: " + motorStatus.toString());
     }
     
     // Reset the position that the elevator currently is at to 0.

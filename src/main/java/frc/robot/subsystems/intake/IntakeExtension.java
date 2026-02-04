@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class IntakeExtension extends SubsystemBase {
   private static final TalonFX intakeExtensionMotor = new TalonFX(intakeExtensionConstants.MOTOR, "rio");
   private static final CANcoder encoder = new CANcoder(intakeExtensionConstants.ENCODER, "rio");
+  
   final TalonFXConfiguration intakeExtensionMotorConfig;
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   final public MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
@@ -31,37 +32,47 @@ public class IntakeExtension extends SubsystemBase {
     intakeExtensionMotorConfig = new TalonFXConfiguration();
 
     intakeExtensionMotorConfig
-    .Feedback
-    .withFeedbackRemoteSensorID(intakeExtensionConstants.ENCODER)
-    .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-    .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
-    .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio
+      .Feedback
+      .withFeedbackRemoteSensorID(intakeExtensionConstants.ENCODER)
+      .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+      .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
+      .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio
     intakeExtensionMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
-
     intakeExtensionMotorConfig
-        .CurrentLimits
-        .withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(20));
-     CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
-     encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
+      .CurrentLimits
+      .withStatorCurrentLimitEnable(true)
+      .withStatorCurrentLimit(Amps.of(20));
 
     intakeExtensionMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; // TODO: Set Cruise Velocity
     intakeExtensionMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; // TODO: Set Acceleration
     intakeExtensionMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     intakeExtensionMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
 
+    // Apply the intake extension config, retry config apply up to 5 times, report if failure
     StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
-
     for (int i = 0; i < 5; ++i) {
       motorStatus = intakeExtensionMotor.getConfigurator().apply(intakeExtensionMotorConfig);
       if (motorStatus.isOK()) break;
     }
 
     if (!motorStatus.isOK()) {
-      System.out.println(
-          "Could not apply Intake Extension motor config, error code: " + motorStatus.toString());
+      System.out.println("Could not apply Intake Extension motor config, error code: " + motorStatus.toString());
     }
     
+    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
+
+    encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
+
+    // Apply the encoder config, retry config apply up to 5 times, report if failure
+    StatusCode encoderStatus = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i) {
+      encoderStatus = encoder.getConfigurator().apply(encoderConfig);
+      if (encoderStatus.isOK()) break;
+    }
+    if (!encoderStatus.isOK()) {
+      System.out.println("Could not apply encoder config, error code: " + encoderStatus.toString());
+    }
+
     // Reset the position that the elevator currently is at to 0.
     // The physical elevator should be all the way down when this is set.
     intakeExtensionMotor.setPosition(0);
