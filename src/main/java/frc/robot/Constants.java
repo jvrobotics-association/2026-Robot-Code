@@ -7,6 +7,11 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -44,5 +49,12 @@ public final class Constants {
   public final class intakeExtensionConstants {
     public static final int MOTOR = -1; //TODO: set motor ID
     public static final int ENCODER = -1; //TODO: set encoder ID
+  }
+  public final class  FieldConstants {
+    public static final Distance FUNNEL_HEIGHT = Inches.of(12); //TODO: set funnel height
+    public static final Distance FUNNEL_RADIUS = Inches.of(0.0); //TODO: set funnel radius
+    public static final Transform3d ROBOT_TO_TURRET_TRANSFORM =
+                new Transform3d(new Translation3d(Inches.zero(), Inches.zero(), Inches.of(18)), Rotation3d.kZero);
+    public static final Distance DISTANCE_ABOVE_FUNNEL = Inches.of(6); //TODO: set distance above funnel            
   }
 }
