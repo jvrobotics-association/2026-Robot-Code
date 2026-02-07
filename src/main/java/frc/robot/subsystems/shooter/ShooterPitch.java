@@ -2,6 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+
+// TODO: Shooter Motor Configs (2 independent motors, X60): MotionMagic MaxVel, Accel, Jerk; Slot0Configs; SensorToMechanismRatio
+// TODO: Reconfigure Intake Motor (1 intake motor, X44) with motion magic (same as shooter); Update how Left Trigger works in RobotContainer, IntakeCommands, and Intake.java (i.e. same updates as shooter)
+// TODO: Copy/Paste the test.java into the programming discord.
+// TODO: Reconfigure the ShooterPitch and IntakeExtend with motion magic. These will be POSITION, not VELOCITY. Reference the elevatr controls from last year. For now, use Dashboard input for those systems.
+
 package frc.robot.subsystems.shooter;
 import frc.robot.Constants.shooterPitchConstants;
 import static edu.wpi.first.units.Units.Amps;

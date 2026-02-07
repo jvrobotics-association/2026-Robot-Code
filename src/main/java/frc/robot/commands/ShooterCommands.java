@@ -11,8 +11,8 @@ public class ShooterCommands{
   
   private ShooterCommands() {}
   
-  public static Command runShooter(Shooter shooter, double speed){
-    return Commands.runEnd(() -> shooter.setSpeed(speed), () -> shooter.setSpeed(0.0), shooter);
+  public static Command runShooter(Shooter shooter){
+    return Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter);
   }
 
 }

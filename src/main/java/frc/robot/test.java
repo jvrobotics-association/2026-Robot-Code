@@ -1,9 +1,30 @@
 package frc.robot;
 
+class ShotData {
+    public double vel;
+    public double deg;
+
+    ShotData(double vel, double rad){
+        this.vel = vel;
+        this.deg = (rad * (180/Math.PI));
+    }
+}
 
 public class test {
+    
     public static void main(String[] args) {
-        double x_dist = 72.0; // 2d distance in inches
+        for(int i = 0; i < (15*12); i++){
+            double inches = i;
+            double vel = math(inches).vel;
+            double deg = math(inches).deg;
+
+
+            System.out.println("Shot from " + inches + " inches: speed: " + vel + " in/s, degrees: " + deg + " degrees");
+        }
+    }
+
+    public static ShotData math (double inches){
+        double x_dist = inches; // 2d distance in inches
         double y_dist = 56.4 - 14; // Z of target minus robot-to-turret transoform Z
         double h = 15.6 + 20.0; // height of funnel plus clearance of funnel 
         double r = 24; // just funnel radius
@@ -23,7 +44,6 @@ public class test {
         double g = 386; // gravity inches/sec^2
         double v0 = Math.sqrt(-g / (2 * a * (Math.cos(theta)) * (Math.cos(theta)) ));
 
-        System.out.println("Theta in radians: " + theta);
-        System.out.println("Exit velocity in in/s: " + v0);
+        return new ShotData(v0, theta);
     }
 }

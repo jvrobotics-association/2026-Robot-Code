@@ -49,7 +49,7 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedNetworkNumber ShooterSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
+
   private final LoggedNetworkNumber IntakeSpeed = new LoggedNetworkNumber("Intake Speed", 0.0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -167,7 +167,7 @@ public class RobotContainer {
 
     controller
         .rightTrigger(0.25)
-        .whileTrue(ShooterCommands.runShooter(shooter, ShooterSpeed.getAsDouble()));
+        .whileTrue(ShooterCommands.runShooter(shooter));
 
     controller
         .leftTrigger(0.25)

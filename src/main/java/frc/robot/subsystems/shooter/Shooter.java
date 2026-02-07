@@ -5,82 +5,109 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.shooterConstants;
 
 public class Shooter extends SubsystemBase {
   /************ Declare Motors ************/
-  private static final TalonFX shootermotor = new TalonFX(shooterConstants.MOTOR, "rio");
-  private static final CANcoder encoder = new CANcoder(shooterConstants.ENCODER, "rio");
+  private static final TalonFX leftMotor = new TalonFX(shooterConstants.LEFT_MOTOR, "rio");
+  private static final TalonFX rightMotor = new TalonFX(shooterConstants.RIGHT_MOTOR, "rio");
   
-  /************ Declare Configs, Requests ************/
-  final TalonFXConfiguration shootermotorConfig;
+
+  /************ Declare Configs ************/
+  final TalonFXConfiguration leftMotorConfig;
+  final TalonFXConfiguration rightMotorConfig;
+
+  /************ Motor Control Requests ************/
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
 
+  /************ Class Member Variables ************/
+  private final LoggedNetworkNumber ShooterSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
 
   /** Creates a new Shooter */
   public Shooter() {
-    /************ Configure Motors ************/
-    shootermotorConfig = new TalonFXConfiguration();
+    
+    /************ Configure Left Motor ************/
+    
+    leftMotorConfig = new TalonFXConfiguration();
     //Gets feed from either the encoder or the CANcoder
-    shootermotorConfig
+    leftMotorConfig
       .Feedback
-      .withFeedbackRemoteSensorID(shooterConstants.ENCODER)
-      .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-      // set gearbox ratio to 1:1
-      .withSensorToMechanismRatio(1)
-      .withRotorToSensorRatio(1);
-      // set Neutral Mode to Coast
-    shootermotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
+      .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor);
+    // set Neutral Mode to Coast
+    leftMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
+      .withInverted(InvertedValue.Clockwise_Positive);
     // Limits the amount of Amps the motor can draw
     // Volts * Amps = Watts
-    shootermotorConfig
+    leftMotorConfig
       .CurrentLimits
       .withStatorCurrentLimitEnable(true)
       .withStatorCurrentLimit(Amps.of(20));
 
     //Configures the Cruise, Acceleration,Torque, and Stator limits
-    shootermotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; //TODO: set this value
-    shootermotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; //TODO: set this value
-    shootermotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
-    shootermotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+    leftMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; //TODO: set this value
+    leftMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; //TODO: set this value
+    leftMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
+    leftMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
     
-    // Apply the shooter motor config, retry config apply up to 5 times, report if failure
-    StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
+    // Apply the left shooter motor config, retry config apply up to 5 times, report if failure
+    StatusCode leftMotorStatus = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      motorStatus = shootermotor.getConfigurator().apply(shootermotorConfig);
-      if (motorStatus.isOK()) break;
+      leftMotorStatus = leftMotor.getConfigurator().apply(leftMotorConfig);
+      if (leftMotorStatus.isOK()) break;
     }
-    if (!motorStatus.isOK()) {
-      System.out.println("Could not apply shooter motor config, error code: " + motorStatus.toString());
+    if (!leftMotorStatus.isOK()) {
+      System.out.println("Could not apply left shooter motor config, error code: " + leftMotorStatus.toString());
     }
+  
+    /************ Configure Right Motor ************/
+    
+    rightMotorConfig = new TalonFXConfiguration();
+    //Gets feed from either the encoder or the CANcoder
+    rightMotorConfig
+      .Feedback
+      .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor);
+      // set Neutral Mode to Coast
+    rightMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
+    .withInverted(InvertedValue.CounterClockwise_Positive);
+    // Limits the amount of Amps the motor can draw
+    // Volts * Amps = Watts
+    rightMotorConfig
+      .CurrentLimits
+      .withStatorCurrentLimitEnable(true)
+      .withStatorCurrentLimit(Amps.of(20));
 
-    /************ Configure Encoders ************/
-    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
-
-    encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
-
-    // Apply the encoder config, retry config apply up to 5 times, report if failure
-    StatusCode encoderStatus = StatusCode.StatusCodeNotInitialized;
+    //Configures the Cruise, Acceleration,Torque, and Stator limits of the right motor
+    rightMotorConfig.MotionMagic.withMotionMagicCruiseVelocity(RotationsPerSecond.of(0.0)); //TODO: set this value
+    rightMotorConfig.MotionMagic.withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(0)); //TODO: set this value
+    rightMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
+    rightMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+    
+    // Apply the right shooter motor config, retry config apply up to 5 times, report if failure
+    StatusCode rightMotorStatus = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      encoderStatus = encoder.getConfigurator().apply(encoderConfig);
-      if (encoderStatus.isOK()) break;
+      rightMotorStatus = rightMotor.getConfigurator().apply(rightMotorConfig);
+      if (rightMotorStatus.isOK()) break;
     }
-    if (!encoderStatus.isOK()) {
-      System.out.println("Could not apply encoder config, error code: " + encoderStatus.toString());
+    if (!rightMotorStatus.isOK()) {
+      System.out.println("Could not apply right shooter motor config, error code: " + rightMotorStatus.toString());
     }
+
   }
 
   @Override
@@ -88,7 +115,14 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
   }
   // Sets the speed and makes it a double
-  public void setSpeed(double speed) {
-    shootermotor.setControl(m_request.withVelocity(speed));
+  public void startShooter() {
+    leftMotor.setControl(m_request.withVelocity(ShooterSpeed.getAsDouble()));
+    rightMotor.setControl(m_request.withVelocity(ShooterSpeed.getAsDouble()));
+    
+  }
+  // Sets the speed and makes it a double
+  public void stopShooter() {
+    leftMotor.setControl(m_request.withVelocity(0.0));
+    rightMotor.setControl(m_request.withVelocity(0.0)); 
   }
 }
