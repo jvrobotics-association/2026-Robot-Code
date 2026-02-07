@@ -20,31 +20,38 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.shooterConstants;
 
 public class Shooter extends SubsystemBase {
+  /************ Declare Motors ************/
   private static final TalonFX shootermotor = new TalonFX(shooterConstants.MOTOR, "rio");
   private static final CANcoder encoder = new CANcoder(shooterConstants.ENCODER, "rio");
   
+  /************ Declare Configs, Requests ************/
   final TalonFXConfiguration shootermotorConfig;
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
 
 
-  /** Creates a new Shooter. */
+  /** Creates a new Shooter */
   public Shooter() {
-    // Create the configs used to configure the devices in this mechanism
+    /************ Configure Motors ************/
     shootermotorConfig = new TalonFXConfiguration();
-    
+    //Gets feed from either the encoder or the CANcoder
     shootermotorConfig
       .Feedback
       .withFeedbackRemoteSensorID(shooterConstants.ENCODER)
       .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+      // set gearbox ratio to 1:1
       .withSensorToMechanismRatio(1)
       .withRotorToSensorRatio(1);
+      // set Neutral Mode to Coast
     shootermotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
+    // Limits the amount of Amps the motor can draw
+    // Volts * Amps = Watts
     shootermotorConfig
       .CurrentLimits
       .withStatorCurrentLimitEnable(true)
       .withStatorCurrentLimit(Amps.of(20));
 
+    //Configures the Cruise, Acceleration,Torque, and Stator limits
     shootermotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; //TODO: set this value
     shootermotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; //TODO: set this value
     shootermotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
@@ -60,6 +67,7 @@ public class Shooter extends SubsystemBase {
       System.out.println("Could not apply shooter motor config, error code: " + motorStatus.toString());
     }
 
+    /************ Configure Encoders ************/
     CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
 
     encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
@@ -79,7 +87,7 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   }
-
+  // Sets the speed and makes it a double
   public void setSpeed(double speed) {
     shootermotor.setControl(m_request.withVelocity(speed));
   }
