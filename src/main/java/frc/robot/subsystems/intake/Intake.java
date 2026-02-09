@@ -5,6 +5,7 @@
 package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Amps;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -15,13 +16,13 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
   private static final TalonFX intakeMotor = new TalonFX(IntakeConstants.MOTOR, "rio");
+
   private static final CANcoder encoder = new CANcoder(IntakeConstants.ENCODER, "rio");
   final TalonFXConfiguration intakeMotorConfig;
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
@@ -30,18 +31,18 @@ public class Intake extends SubsystemBase {
   public Intake() {
     intakeMotorConfig = new TalonFXConfiguration();
     intakeMotorConfig
-    .Feedback
-    .withFeedbackRemoteSensorID(IntakeConstants.ENCODER)
-    .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-    .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
-    .withRotorToSensorRatio(1); //TODO: Set Rotor to Sensor Ratio
+        .Feedback
+        .withFeedbackRemoteSensorID(IntakeConstants.ENCODER)
+        .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+        .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
+        .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio
     intakeMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
     intakeMotorConfig
         .CurrentLimits
         .withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(20));
-     CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
-     encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
+    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
+    encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
 
     // Apply the encoder config, retry config apply up to 5 times, report if failure
     StatusCode encoderStatus = StatusCode.StatusCodeNotInitialized;
@@ -53,8 +54,8 @@ public class Intake extends SubsystemBase {
       System.out.println("Could not apply encoder config, error code: " + encoderStatus.toString());
     }
 
-    intakeMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; //TODO: Set Cruise Velocity
-    intakeMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; //TODO: Set Acceleration
+    intakeMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; // TODO: Set Cruise Velocity
+    intakeMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; // TODO: Set Acceleration
     intakeMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     intakeMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
 

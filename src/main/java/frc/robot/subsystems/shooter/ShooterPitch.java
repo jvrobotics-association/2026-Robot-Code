@@ -2,15 +2,20 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-
-// TODO: Shooter Motor Configs (2 independent motors, X60): MotionMagic MaxVel, Accel, Jerk; Slot0Configs; SensorToMechanismRatio
-// TODO: Reconfigure Intake Motor (1 intake motor, X44) with motion magic (same as shooter); Update how Left Trigger works in RobotContainer, IntakeCommands, and Intake.java (i.e. same updates as shooter)
+// TODO: Shooter Motor Configs (2 independent motors, X60): MotionMagic MaxVel, Accel, Jerk;
+// Slot0Configs; SensorToMechanismRatio
+// TODO: Reconfigure Intake Motor (1 intake motor, X44) with motion magic (same as shooter); Update
+// how Left Trigger works in RobotContainer, IntakeCommands, and Intake.java (i.e. same updates as
+// shooter)
 // TODO: Copy/Paste the test.java into the programming discord.
-// TODO: Reconfigure the ShooterPitch and IntakeExtend with motion magic. These will be POSITION, not VELOCITY. Reference the elevatr controls from last year. For now, use Dashboard input for those systems.
+// TODO: Reconfigure the ShooterPitch and IntakeExtend with motion magic. These will be POSITION,
+// not VELOCITY. Reference the elevatr controls from last year. For now, use Dashboard input for
+// those systems.
 
 package frc.robot.subsystems.shooter;
-import frc.robot.Constants.shooterPitchConstants;
+
 import static edu.wpi.first.units.Units.Amps;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -21,38 +26,40 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.shooterPitchConstants;
 
 public class ShooterPitch extends SubsystemBase {
   /** Creates and Declares a TalonFX motor and a CANcoder */
   private static final TalonFX shooterPitchMotor = new TalonFX(shooterPitchConstants.MOTOR, "rio");
+
   private static final CANcoder encoder = new CANcoder(shooterPitchConstants.ENCODER, "rio");
-  
+
   final TalonFXConfiguration shooterPitchMotorConfig;
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
-  final public MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+  public final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
 
   /** Creates a new ShooterPitch */
   public ShooterPitch() {
     shooterPitchMotorConfig = new TalonFXConfiguration();
-    //Gets feedback from either the encoder or the CANcoder
+    // Gets feedback from either the encoder or the CANcoder
     shooterPitchMotorConfig
-    .Feedback
-    .withFeedbackRemoteSensorID(shooterPitchConstants.ENCODER)
-    .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-    .withSensorToMechanismRatio(1) //TODO: Set Sensor to Mechanism Ratio
-    .withRotorToSensorRatio(1); //TODO: Set Rotor to Sensor Ratio
-    //Sets the Neutral Mode to Brake
+        .Feedback
+        .withFeedbackRemoteSensorID(shooterPitchConstants.ENCODER)
+        .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+        .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
+        .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio
+    // Sets the Neutral Mode to Brake
     shooterPitchMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
     shooterPitchMotorConfig
         .CurrentLimits
         .withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(20));
-    //Configures the Cruise, Acceleration, Torque, and Stator limits
-    shooterPitchMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; //TODO: Set Cruise Velocity
-    shooterPitchMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; //TODO: Set Acceleration
+    // Configures the Cruise, Acceleration, Torque, and Stator limits
+    shooterPitchMotorConfig.MotionMagic.MotionMagicCruiseVelocity =
+        0.0; // TODO: Set Cruise Velocity
+    shooterPitchMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; // TODO: Set Acceleration
     shooterPitchMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     shooterPitchMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
 
@@ -63,12 +70,13 @@ public class ShooterPitch extends SubsystemBase {
       if (motorStatus.isOK()) break;
     }
     if (!motorStatus.isOK()) {
-      System.out.println("Could not apply shooter pitch motor config, error code: " + motorStatus.toString());
+      System.out.println(
+          "Could not apply shooter pitch motor config, error code: " + motorStatus.toString());
     }
 
     /** Configure Encoders */
     CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
-    
+
     encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
 
     // Apply the encoder config, retry config apply up to 5 times, report if failure
@@ -80,7 +88,7 @@ public class ShooterPitch extends SubsystemBase {
     if (!encoderStatus.isOK()) {
       System.out.println("Could not apply encoder config, error code: " + encoderStatus.toString());
     }
-    
+
     // Reset the position that the elevator currently is at to 0.
     // The physical elevator should be all the way down when this is set.
     shooterPitchMotor.setPosition(0);
@@ -95,5 +103,4 @@ public class ShooterPitch extends SubsystemBase {
   public void setAngle(Angle position) {
     shooterPitchMotor.setControl(m_request.withPosition(position));
   }
-  
 }

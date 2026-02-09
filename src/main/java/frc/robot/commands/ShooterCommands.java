@@ -3,16 +3,16 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.shooter.Shooter;
 
-public class ShooterCommands{
-  
+public class ShooterCommands {
+
   private ShooterCommands() {}
-  
-  public static Command runShooter(Shooter shooter){
+
+  public static Command runShooter(Shooter shooter) {
     return Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter);
   }
-
 }

@@ -8,12 +8,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.intake.Intake;
 
-
 public class IntakeCommands {
-  
+
   private IntakeCommands() {}
 
-  public static Command runIntake(Intake intake, double speed){
+  public static Command runIntake(Intake intake, double speed) {
     return Commands.runEnd(() -> intake.setSpeed(speed), () -> intake.setSpeed(0.0), intake);
   }
 }

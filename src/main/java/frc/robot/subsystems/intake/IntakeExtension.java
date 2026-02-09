@@ -3,8 +3,9 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems.intake;
-import frc.robot.Constants.intakeExtensionConstants;
+
 import static edu.wpi.first.units.Units.Amps;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -15,35 +16,37 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.intakeExtensionConstants;
 
 public class IntakeExtension extends SubsystemBase {
-  private static final TalonFX intakeExtensionMotor = new TalonFX(intakeExtensionConstants.MOTOR, "rio");
+  private static final TalonFX intakeExtensionMotor =
+      new TalonFX(intakeExtensionConstants.MOTOR, "rio");
   private static final CANcoder encoder = new CANcoder(intakeExtensionConstants.ENCODER, "rio");
-  
+
   final TalonFXConfiguration intakeExtensionMotorConfig;
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
-  final public MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+  public final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
 
   /** Creates a new IntakeExtension. */
   public IntakeExtension() {
     intakeExtensionMotorConfig = new TalonFXConfiguration();
 
     intakeExtensionMotorConfig
-      .Feedback
-      .withFeedbackRemoteSensorID(intakeExtensionConstants.ENCODER)
-      .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-      .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
-      .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio
+        .Feedback
+        .withFeedbackRemoteSensorID(intakeExtensionConstants.ENCODER)
+        .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+        .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
+        .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio
     intakeExtensionMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
     intakeExtensionMotorConfig
-      .CurrentLimits
-      .withStatorCurrentLimitEnable(true)
-      .withStatorCurrentLimit(Amps.of(20));
+        .CurrentLimits
+        .withStatorCurrentLimitEnable(true)
+        .withStatorCurrentLimit(Amps.of(20));
 
-    intakeExtensionMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; // TODO: Set Cruise Velocity
+    intakeExtensionMotorConfig.MotionMagic.MotionMagicCruiseVelocity =
+        0.0; // TODO: Set Cruise Velocity
     intakeExtensionMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; // TODO: Set Acceleration
     intakeExtensionMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     intakeExtensionMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
@@ -56,9 +59,10 @@ public class IntakeExtension extends SubsystemBase {
     }
 
     if (!motorStatus.isOK()) {
-      System.out.println("Could not apply Intake Extension motor config, error code: " + motorStatus.toString());
+      System.out.println(
+          "Could not apply Intake Extension motor config, error code: " + motorStatus.toString());
     }
-    
+
     CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
 
     encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
