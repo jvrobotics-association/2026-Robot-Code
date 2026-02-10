@@ -10,8 +10,6 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -25,6 +23,7 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.shooterPitchConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class ShooterPitch extends SubsystemBase {
   /** Creates and Declares a TalonFX motor and a CANcoder */
@@ -44,7 +43,7 @@ public class ShooterPitch extends SubsystemBase {
         .Feedback
         .withFeedbackRemoteSensorID(shooterPitchConstants.ENCODER)
         .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-        .withSensorToMechanismRatio(1) ;// TODO: Set Sensor to Mechanism Ratio
+        .withSensorToMechanismRatio(1); // TODO: Set Sensor to Mechanism Ratio
 
     // Sets the Neutral Mode to Brake
     shooterPitchMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);

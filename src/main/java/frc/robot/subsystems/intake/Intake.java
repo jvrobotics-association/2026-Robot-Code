@@ -5,14 +5,12 @@
 package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
@@ -21,6 +19,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Intake extends SubsystemBase {
 
@@ -29,29 +28,32 @@ public class Intake extends SubsystemBase {
 
   /** Declares Configs */
   final TalonFXConfiguration intakeMotorConfig;
+
   final MotionMagicConfigs intakeMotorMMConfigs;
   final Slot0Configs intakeMotorSlot0;
-  
-  /**Motor Control Requests */
+
+  /** Motor Control Requests */
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
+
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
 
   /************ Class Member Variables ************/
   private final LoggedNetworkNumber IntakeSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
 
   /** Creates a new Intake */
-
   public Intake() {
 
-    /**Configures the Motor and sets up the Feedback. */
+    /** Configures the Motor and sets up the Feedback. */
     intakeMotorConfig = new TalonFXConfiguration();
     // Get feedback from either the encoder or the CANcoder
     intakeMotorConfig
         .Feedback
         .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-        .withSensorToMechanismRatio(1); // TODO: Verify if this or ShooterMotor's config works better
-    //Sets Neutral mode to coast
+        .withSensorToMechanismRatio(
+            1); // TODO: Verify if this or ShooterMotor's config works better
+    // Sets Neutral mode to coast
     intakeMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
+    // Sets the current limits for the
     intakeMotorConfig
         .CurrentLimits
         .withStatorCurrentLimitEnable(true)
@@ -73,9 +75,9 @@ public class Intake extends SubsystemBase {
 
     // Configures the Acceleration, Jerk
     intakeMotorMMConfigs = intakeMotorConfig.MotionMagic;
-    intakeMotorMMConfigs.withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10))
-      .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
-
+    intakeMotorMMConfigs
+        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10))
+        .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
 
     StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
@@ -96,6 +98,7 @@ public class Intake extends SubsystemBase {
   public void startIntake() {
     intakeMotor.setControl(m_request.withVelocity(IntakeSpeed.getAsDouble()));
   }
+
   public void stopIntake() {
     intakeMotor.setControl(m_request.withVelocity(0.0));
   }

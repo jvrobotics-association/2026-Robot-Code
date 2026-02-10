@@ -5,10 +5,8 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -22,7 +20,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.shooterConstants;
-
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Shooter extends SubsystemBase {
   /************ Declare Motors ************/
@@ -32,6 +30,7 @@ public class Shooter extends SubsystemBase {
 
   /************ Declare Configs ************/
   final TalonFXConfiguration leftMotorConfig;
+
   final TalonFXConfiguration rightMotorConfig;
   final MotionMagicConfigs leftMotorMMConfigs;
   final MotionMagicConfigs rightMotorMMConfigs;
@@ -53,21 +52,21 @@ public class Shooter extends SubsystemBase {
 
     leftMotorConfig = new TalonFXConfiguration();
     // Gets feed from either the encoder or the CANcoder
-    leftMotorConfig.Feedback.
-      withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-      .SensorToMechanismRatio = 1; // TODO: Verify if this or IntakeMotor's config works better
+    leftMotorConfig.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+            .SensorToMechanismRatio =
+        1; // TODO: Verify if this or IntakeMotor's config works better
     // set Neutral Mode to Coast
     leftMotorConfig
-      .MotorOutput
-      .withNeutralMode(NeutralModeValue.Coast)
-      .withInverted(InvertedValue.Clockwise_Positive);
+        .MotorOutput
+        .withNeutralMode(NeutralModeValue.Coast)
+        .withInverted(InvertedValue.Clockwise_Positive);
 
     // Limits the amount of Amps the motor can draw
     // Volts * Amps = Watts
     leftMotorConfig
-      .CurrentLimits
-      .withStatorCurrentLimitEnable(true)
-      .withStatorCurrentLimit(Amps.of(20));
+        .CurrentLimits
+        .withStatorCurrentLimitEnable(true)
+        .withStatorCurrentLimit(Amps.of(20));
 
     leftMotorSlot0 = leftMotorConfig.Slot0;
     leftMotorSlot0.kS = 0.0; // Add 0.25 V output to overcome static friction
@@ -80,11 +79,11 @@ public class Shooter extends SubsystemBase {
     leftMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     leftMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
 
-
     // Configures the Acceleration,Torque, and Stator limits
     leftMotorMMConfigs = leftMotorConfig.MotionMagic;
-    leftMotorMMConfigs.withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10))
-      .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
+    leftMotorMMConfigs
+        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10))
+        .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
     // Apply the left shooter motor config, retry config apply up to 5 times, report if failure
     StatusCode leftMotorStatus = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
@@ -101,27 +100,28 @@ public class Shooter extends SubsystemBase {
     rightMotorConfig = new TalonFXConfiguration();
     // Gets feed from either the encoder or the CANcoder
     rightMotorConfig.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-      .SensorToMechanismRatio = 1;
+            .SensorToMechanismRatio =
+        1;
     // set Neutral Mode to Coast
     rightMotorConfig
-      .MotorOutput
-      .withNeutralMode(NeutralModeValue.Coast)
-      .withInverted(InvertedValue.CounterClockwise_Positive);
+        .MotorOutput
+        .withNeutralMode(NeutralModeValue.Coast)
+        .withInverted(InvertedValue.CounterClockwise_Positive);
     // Limits the amount of Amps the motor can draw
     // Volts * Amps = Watts
     rightMotorConfig
-      .CurrentLimits
-      .withStatorCurrentLimitEnable(true)
-      .withStatorCurrentLimit(Amps.of(20));
+        .CurrentLimits
+        .withStatorCurrentLimitEnable(true)
+        .withStatorCurrentLimit(Amps.of(20));
 
     // Configures the Cruise, Acceleration,Torque, and Stator limits of the right motor
     rightMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     rightMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
 
     rightMotorConfig
-      .CurrentLimits
-      .withStatorCurrentLimitEnable(true)
-      .withStatorCurrentLimit(Amps.of(20));
+        .CurrentLimits
+        .withStatorCurrentLimitEnable(true)
+        .withStatorCurrentLimit(Amps.of(20));
 
     rightMotorSlot0 = rightMotorConfig.Slot0;
     rightMotorSlot0.kS = 0.0; // Add 0.25 V output to overcome static friction
@@ -132,8 +132,9 @@ public class Shooter extends SubsystemBase {
     rightMotorSlot0.kD = 0.0; // A velocity error of 1 rps results in 0.5 V output
 
     rightMotorMMConfigs = rightMotorConfig.MotionMagic;
-    rightMotorMMConfigs.withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10)) 
-      .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
+    rightMotorMMConfigs
+        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10))
+        .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
 
     // Apply the right shooter motor config, retry config apply up to 5 times, report if failure
     StatusCode rightMotorStatus = StatusCode.StatusCodeNotInitialized;
@@ -155,7 +156,6 @@ public class Shooter extends SubsystemBase {
   public void startShooter() {
     leftMotor.setControl(m_request.withVelocity(ShooterSpeed.getAsDouble()));
     rightMotor.setControl(m_request.withVelocity(ShooterSpeed.getAsDouble()));
-    
   }
   // Sets the speed and makes it a double
   public void stopShooter() {
