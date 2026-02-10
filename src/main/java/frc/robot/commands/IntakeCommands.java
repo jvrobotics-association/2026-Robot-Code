@@ -12,7 +12,7 @@ public class IntakeCommands {
 
   private IntakeCommands() {}
 
-  public static Command runIntake(Intake intake, double speed) {
-    return Commands.runEnd(() -> intake.setSpeed(speed), () -> intake.setSpeed(0.0), intake);
+  public static Command runIntake(Intake intake) {
+    return Commands.runEnd(() -> intake.startIntake(), () -> intake.stopIntake(), intake);
   }
 }

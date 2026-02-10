@@ -2,11 +2,6 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-// TODO: Shooter Motor Configs (2 independent motors, X60): MotionMagic MaxVel, Accel, Jerk;
-// Slot0Configs; SensorToMechanismRatio
-// TODO: Reconfigure Intake Motor (1 intake motor, X44) with motion magic (same as shooter); Update
-// how Left Trigger works in RobotContainer, IntakeCommands, and Intake.java (i.e. same updates as
-// shooter)
 // TODO: Copy/Paste the test.java into the programming discord.
 // TODO: Reconfigure the ShooterPitch and IntakeExtend with motion magic. These will be POSITION,
 // not VELOCITY. Reference the elevatr controls from last year. For now, use Dashboard input for
@@ -15,6 +10,9 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
+
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -48,8 +46,8 @@ public class ShooterPitch extends SubsystemBase {
         .Feedback
         .withFeedbackRemoteSensorID(shooterPitchConstants.ENCODER)
         .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-        .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
-        .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio
+        .withSensorToMechanismRatio(1) ;// TODO: Set Sensor to Mechanism Ratio
+
     // Sets the Neutral Mode to Brake
     shooterPitchMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
     shooterPitchMotorConfig
@@ -97,7 +95,7 @@ public class ShooterPitch extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    Logger.recordOutput("PitchEncoder", encoder.getPosition().getValueAsDouble());
   }
 
   public void setAngle(Angle position) {

@@ -29,7 +29,6 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /*
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -49,8 +48,6 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-
-  private final LoggedNetworkNumber IntakeSpeed = new LoggedNetworkNumber("Intake Speed", 0.0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -173,9 +170,7 @@ public class RobotContainer {
 
     controller.rightTrigger(0.25).whileTrue(ShooterCommands.runShooter(shooter));
 
-    controller
-        .leftTrigger(0.25)
-        .whileTrue(IntakeCommands.runIntake(intake, IntakeSpeed.getAsDouble()));
+    controller.leftTrigger(0.25).whileTrue(IntakeCommands.runIntake(intake));
   }
 
   /**

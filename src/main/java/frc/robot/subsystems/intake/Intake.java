@@ -5,59 +5,77 @@
 package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 public class Intake extends SubsystemBase {
-  /** Creates a new Intake. */
+
+  /** Declares the Motor and Encoder */
   private static final TalonFX intakeMotor = new TalonFX(IntakeConstants.MOTOR, "rio");
 
-  private static final CANcoder encoder = new CANcoder(IntakeConstants.ENCODER, "rio");
+  /** Declares Configs */
   final TalonFXConfiguration intakeMotorConfig;
+  final MotionMagicConfigs intakeMotorMMConfigs;
+  final Slot0Configs intakeMotorSlot0;
+  
+  /**Motor Control Requests */
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
 
+  /************ Class Member Variables ************/
+  private final LoggedNetworkNumber IntakeSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
+
+  /** Creates a new Intake */
+
   public Intake() {
+
+    /**Configures the Motor and sets up the Feedback. */
     intakeMotorConfig = new TalonFXConfiguration();
+    // Get feedback from either the encoder or the CANcoder
     intakeMotorConfig
         .Feedback
-        .withFeedbackRemoteSensorID(IntakeConstants.ENCODER)
-        .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-        .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
-        .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio
+        .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+        .withSensorToMechanismRatio(1); // TODO: Verify if this or ShooterMotor's config works better
+    //Sets Neutral mode to coast
     intakeMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
     intakeMotorConfig
         .CurrentLimits
         .withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(20));
-    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
-    encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
 
-    // Apply the encoder config, retry config apply up to 5 times, report if failure
-    StatusCode encoderStatus = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      encoderStatus = encoder.getConfigurator().apply(encoderConfig);
-      if (encoderStatus.isOK()) break;
-    }
-    if (!encoderStatus.isOK()) {
-      System.out.println("Could not apply encoder config, error code: " + encoderStatus.toString());
-    }
-
-    intakeMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; // TODO: Set Cruise Velocity
-    intakeMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; // TODO: Set Acceleration
     intakeMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     intakeMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+
+    intakeMotorSlot0 = intakeMotorConfig.Slot0;
+    intakeMotorSlot0.kS = 0.0; // Add 0.25 V output to overcome static friction
+    intakeMotorSlot0.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
+    intakeMotorSlot0.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
+    intakeMotorSlot0.kP = 0.0; // A position error of 0.2 rotations results in 12 V output
+    intakeMotorSlot0.kI = 0.0; // No output for integrated error
+    intakeMotorSlot0.kD = 0.0; // A velocity error of 1 rps results in 0.5 V output
+
+    intakeMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
+    intakeMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+
+    // Configures the Acceleration, Jerk
+    intakeMotorMMConfigs = intakeMotorConfig.MotionMagic;
+    intakeMotorMMConfigs.withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10))
+      .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
+
 
     StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
@@ -75,7 +93,10 @@ public class Intake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setSpeed(double speed) {
-    intakeMotor.setControl(m_request.withVelocity(speed));
+  public void startIntake() {
+    intakeMotor.setControl(m_request.withVelocity(IntakeSpeed.getAsDouble()));
+  }
+  public void stopIntake() {
+    intakeMotor.setControl(m_request.withVelocity(0.0));
   }
 }
