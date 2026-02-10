@@ -2,7 +2,6 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-// TODO: Copy/Paste the test.java into the programming discord.
 // TODO: Reconfigure the ShooterPitch and IntakeExtend with motion magic. These will be POSITION,
 // not VELOCITY. Reference the elevatr controls from last year. For now, use Dashboard input for
 // those systems.
@@ -12,7 +11,6 @@ package frc.robot.subsystems.shooter;
 import static edu.wpi.first.units.Units.Amps;
 
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
