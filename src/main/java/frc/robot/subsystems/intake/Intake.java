@@ -23,7 +23,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Intake extends SubsystemBase {
 
-  /** Declares the Motor and Encoder */
+  /** Declares the Motor*/
   private static final TalonFX intakeMotor = new TalonFX(IntakeConstants.MOTOR, "rio");
 
   /** Declares Configs */
