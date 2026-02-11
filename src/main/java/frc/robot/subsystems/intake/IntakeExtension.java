@@ -20,7 +20,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.intakeExtensionConstants;
 
 public class IntakeExtension extends SubsystemBase {
-  private static final TalonFX intakeExtensionMotor = new TalonFX(intakeExtensionConstants.MOTOR, "rio");
+  private static final TalonFX intakeExtensionMotor =
+      new TalonFX(intakeExtensionConstants.MOTOR, "rio");
 
   private static final CANcoder encoder = new CANcoder(intakeExtensionConstants.ENCODER, "rio");
 
@@ -37,14 +38,14 @@ public class IntakeExtension extends SubsystemBase {
         .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
         .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
         .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio
-    
+
     // Sets the Neutral Mode to Brake
     intakeExtensionMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
     intakeExtensionMotorConfig
         .CurrentLimits
         .withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(20));
-    //Configures the Cruise, Accelerartion, Torque, and Stator limts
+    // Configures the Cruise, Accelerartion, Torque, and Stator limts
     intakeExtensionMotorConfig.MotionMagic.MotionMagicCruiseVelocity =
         0.0; // TODO: Set Cruise Velocity
     intakeExtensionMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; // TODO: Set Acceleration
@@ -85,7 +86,7 @@ public class IntakeExtension extends SubsystemBase {
 
   @Override
   public void periodic() {
-    
+
     // This method will be called once per scheduler run
   }
 

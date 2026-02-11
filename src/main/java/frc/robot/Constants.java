@@ -64,6 +64,7 @@ public final class Constants {
     public static final Distance DISTANCE_ABOVE_FUNNEL =
         Inches.of(6); // TODO: set distance above funnel
   }
+
   public final class climberConstants {
     public static final int LEFT_MOTOR = -1; // TODO: set left motor ID
     public static final int LEFT_ENCODER = -1; // TODO: set encoder ID

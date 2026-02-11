@@ -22,7 +22,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Intake extends SubsystemBase {
 
-  /** Declares the Motor*/
+  /** Declares the Motor */
   private static final TalonFX intakeMotor = new TalonFX(IntakeConstants.MOTOR, "rio");
 
   /** Declares Configs */
@@ -32,7 +32,6 @@ public class Intake extends SubsystemBase {
   final Slot0Configs intakeMotorSlot0;
 
   /** Motor Control Requests */
-
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
 
   /************ Class Member Variables ************/

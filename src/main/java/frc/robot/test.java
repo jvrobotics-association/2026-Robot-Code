@@ -26,7 +26,7 @@ public class test {
   public static ShotData math(double inches) {
     double x_dist = inches; // 2d distance in inches
     double y_dist = 56.4 - 14; // Z of target minus robot-to-turret transoform Z
-    double h = 15.6 + 20.0; // height of funnel plus clearance of funnel
+    double h = 15.6 + 10.0; // height of funnel plus clearance of funnel
     double r = 24; // just funnel radius
     double A1 = x_dist * x_dist;
     double B1 = x_dist;

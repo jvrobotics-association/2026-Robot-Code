@@ -2,10 +2,6 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-// TODO: Reconfigure the ShooterPitch and IntakeExtend with motion magic. These will be POSITION,
-// not VELOCITY. Reference the elevatr controls from last year. For now, use Dashboard input for
-// those systems.
-
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
