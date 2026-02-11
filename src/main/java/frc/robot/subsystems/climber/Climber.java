@@ -4,19 +4,24 @@
 
 package frc.robot.subsystems.climber;
 import static edu.wpi.first.units.Units.Amps;
+import edu.wpi.first.units.measure.Angle;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.ForwardLimitValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.climberConstants;
+
+
 
 public class Climber extends SubsystemBase {
   /** LEFT MOTOR */
@@ -40,8 +45,7 @@ public class Climber extends SubsystemBase {
         .Feedback
         .withFeedbackRemoteSensorID(climberConstants.LEFT_ENCODER)
         .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-        .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
-        .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio
+        .withSensorToMechanismRatio(1); // TODO: Set Sensor to Mechanism Ratio
     
     // Sets the Neutral Mode to Brake
     leftClimberMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
@@ -50,8 +54,7 @@ public class Climber extends SubsystemBase {
         .withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(20));
     //Configures the Cruise, Accelerartion, Torque, and Stator limts
-    leftClimberMotorConfig.MotionMagic.MotionMagicCruiseVelocity =
-        0.0; // TODO: Set Cruise Velocity
+    leftClimberMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; // TODO: Set Cruise Velocity
     leftClimberMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; // TODO: Set Acceleration
     leftClimberMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     leftClimberMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
@@ -89,8 +92,7 @@ public class Climber extends SubsystemBase {
         .Feedback
         .withFeedbackRemoteSensorID(climberConstants.RIGHT_ENCODER)
         .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-        .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
-        .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio
+        .withSensorToMechanismRatio(1); // TODO: Set Sensor to Mechanism Ratio
     
     // Sets the Neutral Mode to Brake
     rightClimberMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
@@ -99,8 +101,7 @@ public class Climber extends SubsystemBase {
         .withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(20));
     //Configures the Cruise, Accelerartion, Torque, and Stator limts
-    rightClimberMotorConfig.MotionMagic.MotionMagicCruiseVelocity =
-        0.0; // TODO: Set Cruise Velocity
+    rightClimberMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; // TODO: Set Cruise Velocity
     rightClimberMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; // TODO: Set Acceleration
     rightClimberMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     rightClimberMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
@@ -134,11 +135,28 @@ public class Climber extends SubsystemBase {
     // Reset the position that the elevator currently is at to 0.
     // The physical elevator should be all the way down when this is set.
     rightClimberMotor.setPosition(0);
+    leftClimberMotor.setPosition(0);
     rightEncoder.setPosition(0);
+    leftEncoder.setPosition(0);
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+  }
+  public void setSpeed(double speed) {
+    rightClimberMotor.setControl(new StrictFollower(climberConstants.LEFT_MOTOR));
+    leftClimberMotor.set(speed);
+  }
+
+  public void stopMotors() {
+    leftClimberMotor.stopMotor();
+    rightClimberMotor.stopMotor();
+  }
+
+  public void setAngle(Angle position){
+    if (leftClimberMotor.getForwardLimit(true).getValue() == ForwardLimitValue.ClosedToGround) {
+      rightClimberMotor.setControl(new StrictFollower(climberConstants.LEFT_MOTOR));
+      leftClimberMotor.setControl(m_request.withPosition(position));
+    } else leftClimberMotor.stopMotor();
   }
 }

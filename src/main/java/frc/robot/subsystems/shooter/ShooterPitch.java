@@ -13,7 +13,6 @@ import static edu.wpi.first.units.Units.Amps;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -32,7 +31,6 @@ public class ShooterPitch extends SubsystemBase {
   private static final CANcoder encoder = new CANcoder(shooterPitchConstants.ENCODER, "rio");
 
   final TalonFXConfiguration shooterPitchMotorConfig;
-  final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   public final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
 
   /** Creates a new ShooterPitch */

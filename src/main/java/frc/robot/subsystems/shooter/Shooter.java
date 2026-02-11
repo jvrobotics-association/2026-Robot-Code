@@ -12,7 +12,6 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -38,7 +37,6 @@ public class Shooter extends SubsystemBase {
   final Slot0Configs leftMotorSlot0;
 
   /************ Motor Control Requests ************/
-  final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
 
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
 

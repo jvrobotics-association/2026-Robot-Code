@@ -69,5 +69,6 @@ public final class Constants {
     public static final int LEFT_ENCODER = -1; // TODO: set encoder ID
     public static final int RIGHT_MOTOR = -1; // TODO: set right motor ID
     public static final int RIGHT_ENCODER = -1; // TODO: set encoder ID
+    public static final String INTAKE_SPEED = null;
   }
 }
