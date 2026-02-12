@@ -18,7 +18,7 @@ public class ShooterCommands {
     return Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter);
   }
 
-  public static Command AimAndScore(Shooter shooter,ShooterPitch shooterPitch) {
+  public static Command AimAndScore(Shooter shooter,ShooterPitch shooterPitch, Angle position) {
     return Commands.parallel(
       Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter),
       Commands.runEnd(() -> shooterPitch.setAngle(position), () -> shooter.stopShooter(), shooterPitch)
