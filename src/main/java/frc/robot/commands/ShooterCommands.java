@@ -7,6 +7,8 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterPitch;
+import edu.wpi.first.units.measure.Angle;
 
 public class ShooterCommands {
 
@@ -14,5 +16,12 @@ public class ShooterCommands {
 
   public static Command runShooter(Shooter shooter) {
     return Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter);
+  }
+
+  public static Command AimAndScore(Shooter shooter,ShooterPitch shooterPitch) {
+    return Commands.parallel(
+      Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter),
+      Commands.runEnd(() -> shooterPitch.setAngle(position), () -> shooter.stopShooter(), shooterPitch)
+    );
   }
 }

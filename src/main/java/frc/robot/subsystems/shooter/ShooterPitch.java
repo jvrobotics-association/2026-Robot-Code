@@ -18,7 +18,6 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.shooterPitchConstants;
-import org.littletonrobotics.junction.Logger;
 
 public class ShooterPitch extends SubsystemBase {
   /** Creates and Declares a TalonFX motor and a CANcoder */
@@ -84,12 +83,13 @@ public class ShooterPitch extends SubsystemBase {
     encoder.setPosition(0);
   }
 
+  
+
   @Override
   public void periodic() {
-    Logger.recordOutput("PitchEncoder", encoder.getPosition().getValueAsDouble());
   }
 
   public void setAngle(Angle position) {
-    shooterPitchMotor.setControl(m_request.withPosition(position));
+    shooterPitchMotor.setControl(m_request.withPosition(0));
   }
 }
