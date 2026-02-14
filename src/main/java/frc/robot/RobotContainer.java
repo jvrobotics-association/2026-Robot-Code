@@ -17,8 +17,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.IntakeCommands;
-import frc.robot.commands.ShooterCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -28,6 +26,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterPitch;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.Constants.controllerConstants;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -48,37 +47,24 @@ public class RobotContainer {
   private final Shooter shooter;
   private final Intake  intake;
   private final Climber climber;
+  private final ShooterPitch pitch;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
 
-  // Binding
+  // // Binding
   private final Trigger shootTrigger = controller.rightTrigger(controllerConstants.TRIGGER_THRESHOLD);
   private final Trigger intakeTrigger = controller.leftTrigger(controllerConstants.TRIGGER_THRESHOLD);
   private final Trigger resetGyroTrigger = controller.b();
   private final Trigger lock0DriveTrigger = controller.a();
   private final Trigger lockPositionTrigger = controller.x();
   private final Trigger climbTrigger = controller.y();
-  //private final Trigger climbTrigger = ;
-  //private final Trigger aimTrigger = ;
-   
+  private final Trigger aimTrigger = controller.povRight();
   
-  
-  
-
-
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-   
-   // TODO: Move all commands from ClimberCommands, DriveCommands, IntakeCommands, ShooterCommands into RobotContainer, delete those files once empty
-   // TODO: It will be like "shootTrigger.WhileTrue(COMMAND);", down in ConfigureBindings
-   // TODO: Put the TRIGGER BINDINGS above in an IF/ELSE, have the constructor pull a dashboard value for "XBOX" or "JOYSTICK"
-   // TODO: Put the COMMANDS below in a IF/ELSE and create a dashboard value for "PRACTICE" or "COMPETITION"
-   // TODO: Create dashboard inputs to set Hood Angle, Shooter Speed, Intake Extend, Intake Speed, Indexer; and use those values in PRACTICE mode
-   // TODO: In COMPETITION mode, use the util\ControlConstants.java file to set those values automatically.
     
     switch (Constants.currentMode) {
       case REAL:
@@ -95,6 +81,7 @@ public class RobotContainer {
         shooter = new Shooter();
         intake = new Intake();
         climber = new Climber();
+        pitch = new ShooterPitch();
         break;
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
@@ -108,6 +95,7 @@ public class RobotContainer {
         shooter = new Shooter();
         intake = new Intake();
         climber = new Climber();
+        pitch = new ShooterPitch();
         break;
 
       default:
@@ -122,12 +110,13 @@ public class RobotContainer {
         shooter = new Shooter();
         intake = new Intake();
         climber = new Climber();
+        pitch = new ShooterPitch();
+
         break;
     }
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
     // Set up SysId routines
     autoChooser.addOption(
         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
@@ -143,7 +132,7 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
+    
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -162,21 +151,20 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-
-    // Lock to 0° when A button is held
     lock0DriveTrigger.whileTrue(DriveCommands.joystickDriveAtAngle(drive,() -> -controller.getLeftY(),() -> -controller.getLeftX(),() -> Rotation2d.kZero));
-
-    // Switch to X pattern when X button is pressed
     lockPositionTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
-
-    // Reset gyro to 0° when B button is pressed
     resetGyroTrigger.onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),drive).ignoringDisable(true));
-    //Climbs the tower
-    //climbTriggerlockPositionTrigger.onTrue(Commands.runOnce(climber./*something */, climber)); //TODO: Make command for climbing
-    //controller.rightTrigger(0.25).whileTrue(ShooterCommands.runShooter(shooter));
-    shootTrigger.whileTrue(ShooterCommands.runShooter(shooter));
+
+    
+    shootTrigger.whileTrue (
+   //   Commands.parallel(
+   //     Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter),
+   //     Commands.runEnd(() -> pitch.setAngle(30.0), () -> pitch.setAngle(0.0), pitch)
+    //  )
+      Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter)
+    );
     //controller.leftTrigger(0.25).whileTrue(IntakeCommands.runIntake(intake))
-    intakeTrigger.whileTrue(IntakeCommands.runIntake(intake));
+    intakeTrigger.whileTrue(Commands.runEnd(() -> intake.startIntake(), () -> intake.stopIntake(), intake));
   }
 
   /**

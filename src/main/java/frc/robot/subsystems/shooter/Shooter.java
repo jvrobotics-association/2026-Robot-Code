@@ -51,8 +51,7 @@ public class Shooter extends SubsystemBase {
     leftMotorConfig = new TalonFXConfiguration();
     // Gets feed from either the encoder or the CANcoder
     leftMotorConfig.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-            .SensorToMechanismRatio =
-        1; // TODO: Verify if this or IntakeMotor's config works better
+            .SensorToMechanismRatio = 1; // TODO: Verify if this or IntakeMotor's config works better
     // set Neutral Mode to Coast
     leftMotorConfig
         .MotorOutput

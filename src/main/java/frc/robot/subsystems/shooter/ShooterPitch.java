@@ -15,7 +15,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.shooterPitchConstants;
 
@@ -89,7 +88,7 @@ public class ShooterPitch extends SubsystemBase {
   public void periodic() {
   }
 
-  public void setAngle(Angle position) {
+  public void setAngle(double position) {
     shooterPitchMotor.setControl(m_request.withPosition(0));
   }
 }
