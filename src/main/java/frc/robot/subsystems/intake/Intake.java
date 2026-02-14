@@ -12,6 +12,7 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -33,7 +34,7 @@ public class Intake extends SubsystemBase {
 
   /** Motor Control Requests */
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
-
+   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   /************ Class Member Variables ************/
   private final LoggedNetworkNumber IntakeSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
 
@@ -93,10 +94,10 @@ public class Intake extends SubsystemBase {
   }
 
   public void startIntake() {
-    intakeMotor.setControl(m_request.withVelocity(IntakeSpeed.getAsDouble()));
+    intakeMotor.setControl(m_manualRequest.withOutput(IntakeSpeed.getAsDouble()));
   }
 
   public void stopIntake() {
-    intakeMotor.setControl(m_request.withVelocity(0.0));
+    intakeMotor.setControl(m_manualRequest.withOutput(0.0));
   }
 }

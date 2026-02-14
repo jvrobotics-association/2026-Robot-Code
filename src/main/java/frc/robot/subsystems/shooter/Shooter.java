@@ -18,8 +18,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
-import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.shooterConstants;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -42,6 +40,7 @@ public class Shooter extends SubsystemBase {
   /************ Motor Control Requests ************/
 
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
+
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   /************ Class Member Variables ************/
   private final LoggedNetworkNumber ShooterSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
@@ -160,7 +159,7 @@ public class Shooter extends SubsystemBase {
   }
   // Sets the speed and makes it a double
   public void stopShooter() {
-    leftMotor.setControl(m_request.withVelocity(0.0));
-    rightMotor.setControl(m_request.withVelocity(0.0));
+    leftMotor.setControl(m_manualRequest.withOutput(0.0));
+    rightMotor.setControl(m_manualRequest.withOutput(0.0));
   }
 }
