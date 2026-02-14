@@ -72,4 +72,9 @@ public final class Constants {
     public static final int RIGHT_ENCODER = -1; // TODO: set encoder ID
     public static final String INTAKE_SPEED = null;
   }
+
+  public final class controllerConstants {
+    public static final double TRIGGER_THRESHOLD = 0.25;
+    
+  }
 }

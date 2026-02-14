@@ -28,6 +28,10 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.Constants.controllerConstants;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /*
@@ -36,21 +40,46 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
+
 public class RobotContainer {
 
   // Subsystems
-  private final Drive drive;
-  private final Shooter shooter = new Shooter();
-  private final Intake intake = new Intake();
+  private final Drive   drive;
+  private final Shooter shooter;
+  private final Intake  intake;
+  private final Climber climber;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
 
+  // Binding
+  private final Trigger shootTrigger = controller.rightTrigger(controllerConstants.TRIGGER_THRESHOLD);
+  private final Trigger intakeTrigger = controller.leftTrigger(controllerConstants.TRIGGER_THRESHOLD);
+  private final Trigger resetGyroTrigger = controller.b();
+  private final Trigger lock0DriveTrigger = controller.a();
+  private final Trigger lockPositionTrigger = controller.x();
+  //private final Trigger climbTrigger = ;
+  //private final Trigger aimTrigger = ;
+   
+  
+  
+  
+
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-
+  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+   // TODO: Move all button bindings to up here
+   // TODO: Finish creating subsystems and initializing them in the REAL robot case 
+   // TODO: Move all commands from ClimberCommands, DriveCommands, IntakeCommands, ShooterCommands into RobotContainer, delete those files once empty
+   // TODO: It will be like "shootTrigger.WhileTrue(COMMAND);", down in ConfigureBindings
+   // TODO: Put the TRIGGER BINDINGS above in an IF/ELSE, have the constructor pull a dashboard value for "XBOX" or "JOYSTICK"
+   // TODO: Put the COMMANDS below in a IF/ELSE and create a dashboard value for "PRACTICE" or "COMPETITION"
+   // TODO: Create dashboard inputs to set Hood Angle, Shooter Speed, Intake Extend, Intake Speed, Indexer; and use those values in PRACTICE mode
+   // TODO: In COMPETITION mode, use the util\ControlConstants.java file to set those values automatically.
+    
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -63,26 +92,9 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
-
-        // The ModuleIOTalonFXS implementation provides an example implementation for
-        // TalonFXS controller connected to a CANdi with a PWM encoder. The
-        // implementations
-        // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
-        // swerve
-        // template) can be freely intermixed to support alternative hardware
-        // arrangements.
-        // Please see the AdvantageKit template documentation for more information:
-        // https://docs.advantagekit.org/getting-started/template-projects/talonfx-swerve-template#custom-module-implementations
-        //
-        // drive =
-        // new Drive(
-        // new GyroIOPigeon2(),
-        // new ModuleIOTalonFXS(TunerConstants.FrontLeft),
-        // new ModuleIOTalonFXS(TunerConstants.FrontRight),
-        // new ModuleIOTalonFXS(TunerConstants.BackLeft),
-        // new ModuleIOTalonFXS(TunerConstants.BackRight));
+        shooter = new Shooter();
+        intake = new Intake();
         break;
-
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         drive =
@@ -158,20 +170,12 @@ public class RobotContainer {
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                    () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
-                .ignoringDisable(true));
+    controller.b().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),drive).ignoringDisable(true));
 
     //controller.rightTrigger(0.25).whileTrue(ShooterCommands.runShooter(shooter));
-    controller.rightTrigger(0.25).whileTrue(ShooterCommands.runShooter(shooter));
-
-    controller.leftTrigger(0.25).whileTrue(IntakeCommands.runIntake(intake));
+    shootTrigger.whileTrue(ShooterCommands.runShooter(shooter));
+    //controller.leftTrigger(0.25).whileTrue(IntakeCommands.runIntake(intake))
+    intakeTrigger.whileTrue(IntakeCommands.runIntake(intake));
   }
 
   /**
