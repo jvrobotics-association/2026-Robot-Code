@@ -82,11 +82,8 @@ public class ShooterPitch extends SubsystemBase {
     encoder.setPosition(0);
   }
 
-  
-
   @Override
-  public void periodic() {
-  }
+  public void periodic() {}
 
   public void setAngle(double position) {
     shooterPitchMotor.setControl(m_request.withPosition(0));

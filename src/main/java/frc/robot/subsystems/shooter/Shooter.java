@@ -12,11 +12,14 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.shooterConstants;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -39,7 +42,7 @@ public class Shooter extends SubsystemBase {
   /************ Motor Control Requests ************/
 
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
-
+  final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   /************ Class Member Variables ************/
   private final LoggedNetworkNumber ShooterSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
 
@@ -51,7 +54,8 @@ public class Shooter extends SubsystemBase {
     leftMotorConfig = new TalonFXConfiguration();
     // Gets feed from either the encoder or the CANcoder
     leftMotorConfig.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-            .SensorToMechanismRatio = 1; // TODO: Verify if this or IntakeMotor's config works better
+            .SensorToMechanismRatio =
+        1; // TODO: Verify if this or IntakeMotor's config works better
     // set Neutral Mode to Coast
     leftMotorConfig
         .MotorOutput
@@ -151,8 +155,8 @@ public class Shooter extends SubsystemBase {
   }
   // Sets the speed and makes it a double
   public void startShooter() {
-    leftMotor.setControl(m_request.withVelocity(ShooterSpeed.getAsDouble()));
-    rightMotor.setControl(m_request.withVelocity(ShooterSpeed.getAsDouble()));
+    leftMotor.setControl(m_manualRequest.withOutput(ShooterSpeed.getAsDouble()));
+    rightMotor.setControl(m_manualRequest.withOutput(ShooterSpeed.getAsDouble()));
   }
   // Sets the speed and makes it a double
   public void stopShooter() {

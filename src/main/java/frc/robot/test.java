@@ -46,5 +46,4 @@ public class test {
 
     return new ShotData(v0, theta);
   }
-  
 }

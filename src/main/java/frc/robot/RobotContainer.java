@@ -15,9 +15,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.controllerConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -27,10 +30,6 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPitch;
-import frc.robot.subsystems.climber.Climber;
-import frc.robot.Constants.controllerConstants;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /*
@@ -43,9 +42,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
 
   // Subsystems
-  private final Drive   drive;
+  private final Drive drive;
   private final Shooter shooter;
-  private final Intake  intake;
+  private final Intake intake;
   private final Climber climber;
   private final ShooterPitch pitch;
 
@@ -53,19 +52,21 @@ public class RobotContainer {
   private final CommandXboxController controller = new CommandXboxController(0);
 
   // // Binding
-  private final Trigger shootTrigger = controller.rightTrigger(controllerConstants.TRIGGER_THRESHOLD);
-  private final Trigger intakeTrigger = controller.leftTrigger(controllerConstants.TRIGGER_THRESHOLD);
+  private final Trigger shootTrigger =
+      controller.rightTrigger(controllerConstants.TRIGGER_THRESHOLD);
+  private final Trigger intakeTrigger =
+      controller.leftTrigger(controllerConstants.TRIGGER_THRESHOLD);
   private final Trigger resetGyroTrigger = controller.b();
   private final Trigger lock0DriveTrigger = controller.a();
   private final Trigger lockPositionTrigger = controller.x();
   private final Trigger climbTrigger = controller.y();
   private final Trigger aimTrigger = controller.povRight();
-  
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -132,7 +133,7 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-    
+
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -151,20 +152,28 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-    lock0DriveTrigger.whileTrue(DriveCommands.joystickDriveAtAngle(drive,() -> -controller.getLeftY(),() -> -controller.getLeftX(),() -> Rotation2d.kZero));
+    lock0DriveTrigger.whileTrue(
+        DriveCommands.joystickDriveAtAngle(
+            drive,
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> Rotation2d.kZero));
     lockPositionTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
-    resetGyroTrigger.onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),drive).ignoringDisable(true));
+    resetGyroTrigger.onTrue(
+        Commands.runOnce(
+                () -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+                drive)
+            .ignoringDisable(true));
 
-    
-    shootTrigger.whileTrue (
-   //   Commands.parallel(
-   //     Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter),
-   //     Commands.runEnd(() -> pitch.setAngle(30.0), () -> pitch.setAngle(0.0), pitch)
-    //  )
-      Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter)
-    );
-    //controller.leftTrigger(0.25).whileTrue(IntakeCommands.runIntake(intake))
-    intakeTrigger.whileTrue(Commands.runEnd(() -> intake.startIntake(), () -> intake.stopIntake(), intake));
+    shootTrigger.whileTrue(
+        //   Commands.parallel(
+        //     Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter),
+        //     Commands.runEnd(() -> pitch.setAngle(30.0), () -> pitch.setAngle(0.0), pitch)
+        //  )
+        Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter));
+    // controller.leftTrigger(0.25).whileTrue(IntakeCommands.runIntake(intake))
+    intakeTrigger.whileTrue(
+        Commands.runEnd(() -> intake.startIntake(), () -> intake.stopIntake(), intake));
   }
 
   /**

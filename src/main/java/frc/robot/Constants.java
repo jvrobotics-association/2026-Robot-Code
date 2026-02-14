@@ -75,6 +75,5 @@ public final class Constants {
 
   public final class controllerConstants {
     public static final double TRIGGER_THRESHOLD = 0.25;
-    
   }
 }
