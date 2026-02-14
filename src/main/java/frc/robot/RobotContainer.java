@@ -172,7 +172,7 @@ public class RobotContainer {
     // Reset gyro to 0° when B button is pressed
     resetGyroTrigger.onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),drive).ignoringDisable(true));
     //Climbs the tower
-    climbTriggerlockPositionTrigger.onTrue(Commands.runOnce(climber./*something */, climber)); //TODO: Make command for climbing
+    //climbTriggerlockPositionTrigger.onTrue(Commands.runOnce(climber./*something */, climber)); //TODO: Make command for climbing
     //controller.rightTrigger(0.25).whileTrue(ShooterCommands.runShooter(shooter));
     shootTrigger.whileTrue(ShooterCommands.runShooter(shooter));
     //controller.leftTrigger(0.25).whileTrue(IntakeCommands.runIntake(intake))
