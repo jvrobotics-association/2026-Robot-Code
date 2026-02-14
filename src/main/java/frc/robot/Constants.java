@@ -36,8 +36,8 @@ public final class Constants {
   }
 
   public final class shooterConstants {
-    public static final int LEFT_MOTOR = -1; // TODO: set left motor ID
-    public static final int RIGHT_MOTOR = -1; // TODO: set right ID
+    public static final int LEFT_MOTOR = 30; // TODO: set left motor ID
+    public static final int RIGHT_MOTOR = 40; // TODO: set right ID
   }
 
   public final class IntakeConstants {
