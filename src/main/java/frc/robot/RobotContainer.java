@@ -58,6 +58,7 @@ public class RobotContainer {
   private final Trigger resetGyroTrigger = controller.b();
   private final Trigger lock0DriveTrigger = controller.a();
   private final Trigger lockPositionTrigger = controller.x();
+  private final Trigger climbTrigger = controller.y();
   //private final Trigger climbTrigger = ;
   //private final Trigger aimTrigger = ;
    
@@ -71,8 +72,7 @@ public class RobotContainer {
   
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-   // TODO: Move all button bindings to up here
-   // TODO: Finish creating subsystems and initializing them in the REAL robot case 
+   
    // TODO: Move all commands from ClimberCommands, DriveCommands, IntakeCommands, ShooterCommands into RobotContainer, delete those files once empty
    // TODO: It will be like "shootTrigger.WhileTrue(COMMAND);", down in ConfigureBindings
    // TODO: Put the TRIGGER BINDINGS above in an IF/ELSE, have the constructor pull a dashboard value for "XBOX" or "JOYSTICK"
@@ -94,6 +94,7 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackRight));
         shooter = new Shooter();
         intake = new Intake();
+        climber = new Climber();
         break;
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
@@ -104,6 +105,9 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+        shooter = new Shooter();
+        intake = new Intake();
+        climber = new Climber();
         break;
 
       default:
@@ -115,6 +119,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        shooter = new Shooter();
+        intake = new Intake();
+        climber = new Climber();
         break;
     }
 
@@ -157,21 +164,15 @@ public class RobotContainer {
             () -> -controller.getRightX()));
 
     // Lock to 0° when A button is held
-    controller
-        .a()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> Rotation2d.kZero));
+    lock0DriveTrigger.whileTrue(DriveCommands.joystickDriveAtAngle(drive,() -> -controller.getLeftY(),() -> -controller.getLeftX(),() -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    lockPositionTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro to 0° when B button is pressed
-    controller.b().onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),drive).ignoringDisable(true));
-
+    resetGyroTrigger.onTrue(Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),drive).ignoringDisable(true));
+    //Climbs the tower
+    climbTriggerlockPositionTrigger.onTrue(Commands.runOnce(climber./*something */, climber)); //TODO: Make command for climbing
     //controller.rightTrigger(0.25).whileTrue(ShooterCommands.runShooter(shooter));
     shootTrigger.whileTrue(ShooterCommands.runShooter(shooter));
     //controller.leftTrigger(0.25).whileTrue(IntakeCommands.runIntake(intake))
