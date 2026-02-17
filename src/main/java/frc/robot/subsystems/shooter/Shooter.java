@@ -45,6 +45,8 @@ public class Shooter extends SubsystemBase {
   /************ Class Member Variables ************/
   private final LoggedNetworkNumber ShooterSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
 
+  private double flywheelSetpoint;
+
   /** Creates a new Shooter */
   public Shooter() {
 
@@ -148,9 +150,12 @@ public class Shooter extends SubsystemBase {
     }
   }
 
+  
+
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    leftMotor.setControl(m_manualRequest.withOutput(flywheelSetpoint));
+    rightMotor.setControl(m_manualRequest.withOutput(flywheelSetpoint));  
   }
   // Sets the speed and makes it a double
   public void startShooter() {
@@ -162,4 +167,23 @@ public class Shooter extends SubsystemBase {
     leftMotor.setControl(m_manualRequest.withOutput(0.0));
     rightMotor.setControl(m_manualRequest.withOutput(0.0));
   }
+
+public void setSpeed(double position) {
+    this.flywheelSetpoint = position; // TODO: Limit updates to a margin of error (i.e. 2%)
+  }
+
+  public boolean readyToShoot(){
+    boolean leftReady = false;
+    boolean rightReady = false;
+
+    leftReady = (leftMotor.getPosition().getValueAsDouble() >= ((1.00-shooterConstants.SPEED_MOE))*flywheelSetpoint) && 
+                  (leftMotor.getPosition().getValueAsDouble() <= ((1.00+shooterConstants.SPEED_MOE)*flywheelSetpoint));
+
+    rightReady = (rightMotor.getPosition().getValueAsDouble() >= ((1.00-shooterConstants.SPEED_MOE))*flywheelSetpoint) && 
+                    (rightMotor.getPosition().getValueAsDouble() <= ((1.00+shooterConstants.SPEED_MOE)*flywheelSetpoint));
+
+    return leftReady && rightReady;
+      
+  }
+
 }
