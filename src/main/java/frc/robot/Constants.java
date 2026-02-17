@@ -38,6 +38,7 @@ public final class Constants {
   public final class shooterConstants {
     public static final int LEFT_MOTOR = 30; // TODO: set left motor ID
     public static final int RIGHT_MOTOR = 40; // TODO: set right ID
+      public static final double SPEED_MOE = 0.05;
   }
 
   public final class IntakeConstants {
@@ -48,6 +49,7 @@ public final class Constants {
   public final class shooterPitchConstants {
     public static final int MOTOR = -1; // TODO: set motor ID
     public static final int ENCODER = -1; // TODO: set encoder ID
+    public static final double PITCH_MOE = 0.05;
   }
 
   public final class intakeExtensionConstants {
@@ -56,12 +58,17 @@ public final class Constants {
   }
 
   public final class FieldConstants {
-    public static final Distance FUNNEL_HEIGHT = Inches.of(12); // TODO: set funnel height
-    public static final Distance FUNNEL_RADIUS = Inches.of(0.0); // TODO: set funnel radius
-    public static final Transform3d ROBOT_TO_TURRET_TRANSFORM =
-        new Transform3d(
-            new Translation3d(Inches.zero(), Inches.zero(), Inches.of(18)), Rotation3d.kZero);
-    public static final Distance DISTANCE_ABOVE_FUNNEL =
+    public static final Distance FIELD_LENGTH = Inches.of(650.12);
+    public static final Distance FIELD_WIDTH = Inches.of(316.64);
+    public static final Translation3d HUB_BLUE = 
+        new Translation3d(Inches.of(181.56), FIELD_WIDTH.div(2), Inches.of(56.4));
+    public static final Translation3d HUB_RED = 
+        new Translation3d(FIELD_LENGTH.minus(Inches.of(181.56)), FIELD_WIDTH.div(2), Inches.of(56.4));
+    public static final    Distance FUNNEL_HEIGHT = Inches.of(72 - 56.4); // TODO: set funnel height
+    public static final    Distance FUNNEL_RADIUS = Inches.of(24); // TODO: set funnel radius
+    public static final Transform3d ROBOT_TO_TURRET_TRANSFORM = new Transform3d(
+      new Translation3d(Inches.zero(), Inches.zero(), Inches.of(18)), Rotation3d.kZero);
+    public static final    Distance DISTANCE_ABOVE_FUNNEL =
         Inches.of(6); // TODO: set distance above funnel
   }
 

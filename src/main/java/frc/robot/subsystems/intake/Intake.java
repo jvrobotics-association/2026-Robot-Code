@@ -34,7 +34,8 @@ public class Intake extends SubsystemBase {
 
   /** Motor Control Requests */
   final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
-   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
+
+  final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   /************ Class Member Variables ************/
   private final LoggedNetworkNumber IntakeSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
 

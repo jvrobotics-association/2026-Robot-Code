@@ -165,16 +165,26 @@ public class RobotContainer {
                 drive)
             .ignoringDisable(true));
 
-    shootTrigger.whileTrue(
-        //   Commands.parallel(
-        //     Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter),
-        //     Commands.runEnd(() -> pitch.setAngle(30.0), () -> pitch.setAngle(0.0), pitch)
-        //  )
-        Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter));
-    // controller.leftTrigger(0.25).whileTrue(IntakeCommands.runIntake(intake))
+    // shootTrigger.whileTrue(
+    //     //   Commands.parallel(
+    //     //     Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter),
+    //     //     Commands.runEnd(() -> pitch.setAngle(30.0), () -> pitch.setAngle(0.0), pitch)
+    //     //  )
+    //     Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter));
+   // controller.leftTrigger(0.25).whileTrue(() -> intake.runIntake(intake));
     intakeTrigger.whileTrue(
         Commands.runEnd(() -> intake.startIntake(), () -> intake.stopIntake(), intake));
-  }
+    
+    shootTrigger.whileTrue(
+        Commands.sequence(
+            Commands.runOnce(() -> pitch.setAngle(10.0), pitch), 
+            Commands.runOnce(() -> pitch.setAngle(10.0), pitch)
+        )
+        
+    );
+    
+}
+    
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
