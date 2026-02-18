@@ -51,7 +51,7 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
 
-  // // Binding
+  // Binding
   private final Trigger shootTrigger =
       controller.rightTrigger(controllerConstants.TRIGGER_THRESHOLD);
   private final Trigger intakeTrigger =
