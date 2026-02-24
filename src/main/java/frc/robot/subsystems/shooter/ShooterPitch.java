@@ -16,13 +16,13 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.shooterPitchConstants;
+import frc.robot.Constants.ShooterPitchConstants;
 
 public class ShooterPitch extends SubsystemBase {
   /** Creates and Declares a TalonFX motor and a CANcoder */
-  private static final TalonFX shooterPitchMotor = new TalonFX(shooterPitchConstants.MOTOR, "rio");
+  private static final TalonFX shooterPitchMotor = new TalonFX(ShooterPitchConstants.MOTOR, "rio");
 
-  private static final CANcoder encoder = new CANcoder(shooterPitchConstants.ENCODER, "rio");
+  private static final CANcoder encoder = new CANcoder(ShooterPitchConstants.ENCODER, "rio");
 
   final TalonFXConfiguration shooterPitchMotorConfig;
   public final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
@@ -36,7 +36,7 @@ public class ShooterPitch extends SubsystemBase {
     // Gets feedback from either the encoder or the CANcoder
     shooterPitchMotorConfig
         .Feedback
-        .withFeedbackRemoteSensorID(shooterPitchConstants.ENCODER)
+        .withFeedbackRemoteSensorID(ShooterPitchConstants.ENCODER)
         .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
         .withSensorToMechanismRatio(1); // TODO: Set Sensor to Mechanism Ratio
 
@@ -95,8 +95,8 @@ public class ShooterPitch extends SubsystemBase {
   }
 
   public boolean readyToShoot(){
-    return (shooterPitchMotor.getPosition().getValueAsDouble() >= ((1.00-shooterPitchConstants.PITCH_MOE))*setPointPosition) && 
-      (shooterPitchMotor.getPosition().getValueAsDouble() <= ((1.00+shooterPitchConstants.PITCH_MOE)*setPointPosition));
+    return (shooterPitchMotor.getPosition().getValueAsDouble() >= ((1.00-ShooterPitchConstants.PITCH_MOE))*setPointPosition) && 
+      (shooterPitchMotor.getPosition().getValueAsDouble() <= ((1.00+ShooterPitchConstants.PITCH_MOE)*setPointPosition));
   }
 
 

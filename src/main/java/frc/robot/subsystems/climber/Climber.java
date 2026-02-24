@@ -20,15 +20,15 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.climberConstants;
+import frc.robot.Constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
   /** LEFT MOTOR */
-  private static final TalonFX leftClimberMotor = new TalonFX(climberConstants.LEFT_MOTOR, "rio");
+  private static final TalonFX leftClimberMotor = new TalonFX(ClimberConstants.LEFT_MOTOR, "rio");
 
-  private static final TalonFX rightClimberMotor = new TalonFX(climberConstants.LEFT_MOTOR, "rio");
-  private static final CANcoder leftEncoder = new CANcoder(climberConstants.LEFT_ENCODER, "rio");
-  private static final CANcoder rightEncoder = new CANcoder(climberConstants.LEFT_ENCODER, "rio");
+  private static final TalonFX rightClimberMotor = new TalonFX(ClimberConstants.LEFT_MOTOR, "rio");
+  private static final CANcoder leftEncoder = new CANcoder(ClimberConstants.LEFT_ENCODER, "rio");
+  private static final CANcoder rightEncoder = new CANcoder(ClimberConstants.LEFT_ENCODER, "rio");
 
   final TalonFXConfiguration leftClimberMotorConfig;
   final DutyCycleOut m_leftmanualRequest = new DutyCycleOut(0);
@@ -43,7 +43,7 @@ public class Climber extends SubsystemBase {
 
     leftClimberMotorConfig
         .Feedback
-        .withFeedbackRemoteSensorID(climberConstants.LEFT_ENCODER)
+        .withFeedbackRemoteSensorID(ClimberConstants.LEFT_ENCODER)
         .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
         .withSensorToMechanismRatio(1); // TODO: Set Sensor to Mechanism Ratio
 
@@ -91,7 +91,7 @@ public class Climber extends SubsystemBase {
 
     rightClimberMotorConfig
         .Feedback
-        .withFeedbackRemoteSensorID(climberConstants.RIGHT_ENCODER)
+        .withFeedbackRemoteSensorID(ClimberConstants.RIGHT_ENCODER)
         .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
         .withSensorToMechanismRatio(1); // TODO: Set Sensor to Mechanism Ratio
 
@@ -147,7 +147,7 @@ public class Climber extends SubsystemBase {
   public void periodic() {}
 
   public void setSpeed(double speed) {
-    rightClimberMotor.setControl(new StrictFollower(climberConstants.LEFT_MOTOR));
+    rightClimberMotor.setControl(new StrictFollower(ClimberConstants.LEFT_MOTOR));
     leftClimberMotor.set(speed);
   }
 
@@ -158,7 +158,7 @@ public class Climber extends SubsystemBase {
 
   public void setAngle(Angle position) {
     if (leftClimberMotor.getForwardLimit(true).getValue() == ForwardLimitValue.ClosedToGround) {
-      rightClimberMotor.setControl(new StrictFollower(climberConstants.LEFT_MOTOR));
+      rightClimberMotor.setControl(new StrictFollower(ClimberConstants.LEFT_MOTOR));
       leftClimberMotor.setControl(m_request.withPosition(position));
     } else leftClimberMotor.stopMotor();
   }

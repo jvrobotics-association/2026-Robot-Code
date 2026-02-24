@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.controllerConstants;
+import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
@@ -44,9 +44,9 @@ public class MidSystem extends SubsystemBase {
 
   //Triggers
   private final Trigger shootTrigger =
-      controller.rightTrigger(controllerConstants.TRIGGER_THRESHOLD);
+      controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD);
   private final Trigger intakeTrigger =
-      controller.leftTrigger(controllerConstants.TRIGGER_THRESHOLD);
+      controller.leftTrigger(ControllerConstants.TRIGGER_THRESHOLD);
   private final Trigger resetGyroTrigger = controller.b();
   private final Trigger lock0DriveTrigger = controller.a();
   private final Trigger lockPositionTrigger = controller.x();

@@ -35,10 +35,14 @@ public final class Constants {
     REPLAY
   }
 
-  public final class shooterConstants {
+  public final class IndexerConstants {
+    public static final int INDEXER_MOTOR = -1;
+  }
+
+  public final class ShooterConstants {
     public static final int LEFT_MOTOR = 30; // TODO: set left motor ID
     public static final int RIGHT_MOTOR = 40; // TODO: set right ID
-      public static final double SPEED_MOE = 0.05;
+    public static final double SPEED_MOE = 0.05;
   }
 
   public final class IntakeConstants {
@@ -46,13 +50,13 @@ public final class Constants {
     public static final int ENCODER = -1; // TODO: set encoder ID
   }
 
-  public final class shooterPitchConstants {
+  public final class ShooterPitchConstants {
     public static final int MOTOR = -1; // TODO: set motor ID
     public static final int ENCODER = -1; // TODO: set encoder ID
     public static final double PITCH_MOE = 0.05;
   }
 
-  public final class intakeExtensionConstants {
+  public final class IntakeExtensionConstants {
     public static final int MOTOR = -1; // TODO: set motor ID
     public static final int ENCODER = -1; // TODO: set encoder ID
   }
@@ -72,7 +76,7 @@ public final class Constants {
         Inches.of(6); // TODO: set distance above funnel
   }
 
-  public final class climberConstants {
+  public final class ClimberConstants {
     public static final int LEFT_MOTOR = -1; // TODO: set left motor ID
     public static final int LEFT_ENCODER = -1; // TODO: set encoder ID
     public static final int RIGHT_MOTOR = -1; // TODO: set right motor ID
@@ -80,7 +84,7 @@ public final class Constants {
     public static final String INTAKE_SPEED = null;
   }
 
-  public final class controllerConstants {
+  public final class ControllerConstants {
     public static final double TRIGGER_THRESHOLD = 0.25;
   }
 }

@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.controllerConstants;
+import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.climber.Climber;
@@ -53,9 +53,9 @@ public class RobotContainer {
 
   // Binding
   private final Trigger shootTrigger =
-      controller.rightTrigger(controllerConstants.TRIGGER_THRESHOLD);
+      controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD);
   private final Trigger intakeTrigger =
-      controller.leftTrigger(controllerConstants.TRIGGER_THRESHOLD);
+      controller.leftTrigger(ControllerConstants.TRIGGER_THRESHOLD);
   private final Trigger resetGyroTrigger = controller.b();
   private final Trigger lock0DriveTrigger = controller.a();
   private final Trigger lockPositionTrigger = controller.x();
@@ -114,6 +114,7 @@ public class RobotContainer {
         pitch = new ShooterPitch();
 
         break;
+
     }
 
     // Set up auto routines

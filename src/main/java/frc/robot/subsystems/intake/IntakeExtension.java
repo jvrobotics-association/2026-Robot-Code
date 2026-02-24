@@ -17,13 +17,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.intakeExtensionConstants;
+import frc.robot.Constants.IntakeExtensionConstants;
 
 public class IntakeExtension extends SubsystemBase {
   private static final TalonFX intakeExtensionMotor =
-      new TalonFX(intakeExtensionConstants.MOTOR, "rio");
+      new TalonFX(IntakeExtensionConstants.MOTOR, "rio");
 
-  private static final CANcoder encoder = new CANcoder(intakeExtensionConstants.ENCODER, "rio");
+  private static final CANcoder encoder = new CANcoder(IntakeExtensionConstants.ENCODER, "rio");
 
   final TalonFXConfiguration intakeExtensionMotorConfig;
   public final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
@@ -34,7 +34,7 @@ public class IntakeExtension extends SubsystemBase {
 
     intakeExtensionMotorConfig
         .Feedback
-        .withFeedbackRemoteSensorID(intakeExtensionConstants.ENCODER)
+        .withFeedbackRemoteSensorID(IntakeExtensionConstants.ENCODER)
         .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
         .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
         .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio

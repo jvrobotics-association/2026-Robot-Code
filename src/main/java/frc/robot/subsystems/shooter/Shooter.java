@@ -19,14 +19,14 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.shooterConstants;
+import frc.robot.Constants.ShooterConstants;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Shooter extends SubsystemBase {
   /************ Declare Motors ************/
-  private static final TalonFX leftMotor = new TalonFX(shooterConstants.LEFT_MOTOR, "rio");
+  private static final TalonFX leftMotor = new TalonFX(ShooterConstants.LEFT_MOTOR, "rio");
 
-  private static final TalonFX rightMotor = new TalonFX(shooterConstants.RIGHT_MOTOR, "rio");
+  private static final TalonFX rightMotor = new TalonFX(ShooterConstants.RIGHT_MOTOR, "rio");
 
   /************ Declare Configs ************/
   final TalonFXConfiguration leftMotorConfig;
@@ -176,11 +176,11 @@ public void setSpeed(double position) {
     boolean leftReady = false;
     boolean rightReady = false;
 
-    leftReady = (leftMotor.getPosition().getValueAsDouble() >= ((1.00-shooterConstants.SPEED_MOE))*flywheelSetpoint) && 
-                  (leftMotor.getPosition().getValueAsDouble() <= ((1.00+shooterConstants.SPEED_MOE)*flywheelSetpoint));
+    leftReady = (leftMotor.getPosition().getValueAsDouble() >= ((1.00-ShooterConstants.SPEED_MOE))*flywheelSetpoint) && 
+                  (leftMotor.getPosition().getValueAsDouble() <= ((1.00+ShooterConstants.SPEED_MOE)*flywheelSetpoint));
 
-    rightReady = (rightMotor.getPosition().getValueAsDouble() >= ((1.00-shooterConstants.SPEED_MOE))*flywheelSetpoint) && 
-                    (rightMotor.getPosition().getValueAsDouble() <= ((1.00+shooterConstants.SPEED_MOE)*flywheelSetpoint));
+    rightReady = (rightMotor.getPosition().getValueAsDouble() >= ((1.00-ShooterConstants.SPEED_MOE))*flywheelSetpoint) && 
+                    (rightMotor.getPosition().getValueAsDouble() <= ((1.00+ShooterConstants.SPEED_MOE)*flywheelSetpoint));
 
     return leftReady && rightReady;
       
