@@ -30,7 +30,6 @@ public class Shooter extends SubsystemBase {
 
   /************ Declare Configs ************/
   final TalonFXConfiguration leftMotorConfig;
-
   final TalonFXConfiguration rightMotorConfig;
   final MotionMagicConfigs leftMotorMMConfigs;
   final MotionMagicConfigs rightMotorMMConfigs;
@@ -55,20 +54,19 @@ public class Shooter extends SubsystemBase {
     leftMotorConfig = new TalonFXConfiguration();
     // Gets feed from either the encoder or the CANcoder
     leftMotorConfig.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-            .SensorToMechanismRatio =
-        1; // TODO: Verify if this or IntakeMotor's config works better
+      .SensorToMechanismRatio = 1; // TODO: Verify if this or IntakeMotor's config works better
     // set Neutral Mode to Coast
     leftMotorConfig
-        .MotorOutput
-        .withNeutralMode(NeutralModeValue.Coast)
-        .withInverted(InvertedValue.Clockwise_Positive);
+      .MotorOutput
+      .withNeutralMode(NeutralModeValue.Coast)
+      .withInverted(InvertedValue.Clockwise_Positive);
 
     // Limits the amount of Amps the motor can draw
     // Volts * Amps = Watts
     leftMotorConfig
-        .CurrentLimits
-        .withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(20));
+      .CurrentLimits
+      .withStatorCurrentLimitEnable(true)
+      .withStatorCurrentLimit(Amps.of(20));
 
     leftMotorSlot0 = leftMotorConfig.Slot0;
     leftMotorSlot0.kS = 0.0; // Add 0.25 V output to overcome static friction
