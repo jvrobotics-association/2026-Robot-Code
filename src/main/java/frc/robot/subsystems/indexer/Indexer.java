@@ -90,6 +90,8 @@ public class Indexer extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+        indexerMotor.setControl(m_manualRequest.withOutput(indexerSpeed));
+
   }
 
 public void setspeed(double speed){
