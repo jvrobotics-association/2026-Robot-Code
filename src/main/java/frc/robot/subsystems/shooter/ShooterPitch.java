@@ -26,9 +26,8 @@ public class ShooterPitch extends SubsystemBase {
 
   final TalonFXConfiguration shooterPitchMotorConfig;
   public final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
-  
-  private double setPointPosition;
 
+  private double setPointPosition;
 
   /** Creates a new ShooterPitch */
   public ShooterPitch() {
@@ -94,10 +93,10 @@ public class ShooterPitch extends SubsystemBase {
     this.setPointPosition = position; // TODO: Limit updates to a margin of error (i.e. 2%)
   }
 
-  public boolean readyToShoot(){
-    return (shooterPitchMotor.getPosition().getValueAsDouble() >= ((1.00-ShooterPitchConstants.PITCH_MOE))*setPointPosition) && 
-      (shooterPitchMotor.getPosition().getValueAsDouble() <= ((1.00+ShooterPitchConstants.PITCH_MOE)*setPointPosition));
+  public boolean readyToShoot() {
+    return (shooterPitchMotor.getPosition().getValueAsDouble()
+            >= ((1.00 - ShooterPitchConstants.PITCH_MOE)) * setPointPosition)
+        && (shooterPitchMotor.getPosition().getValueAsDouble()
+            <= ((1.00 + ShooterPitchConstants.PITCH_MOE) * setPointPosition));
   }
-
-
 }

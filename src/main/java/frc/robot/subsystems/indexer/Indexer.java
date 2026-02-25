@@ -5,19 +5,15 @@
 package frc.robot.subsystems.indexer;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IndexerConstants;
 
 public class Indexer extends SubsystemBase {
 
-private static final TalonFX indexerMotor = new TalonFX(IndexerConstants.INDEXER_MOTOR, "rio");
+  private static final TalonFX indexerMotor = new TalonFX(IndexerConstants.INDEXER_MOTOR, "rio");
 
   /** Creates a new Indexer. */
-  public Indexer() {
-
-
-  }
+  public Indexer() {}
 
   @Override
   public void periodic() {

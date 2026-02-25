@@ -40,8 +40,27 @@ public final class Constants {
   }
 
   public final class ShooterConstants {
-    public static final int LEFT_MOTOR = 30; // TODO: set left motor ID
-    public static final int RIGHT_MOTOR = 40; // TODO: set right ID
+    public final class LeftMotor {
+      public static final int CAN_ID = 30; 
+      public static final double PID_KS = 0.0;
+      public static final double PID_KV = 0.0;
+      public static final double PID_KA = 0.0;
+      public static final double PID_KP = 0.0;
+      public static final double PID_KI = 0.0;
+      public static final double PID_KD = 0.0;
+
+      public static final double SENSOR_TO_MECH = 1;
+
+      public static final double STATOR_LIMIT = 20;
+      public static final double PEAK_FORWARD_TORQUE = 40;
+
+      public static final double MM_ACCELERATION = 10;
+      public static final double MM_JERK = 100;
+    }
+    public final class RightMotor {
+      public static final int CAN_ID = 40;
+    }
+
     public static final double SPEED_MOE = 0.05;
   }
 
@@ -61,27 +80,29 @@ public final class Constants {
     public static final int ENCODER = -1; // TODO: set encoder ID
   }
 
-  public final class FieldConstants {
-    public static final Distance FIELD_LENGTH = Inches.of(650.12);
-    public static final Distance FIELD_WIDTH = Inches.of(316.64);
-    public static final Translation3d HUB_BLUE = 
-        new Translation3d(Inches.of(181.56), FIELD_WIDTH.div(2), Inches.of(56.4));
-    public static final Translation3d HUB_RED = 
-        new Translation3d(FIELD_LENGTH.minus(Inches.of(181.56)), FIELD_WIDTH.div(2), Inches.of(56.4));
-    public static final    Distance FUNNEL_HEIGHT = Inches.of(72 - 56.4); // TODO: set funnel height
-    public static final    Distance FUNNEL_RADIUS = Inches.of(24); // TODO: set funnel radius
-    public static final Transform3d ROBOT_TO_TURRET_TRANSFORM = new Transform3d(
-      new Translation3d(Inches.zero(), Inches.zero(), Inches.of(18)), Rotation3d.kZero);
-    public static final    Distance DISTANCE_ABOVE_FUNNEL =
-        Inches.of(6); // TODO: set distance above funnel
-  }
-
   public final class ClimberConstants {
     public static final int LEFT_MOTOR = -1; // TODO: set left motor ID
     public static final int LEFT_ENCODER = -1; // TODO: set encoder ID
     public static final int RIGHT_MOTOR = -1; // TODO: set right motor ID
     public static final int RIGHT_ENCODER = -1; // TODO: set encoder ID
     public static final String INTAKE_SPEED = null;
+  }
+
+  public final class FieldConstants {
+    public static final Distance FIELD_LENGTH = Inches.of(650.12);
+    public static final Distance FIELD_WIDTH = Inches.of(316.64);
+    public static final Translation3d HUB_BLUE =
+        new Translation3d(Inches.of(181.56), FIELD_WIDTH.div(2), Inches.of(56.4));
+    public static final Translation3d HUB_RED =
+        new Translation3d(
+            FIELD_LENGTH.minus(Inches.of(181.56)), FIELD_WIDTH.div(2), Inches.of(56.4));
+    public static final Distance FUNNEL_HEIGHT = Inches.of(72 - 56.4); // TODO: set funnel height
+    public static final Distance FUNNEL_RADIUS = Inches.of(24); // TODO: set funnel radius
+    public static final Transform3d ROBOT_TO_TURRET_TRANSFORM =
+        new Transform3d(
+            new Translation3d(Inches.zero(), Inches.zero(), Inches.of(18)), Rotation3d.kZero);
+    public static final Distance DISTANCE_ABOVE_FUNNEL =
+        Inches.of(6); // TODO: set distance above funnel
   }
 
   public final class ControllerConstants {
