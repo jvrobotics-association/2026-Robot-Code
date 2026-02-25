@@ -30,15 +30,15 @@ public class Indexer extends SubsystemBase {
   final Slot0Configs indexerMotorSlot0;  
   final TalonFXConfiguration indexerMotorConfig;
 
-  final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
+  final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(IndexerConstants.MM_VEL_TORQUE_CURRENT_FOC);
 
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
 
   private static final TalonFX indexerMotor = new TalonFX(IndexerConstants.INDEXER_MOTOR, "rio");
 
-  private final LoggedNetworkNumber ShooterSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
+  private final LoggedNetworkNumber IndexerSpeed = new LoggedNetworkNumber("Indexer Speed", 0.0);
 
-  public double indexerSpeed = 0;
+  public double indexerSpeed = IndexerConstants.INDEXER_SPEED;
 
   /** Creates a new Indexer. */
   public Indexer() {
@@ -46,17 +46,13 @@ public class Indexer extends SubsystemBase {
     indexerMotorConfig = new TalonFXConfiguration();
 
     indexerMotorConfig.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-            .SensorToMechanismRatio = 1; // TODO: Verify if this or IntakeMotor's config works better
+            .SensorToMechanismRatio = IndexerConstants.SENSOR_TO_MECH_RATIO; // TODO: Verify if this or IntakeMotor's config works better
     
     indexerMotorConfig
       .MotorOutput
       .withNeutralMode(NeutralModeValue.Coast)
       .withInverted(InvertedValue.Clockwise_Positive);
 
-    indexerMotorConfig
-      .CurrentLimits
-      .withStatorCurrentLimitEnable(true)
-      .withStatorCurrentLimit(Amps.of(20));
     
     indexerMotorSlot0 = indexerMotorConfig.Slot0;
     indexerMotorSlot0.kS = 0.0; // Add 0.25 V output to overcome static friction
@@ -66,13 +62,13 @@ public class Indexer extends SubsystemBase {
     indexerMotorSlot0.kI = 0.0; // No output for integrated error
     indexerMotorSlot0.kD = 0.0; // A velocity error of 1 rps results in 0.5 V output
 
-    indexerMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
-    indexerMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+    indexerMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(IndexerConstants.FORWARD_TORQUE_AMPS_LIMIT));
+    indexerMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(IndexerConstants.STATOR_AMP_LIMIT));
 
     indexerMotorMMConfigs = indexerMotorConfig.MotionMagic;
     indexerMotorMMConfigs
-      .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10))
-      .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
+      .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(IndexerConstants.ROTATIONS_PER_SECOND_PER_SECOND))
+      .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IndexerConstants.ROTATIONS_PER_SECOND_PER_SECOND*10));
     // Apply the left shooter motor config, retry config apply up to 5 times, report if failure
     StatusCode indexerMotorStatus = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
@@ -91,12 +87,10 @@ public class Indexer extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
         indexerMotor.setControl(m_manualRequest.withOutput(indexerSpeed));
-
   }
 
 public void setspeed(double speed){
   this.indexerSpeed = speed;
-
 }
 
 }

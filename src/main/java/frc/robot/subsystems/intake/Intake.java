@@ -18,6 +18,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.IndexerConstants;
 import frc.robot.Constants.IntakeConstants;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -33,11 +34,11 @@ public class Intake extends SubsystemBase {
   final Slot0Configs intakeMotorSlot0;
 
   /** Motor Control Requests */
-  final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
+  final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(IntakeConstants.MM_VEL_TORQUE_CURRENT_FOC);
 
   final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
   /************ Class Member Variables ************/
-  private final LoggedNetworkNumber IntakeSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
+  private final LoggedNetworkNumber IntakeSpeed = new LoggedNetworkNumber("Intake Speed", 0.0);
 
   /** Creates a new Intake */
   public Intake() {
@@ -48,18 +49,17 @@ public class Intake extends SubsystemBase {
     intakeMotorConfig
         .Feedback
         .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-        .withSensorToMechanismRatio(
-            1); // TODO: Verify if this or ShooterMotor's config works better
+        .withSensorToMechanismRatio(IntakeConstants.SENSOR_TO_MECH_RATIO); // TODO: Verify if this or ShooterMotor's config works better
     // Sets Neutral mode to coast
     intakeMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
     // Sets the current limits for the
     intakeMotorConfig
         .CurrentLimits
         .withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(20));
+        .withStatorCurrentLimit(Amps.of(IntakeConstants.STATOR_AMP_LIMIT));
 
-    intakeMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
-    intakeMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+    intakeMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(IntakeConstants.PEAK_FORWARD_TORQUE_CURRENT));
+    intakeMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(IntakeConstants.STATOR_CURRENT_LIMIT));
 
     intakeMotorSlot0 = intakeMotorConfig.Slot0;
     intakeMotorSlot0.kS = 0.0; // Add 0.25 V output to overcome static friction

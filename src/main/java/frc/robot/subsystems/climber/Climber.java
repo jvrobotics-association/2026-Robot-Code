@@ -54,8 +54,8 @@ public class Climber extends SubsystemBase {
         .withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(20));
     // Configures the Cruise, Accelerartion, Torque, and Stator limts
-    leftClimberMotorConfig.MotionMagic.MotionMagicCruiseVelocity = 0.0; // TODO: Set Cruise Velocity
-    leftClimberMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; // TODO: Set Acceleration
+    leftClimberMotorConfig.MotionMagic.MotionMagicCruiseVelocity = ClimberConstants.MM_CRUISE_VEL; // TODO: Set Cruise Velocity
+    leftClimberMotorConfig.MotionMagic.MotionMagicAcceleration = ClimberConstants.MM_ACCELERATION; // TODO: Set Acceleration
     leftClimberMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
     leftClimberMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
 
@@ -93,20 +93,20 @@ public class Climber extends SubsystemBase {
         .Feedback
         .withFeedbackRemoteSensorID(ClimberConstants.RIGHT_ENCODER)
         .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-        .withSensorToMechanismRatio(1); // TODO: Set Sensor to Mechanism Ratio
+        .withSensorToMechanismRatio(ClimberConstants.SENSOR_TO_MECH_RATIO); // TODO: Set Sensor to Mechanism Ratio
 
     // Sets the Neutral Mode to Brake
     rightClimberMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
     rightClimberMotorConfig
         .CurrentLimits
         .withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(20));
+        .withStatorCurrentLimit(Amps.of(ClimberConstants.STATOR_AMPS));
     // Configures the Cruise, Accelerartion, Torque, and Stator limts
     rightClimberMotorConfig.MotionMagic.MotionMagicCruiseVelocity =
         0.0; // TODO: Set Cruise Velocity
-    rightClimberMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; // TODO: Set Acceleration
-    rightClimberMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
-    rightClimberMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+    rightClimberMotorConfig.MotionMagic.MotionMagicAcceleration = ClimberConstants.MM_ACCELERATION; // TODO: Set Acceleration
+    rightClimberMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(ClimberConstants.FORWARD_TORQUE_AMPS_LIMIT));
+    rightClimberMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(ClimberConstants.STATOR_CURRENT_LIMIT));
 
     // Apply the intake extension config, retry config apply up to 5 times, report if failure
     StatusCode rightMotorStatus = StatusCode.StatusCodeNotInitialized;
@@ -137,8 +137,8 @@ public class Climber extends SubsystemBase {
 
     // Reset the position that the elevator currently is at to 0.
     // The physical elevator should be all the way down when this is set.
-    rightClimberMotor.setPosition(0);
-    leftClimberMotor.setPosition(0);
+    rightClimberMotor.setPosition(ClimberConstants.CLIMBER_POSITION);
+    leftClimberMotor.setPosition(ClimberConstants.CLIMBER_POSITION);
     rightEncoder.setPosition(0);
     leftEncoder.setPosition(0);
   }
