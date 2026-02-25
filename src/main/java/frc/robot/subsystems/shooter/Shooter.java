@@ -30,7 +30,6 @@ public class Shooter extends SubsystemBase {
 
   /************ Declare Configs ************/
   final TalonFXConfiguration leftMotorConfig;
-
   final TalonFXConfiguration rightMotorConfig;
   final MotionMagicConfigs leftMotorMMConfigs;
   final MotionMagicConfigs rightMotorMMConfigs;
@@ -58,9 +57,9 @@ public class Shooter extends SubsystemBase {
             .SensorToMechanismRatio = ShooterConstants.LeftMotor.SENSOR_TO_MECH; // TODO: Verify if this or IntakeMotor's config works better
     // set Neutral Mode to Coast
     leftMotorConfig
-        .MotorOutput
-        .withNeutralMode(NeutralModeValue.Coast)
-        .withInverted(InvertedValue.Clockwise_Positive);
+      .MotorOutput
+      .withNeutralMode(NeutralModeValue.Coast)
+      .withInverted(InvertedValue.Clockwise_Positive);
 
     // Limits the amount of Amps the motor can draw
     // Volts * Amps = Watts
