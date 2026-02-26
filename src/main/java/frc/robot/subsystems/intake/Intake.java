@@ -59,7 +59,6 @@ public class Intake extends SubsystemBase {
         .withStatorCurrentLimit(Amps.of(IntakeConstants.STATOR_AMP_LIMIT));
 
     intakeMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(IntakeConstants.PEAK_FORWARD_TORQUE_CURRENT));
-    intakeMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(IntakeConstants.STATOR_CURRENT_LIMIT));
 
     intakeMotorSlot0 = intakeMotorConfig.Slot0;
     intakeMotorSlot0.kS = 0.0; // Add 0.25 V output to overcome static friction
@@ -68,9 +67,6 @@ public class Intake extends SubsystemBase {
     intakeMotorSlot0.kP = 0.0; // A position error of 0.2 rotations results in 12 V output
     intakeMotorSlot0.kI = 0.0; // No output for integrated error
     intakeMotorSlot0.kD = 0.0; // A velocity error of 1 rps results in 0.5 V output
-
-    intakeMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
-    intakeMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
 
     // Configures the Acceleration, Jerk
     intakeMotorMMConfigs = intakeMotorConfig.MotionMagic;

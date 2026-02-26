@@ -9,8 +9,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
@@ -20,170 +18,142 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
+
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
-  /************ Declare Motors ************/
-  private static final TalonFX leftMotor = new TalonFX(ShooterConstants.LeftMotor.CAN_ID, "rio");
+  /* Hardware */
+  private final TalonFX leftMotor = new TalonFX(ShooterConstants.LeftMotor.CAN_ID, "rio");
+  private final TalonFX rightMotor = new TalonFX(ShooterConstants.RightMotor.CAN_ID, "rio");
 
-  private static final TalonFX rightMotor = new TalonFX(ShooterConstants.RightMotor.CAN_ID, "rio");
+  /* Control Requests - Distinct objects for separate motor streams */
+  private final MotionMagicVelocityTorqueCurrentFOC leftVelocityRequest = 
+      new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
+  private final MotionMagicVelocityTorqueCurrentFOC rightVelocityRequest = 
+      new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
+  
+  private final DutyCycleOut leftDutyCycleRequest = new DutyCycleOut(0);
+  private final DutyCycleOut rightDutyCycleRequest = new DutyCycleOut(0);
 
-  /************ Declare Configs ************/
-  final TalonFXConfiguration leftMotorConfig;
-  final TalonFXConfiguration rightMotorConfig;
-  final MotionMagicConfigs leftMotorMMConfigs;
-  final MotionMagicConfigs rightMotorMMConfigs;
-  final Slot0Configs rightMotorSlot0;
-  final Slot0Configs leftMotorSlot0;
-
-  /************ Motor Control Requests ************/
-
-  final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(0);
-
-  final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
-  /************ Class Member Variables ************/
-  private final LoggedNetworkNumber ShooterSpeed = new LoggedNetworkNumber("Shooter Speed", 0.0);
-
-  private double flywheelSetpoint = 0;
+  /* State */
+  private final LoggedNetworkBoolean LNNOverride = new LoggedNetworkBoolean("Shooter Override", false);
+  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Shooter Speed", 0.0);
+  
+  private double targetVelocityRPS = 0;
 
   /** Creates a new Shooter */
   public Shooter() {
+    configureLeftMotor();
+    configureRightMotor();
+  }
 
-    /************ Configure Left Motor ************/
+  private void configureLeftMotor() {
+    TalonFXConfiguration config = new TalonFXConfiguration();
 
-    leftMotorConfig = new TalonFXConfiguration();
-    // Gets feed from either the encoder or the CANcoder
-    leftMotorConfig.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-            .SensorToMechanismRatio = ShooterConstants.LeftMotor.SENSOR_TO_MECH; // TODO: Verify if this or IntakeMotor's config works better
-    // set Neutral Mode to Coast
-    leftMotorConfig
-      .MotorOutput
-      .withNeutralMode(NeutralModeValue.Coast)
-      .withInverted(InvertedValue.Clockwise_Positive);
+    config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+        .withSensorToMechanismRatio(ShooterConstants.LeftMotor.SENSOR_TO_MECH);
 
-    // Limits the amount of Amps the motor can draw
-    // Volts * Amps = Watts
-    leftMotorConfig
-      .CurrentLimits
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
+        .withInverted(InvertedValue.Clockwise_Positive);
+
+    config.CurrentLimits
         .withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(ShooterConstants.LeftMotor.STATOR_LIMIT));
-    leftMotorConfig
-      .TorqueCurrent
-        .withPeakForwardTorqueCurrent(Amps.of(ShooterConstants.LeftMotor.PEAK_FORWARD_TORQUE));
+        .withStatorCurrentLimit(Amps.of(ShooterConstants.LeftMotor.STATOR_AMP_LIMIT));
 
-    leftMotorSlot0 = leftMotorConfig.Slot0;
-    leftMotorSlot0.kS = ShooterConstants.LeftMotor.PID_KS; // Add 0.25 V output to overcome static friction
-    leftMotorSlot0.kV = ShooterConstants.LeftMotor.PID_KV; // A velocity target of 1 rps results in 0.12 V output
-    leftMotorSlot0.kA = ShooterConstants.LeftMotor.PID_KA; // An acceleration of 1 rps/s requires 0.01 V output
-    leftMotorSlot0.kP = ShooterConstants.LeftMotor.PID_KP; // A position error of 0.2 rotations results in 12 V output
-    leftMotorSlot0.kI = ShooterConstants.LeftMotor.PID_KI; // No output for integrated error
-    leftMotorSlot0.kD = ShooterConstants.LeftMotor.PID_KD; // A velocity error of 1 rps results in 0.5 V output
-
-    // Configures the Acceleration,Torque, and Stator limits
-    leftMotorMMConfigs = leftMotorConfig.MotionMagic;
-    leftMotorMMConfigs
+    config.Slot0.withKP(ShooterConstants.LeftMotor.PID_KP)
+        .withKI(ShooterConstants.LeftMotor.PID_KI)
+        .withKD(ShooterConstants.LeftMotor.PID_KD)
+        .withKV(ShooterConstants.LeftMotor.PID_KV)
+        .withKS(ShooterConstants.LeftMotor.PID_KS);
+    
+    config.MotionMagic
         .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(ShooterConstants.LeftMotor.MM_ACCELERATION))
         .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(ShooterConstants.LeftMotor.MM_JERK));
-    // Apply the left shooter motor config, retry config apply up to 5 times, report if failure
-    StatusCode leftMotorStatus = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      leftMotorStatus = leftMotor.getConfigurator().apply(leftMotorConfig);
-      if (leftMotorStatus.isOK()) break;
-    }
-    if (!leftMotorStatus.isOK()) {
-      System.out.println(
-          "Could not apply left shooter motor config, error code: " + leftMotorStatus.toString());
-    }
 
-    /************ Configure Right Motor ************/
+    applyConfig(leftMotor, config);
+  }
 
-    rightMotorConfig = new TalonFXConfiguration();
-    // Gets feed from either the encoder or the CANcoder
-    rightMotorConfig.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-            .SensorToMechanismRatio =
-        1;
-    // set Neutral Mode to Coast
-    rightMotorConfig
-        .MotorOutput
-        .withNeutralMode(NeutralModeValue.Coast)
+  private void configureRightMotor() {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+
+    config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+        .withSensorToMechanismRatio(ShooterConstants.RightMotor.SENSOR_TO_MECH);
+
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.CounterClockwise_Positive);
-    // Limits the amount of Amps the motor can draw
-    // Volts * Amps = Watts
-    rightMotorConfig
-        .CurrentLimits
+
+    config.CurrentLimits
         .withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(20));
+        .withStatorCurrentLimit(Amps.of(ShooterConstants.RightMotor.STATOR_AMP_LIMIT));
 
-    // Configures the Cruise, Acceleration,Torque, and Stator limits of the right motor
-    rightMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
-    rightMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+    config.Slot0.withKP(ShooterConstants.RightMotor.PID_KP)
+        .withKI(ShooterConstants.RightMotor.PID_KI)
+        .withKD(ShooterConstants.RightMotor.PID_KD)
+        .withKV(ShooterConstants.RightMotor.PID_KV)
+        .withKS(ShooterConstants.RightMotor.PID_KS);
 
-    rightMotorConfig
-        .CurrentLimits
-        .withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(20));
+    config.MotionMagic
+        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(ShooterConstants.RightMotor.MM_ACCELERATION))
+        .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(ShooterConstants.RightMotor.MM_JERK));
 
-    rightMotorSlot0 = rightMotorConfig.Slot0;
-    rightMotorSlot0.kS = 0.0; // Add 0.25 V output to overcome static friction
-    rightMotorSlot0.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
-    rightMotorSlot0.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-    rightMotorSlot0.kP = 0.0; // A position error of 0.2 rotations results in 12 V output
-    rightMotorSlot0.kI = 0.0; // No output for integrated error
-    rightMotorSlot0.kD = 0.0; // A velocity error of 1 rps results in 0.5 V output
+    applyConfig(rightMotor, config);
+  }
 
-    rightMotorMMConfigs = rightMotorConfig.MotionMagic;
-    rightMotorMMConfigs
-        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10))
-        .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
-
-    // Apply the right shooter motor config, retry config apply up to 5 times, report if failure
-    StatusCode rightMotorStatus = StatusCode.StatusCodeNotInitialized;
+  private void applyConfig(TalonFX motor, TalonFXConfiguration config) {
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      rightMotorStatus = rightMotor.getConfigurator().apply(rightMotorConfig);
-      if (rightMotorStatus.isOK()) break;
+      status = motor.getConfigurator().apply(config);
+      if (status.isOK()) break;
     }
-    if (!rightMotorStatus.isOK()) {
-      System.out.println(
-          "Could not apply right shooter motor config, error code: " + rightMotorStatus.toString());
-    }
+  }
+
+  /** Sets target velocity and updates the motor control immediately. */
+  public void setTargetVelocity(double velocityRPS) {
+    if (LNNOverride.getAsBoolean()) return;
+
+    this.targetVelocityRPS = velocityRPS;
+    leftMotor.setControl(leftVelocityRequest.withVelocity(velocityRPS));
+    rightMotor.setControl(rightVelocityRequest.withVelocity(velocityRPS));
+  }
+
+  /** Sets open-loop duty cycle (for testing/override). */
+  public void setDutyCycle(double output) {
+    this.targetVelocityRPS = 0; // Invalidate velocity setpoint
+    leftMotor.setControl(leftDutyCycleRequest.withOutput(output));
+    rightMotor.setControl(rightDutyCycleRequest.withOutput(output));
+  }
+
+  public void stop() {
+    this.targetVelocityRPS = 0;
+    leftMotor.stopMotor();
+    rightMotor.stopMotor();
   }
 
   @Override
   public void periodic() {
-    leftMotor.setControl(m_manualRequest.withOutput(flywheelSetpoint));
-    rightMotor.setControl(m_manualRequest.withOutput(flywheelSetpoint));
-  }
-  // Sets the speed and makes it a double
-  public void startShooter() {
-    leftMotor.setControl(m_manualRequest.withOutput(ShooterSpeed.getAsDouble()));
-    rightMotor.setControl(m_manualRequest.withOutput(ShooterSpeed.getAsDouble()));
-  }
-  // Sets the speed and makes it a double
-  public void stopShooter() {
-    leftMotor.setControl(m_manualRequest.withOutput(0.0));
-    rightMotor.setControl(m_manualRequest.withOutput(0.0));
-  }
+    // Handle NetworkTable Override logic
+    if (LNNOverride.getAsBoolean()) {
+      setDutyCycle(LNNTarget.getAsDouble());
+    }
 
-  public void setSpeed(double speed) {
-    this.flywheelSetpoint = speed; // TODO: Limit updates to a margin of error (i.e. 2%)
+    // AdvantageKit Logging (Crucial for the "Active" method to see what is happening)
+    Logger.recordOutput("Shooter/TargetVelocityRPS", targetVelocityRPS);
+    Logger.recordOutput("Shooter/LeftActualRPS", leftMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Shooter/RightActualRPS", rightMotor.getVelocity().getValueAsDouble());
   }
 
   public boolean readyToShoot() {
-    boolean leftReady = false;
-    boolean rightReady = false;
+    if (targetVelocityRPS <= 0) return false;
 
-    leftReady =
-        (leftMotor.getPosition().getValueAsDouble()
-                >= ((1.00 - ShooterConstants.SPEED_MOE)) * flywheelSetpoint)
-            && (leftMotor.getPosition().getValueAsDouble()
-                <= ((1.00 + ShooterConstants.SPEED_MOE) * flywheelSetpoint));
-
-    rightReady =
-        (rightMotor.getPosition().getValueAsDouble()
-                >= ((1.00 - ShooterConstants.SPEED_MOE)) * flywheelSetpoint)
-            && (rightMotor.getPosition().getValueAsDouble()
-                <= ((1.00 + ShooterConstants.SPEED_MOE) * flywheelSetpoint));
-
-    return leftReady && rightReady;
+    double currentLeft = leftMotor.getVelocity().getValueAsDouble();
+    double currentRight = rightMotor.getVelocity().getValueAsDouble();
+    
+    // Use a flat minimum floor for tolerance to avoid noise issues at low speeds
+    double tolerance = Math.max(targetVelocityRPS * ShooterConstants.SPEED_MOE, 0.5);
+    
+    return Math.abs(currentLeft - targetVelocityRPS) <= tolerance
+        && Math.abs(currentRight - targetVelocityRPS) <= tolerance;
   }
 }

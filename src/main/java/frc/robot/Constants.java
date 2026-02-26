@@ -37,13 +37,21 @@ public final class Constants {
 
   public final class IndexerConstants {
     public static final int INDEXER_MOTOR = -1;
-    public static final int MM_VEL_TORQUE_CURRENT_FOC = -1; // TODO: set value
-    public static final int INDEXER_SPEED = -1; // TODO: set speed
-    public static final int SENSOR_TO_MECH_RATIO = -1; // TODO: set ratio
-    public static final int STATOR_CURRENT_LIMIT = 50;
+    public static final double INDEXER_SPEED = 0.5; // TODO: set speed
+
+    public static final int SENSOR_TO_MECH_RATIO = 1; // TODO: set ratio
     public static final int STATOR_AMP_LIMIT = 20;
     public static final int FORWARD_TORQUE_AMPS_LIMIT = 40;
-    public static final int ROTATIONS_PER_SECOND_PER_SECOND = 10;
+    
+    public static final double MM_ACCELERATION = 0.0;
+    public static final double MM_JERK = 0.0;
+
+    public static final double PID_KS = 0.0;
+    public static final double PID_KV = 0.0;
+    public static final double PID_KA = 0.0;
+    public static final double PID_KP = 0.0;
+    public static final double PID_KI = 0.0;
+    public static final double PID_KD = 0.0;
   }
 
   public final class ShooterConstants {
@@ -66,6 +74,20 @@ public final class Constants {
     }
     public final class RightMotor {
       public static final int CAN_ID = 40;
+      public static final double PID_KS = 0.0;
+      public static final double PID_KV = 0.0;
+      public static final double PID_KA = 0.0;
+      public static final double PID_KP = 0.0;
+      public static final double PID_KI = 0.0;
+      public static final double PID_KD = 0.0;
+
+      public static final double SENSOR_TO_MECH = 1;
+
+      public static final double STATOR_AMP_LIMIT = 20;
+      public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
+
+      public static final double MM_ACCELERATION = 10;
+      public static final double MM_JERK = 100;
     }
 
     public static final double SPEED_MOE = 0.05;
@@ -85,6 +107,23 @@ public final class Constants {
     public static final int MOTOR = -1; // TODO: set motor ID
     public static final int ENCODER = -1; // TODO: set encoder ID
     public static final double PITCH_MOE = 0.05;
+
+    public static final double SENSOR_TO_MECH = 1;
+    public static final double STATOR_AMP_LIMIT = 20;
+    public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
+    public static final double PEAK_REVERSE_TORQUE_CURRENT = -40;
+
+
+    public static final double MM_ACCELERATION = 0.0;
+    public static final double MM_CRUISE_VEL = 0.0;
+    public static final double MM_JERK = 0.0;
+
+    public static final double PID_KS = 0.0;
+    public static final double PID_KV = 0.0;
+    public static final double PID_KA = 0.0;
+    public static final double PID_KP = 0.0;
+    public static final double PID_KI = 0.0;
+    public static final double PID_KD = 0.0;
   }
 
   public final class IntakeExtensionConstants {

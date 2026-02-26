@@ -1,18 +1,13 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems.indexer;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
@@ -24,73 +19,100 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IndexerConstants;
 
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 public class Indexer extends SubsystemBase {
+  /* Hardware */
+  private final TalonFX indexerMotor = new TalonFX(IndexerConstants.INDEXER_MOTOR, "rio");
 
-  final MotionMagicConfigs indexerMotorMMConfigs;
-  final Slot0Configs indexerMotorSlot0;  
-  final TalonFXConfiguration indexerMotorConfig;
+  /* Control Requests */
+  private final MotionMagicVelocityTorqueCurrentFOC velocityRequest = 
+      new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
+  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
-  final MotionMagicVelocityTorqueCurrentFOC m_request = new MotionMagicVelocityTorqueCurrentFOC(IndexerConstants.MM_VEL_TORQUE_CURRENT_FOC);
+  /* State */
+  private final LoggedNetworkBoolean LNNOverride = new LoggedNetworkBoolean("Indexer Override", false);
+  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Indexer Manual Duty", 0.0);
+  
+  private double targetVelocityRPS = 0;
 
-  final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
-
-  private static final TalonFX indexerMotor = new TalonFX(IndexerConstants.INDEXER_MOTOR, "rio");
-
-  private final LoggedNetworkNumber IndexerSpeed = new LoggedNetworkNumber("Indexer Speed", 0.0);
-
-  public double indexerSpeed = IndexerConstants.INDEXER_SPEED;
-
-  /** Creates a new Indexer. */
   public Indexer() {
+    configureHardware();
+  }
 
-    indexerMotorConfig = new TalonFXConfiguration();
+  private void configureHardware() {
+    TalonFXConfiguration config = new TalonFXConfiguration();
 
-    indexerMotorConfig.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-            .SensorToMechanismRatio = IndexerConstants.SENSOR_TO_MECH_RATIO; // TODO: Verify if this or IntakeMotor's config works better
+    config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+        .withSensorToMechanismRatio(IndexerConstants.SENSOR_TO_MECH_RATIO);
     
-    indexerMotorConfig
-      .MotorOutput
-      .withNeutralMode(NeutralModeValue.Coast)
-      .withInverted(InvertedValue.Clockwise_Positive);
+    config.MotorOutput
+        .withNeutralMode(NeutralModeValue.Coast) // TODO: COAST TO PREVENT WEAR OR BRAKE TO STOP FASTER
+        .withInverted(InvertedValue.Clockwise_Positive);
 
-    
-    indexerMotorSlot0 = indexerMotorConfig.Slot0;
-    indexerMotorSlot0.kS = 0.0; // Add 0.25 V output to overcome static friction
-    indexerMotorSlot0.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
-    indexerMotorSlot0.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-    indexerMotorSlot0.kP = 0.0; // A position error of 0.2 rotations results in 12 V output
-    indexerMotorSlot0.kI = 0.0; // No output for integrated error
-    indexerMotorSlot0.kD = 0.0; // A velocity error of 1 rps results in 0.5 V output
+    config.Slot0.kP = IndexerConstants.PID_KP;
+    config.Slot0.kI = IndexerConstants.PID_KI;
+    config.Slot0.kD = IndexerConstants.PID_KD;
+    config.Slot0.kS = IndexerConstants.PID_KS;
+    config.Slot0.kV = IndexerConstants.PID_KV;
 
-    indexerMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(IndexerConstants.FORWARD_TORQUE_AMPS_LIMIT));
-    indexerMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(IndexerConstants.STATOR_AMP_LIMIT));
+    config.MotionMagic
+        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(IndexerConstants.MM_ACCELERATION))
+        .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IndexerConstants.MM_JERK));
 
-    indexerMotorMMConfigs = indexerMotorConfig.MotionMagic;
-    indexerMotorMMConfigs
-      .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(IndexerConstants.ROTATIONS_PER_SECOND_PER_SECOND))
-      .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IndexerConstants.ROTATIONS_PER_SECOND_PER_SECOND*10));
-    // Apply the left shooter motor config, retry config apply up to 5 times, report if failure
-    StatusCode indexerMotorStatus = StatusCode.StatusCodeNotInitialized;
+    config.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(IndexerConstants.FORWARD_TORQUE_AMPS_LIMIT));
+    config.CurrentLimits.withStatorCurrentLimit(Amps.of(IndexerConstants.STATOR_AMP_LIMIT))
+                        .withStatorCurrentLimitEnable(true);
+
+    applyConfig(config);
+  }
+
+  private void applyConfig(TalonFXConfiguration config) {
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      indexerMotorStatus = indexerMotor.getConfigurator().apply(indexerMotorConfig);
-      if (indexerMotorStatus.isOK()) break;
+      status = indexerMotor.getConfigurator().apply(config);
+      if (status.isOK()) break;
     }
-    if (!indexerMotorStatus.isOK()) {
-      System.out.println(
-        "Could not apply indexer shooter motor config, error code: " + indexerMotorStatus.toString());
-    }
+  }
 
+  public void feed() {
+    if (LNNOverride.getAsBoolean()) return;
 
+    this.targetVelocityRPS = IndexerConstants.INDEXER_SPEED;
+    indexerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
+  }
+
+  // Active Control for Prod
+  public void setVelocity(double velocityRPS) {
+    if (LNNOverride.getAsBoolean()) return;
+
+    this.targetVelocityRPS = velocityRPS;
+    indexerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
+  }
+
+  // Manual Control for Dev
+  public void setManualDutyCycle(double output) {
+    this.targetVelocityRPS = 0;
+    indexerMotor.setControl(dutyCycleRequest.withOutput(output));
+  }
+
+  public void stop() {
+    this.targetVelocityRPS = 0;
+    indexerMotor.stopMotor();
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-        indexerMotor.setControl(m_manualRequest.withOutput(indexerSpeed));
+    // Handling Dashboard Override
+    if (LNNOverride.getAsBoolean()) {
+      setManualDutyCycle(LNNTarget.getAsDouble());
+    }
+
+    // AdvantageKit Logging
+    Logger.recordOutput("Indexer/TargetVelocityRPS", targetVelocityRPS);
+    Logger.recordOutput("Indexer/ActualVelocityRPS", indexerMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Indexer/StatorCurrent", indexerMotor.getStatorCurrent().getValueAsDouble());
   }
-
-public void setspeed(double speed){
-  this.indexerSpeed = speed;
-}
-
 }

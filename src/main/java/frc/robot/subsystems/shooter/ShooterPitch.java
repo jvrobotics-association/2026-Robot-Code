@@ -1,102 +1,108 @@
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
 
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterPitchConstants;
 
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 public class ShooterPitch extends SubsystemBase {
-  /** Creates and Declares a TalonFX motor and a CANcoder */
-  private static final TalonFX shooterPitchMotor = new TalonFX(ShooterPitchConstants.MOTOR, "rio");
+  /* Hardware */
+  private final TalonFX pitchMotor = new TalonFX(ShooterPitchConstants.MOTOR, "rio");
 
-  private static final CANcoder encoder = new CANcoder(ShooterPitchConstants.ENCODER, "rio");
+  /* Control Requests */
+  private final MotionMagicTorqueCurrentFOC positionRequest = new MotionMagicTorqueCurrentFOC(0).withSlot(0);
+  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
-  final TalonFXConfiguration shooterPitchMotorConfig;
-  public final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+  /* State */
+  private final LoggedNetworkBoolean LNNOverride = new LoggedNetworkBoolean("Pitch Override", false);
+  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Pitch Manual Duty", 0.0);
+  private double targetPositionRotations = 0;
 
-  private double setPointPosition;
-
-  /** Creates a new ShooterPitch */
   public ShooterPitch() {
-    shooterPitchMotorConfig = new TalonFXConfiguration();
-    // Gets feedback from either the encoder or the CANcoder
-    shooterPitchMotorConfig
-        .Feedback
-        .withFeedbackRemoteSensorID(ShooterPitchConstants.ENCODER)
-        .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-        .withSensorToMechanismRatio(1); // TODO: Set Sensor to Mechanism Ratio
+    configureHardware();
+    pitchMotor.setPosition(0);
+  }
 
-    // Sets the Neutral Mode to Brake
-    shooterPitchMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
-    shooterPitchMotorConfig
-        .CurrentLimits
+  private void configureHardware() {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+
+    config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                    .withSensorToMechanismRatio(ShooterPitchConstants.SENSOR_TO_MECH);
+
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+    config.CurrentLimits
         .withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(20));
-    // Configures the Cruise, Acceleration, Torque, and Stator limits
-    shooterPitchMotorConfig.MotionMagic.MotionMagicCruiseVelocity =
-        0.0; // TODO: Set Cruise Velocity
-    shooterPitchMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; // TODO: Set Acceleration
-    shooterPitchMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
-    shooterPitchMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+        .withStatorCurrentLimit(Amps.of(ShooterPitchConstants.STATOR_AMP_LIMIT));
+    
+    config.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(ShooterPitchConstants.PEAK_FORWARD_TORQUE_CURRENT))
+                        .withPeakReverseTorqueCurrent(Amps.of(ShooterPitchConstants.PEAK_REVERSE_TORQUE_CURRENT));
 
-    // Apply the motor config, retry config apply up to 5 times, report if failure
-    StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
+    config.MotionMagic.MotionMagicCruiseVelocity = ShooterPitchConstants.MM_CRUISE_VEL;
+    config.MotionMagic.MotionMagicAcceleration = ShooterPitchConstants.MM_ACCELERATION;
+    config.MotionMagic.MotionMagicJerk = ShooterPitchConstants.MM_JERK;
+
+    config.Slot0.kP = ShooterPitchConstants.PID_KP;
+    config.Slot0.kI = ShooterPitchConstants.PID_KI;
+    config.Slot0.kD = ShooterPitchConstants.PID_KD;
+    config.Slot0.kS = ShooterPitchConstants.PID_KS;
+    config.Slot0.kV = ShooterPitchConstants.PID_KV;
+
+    applyConfig(pitchMotor, config);
+  }
+
+  private void applyConfig(TalonFX motor, TalonFXConfiguration config) {
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      motorStatus = shooterPitchMotor.getConfigurator().apply(shooterPitchMotorConfig);
-      if (motorStatus.isOK()) break;
+      status = motor.getConfigurator().apply(config);
+      if (status.isOK()) break;
     }
-    if (!motorStatus.isOK()) {
-      System.out.println(
-          "Could not apply shooter pitch motor config, error code: " + motorStatus.toString());
-    }
+  }
 
-    /** Configure Encoders */
-    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
+  // Active Control for Prod
+  public void setTargetPosition(double rotations) {
+    if (LNNOverride.getAsBoolean()) return;
 
-    encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
+    this.targetPositionRotations = rotations;
+    pitchMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+  }
 
-    // Apply the encoder config, retry config apply up to 5 times, report if failure
-    StatusCode encoderStatus = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      encoderStatus = encoder.getConfigurator().apply(encoderConfig);
-      if (encoderStatus.isOK()) break;
-    }
-    if (!encoderStatus.isOK()) {
-      System.out.println("Could not apply encoder config, error code: " + encoderStatus.toString());
-    }
+  // Manual Control for Dev
+  public void setManualDutyCycle(double output) {
+    this.targetPositionRotations = pitchMotor.getPosition().getValueAsDouble(); 
+    pitchMotor.setControl(dutyCycleRequest.withOutput(output));
+  }
 
-    // Reset the position that the elevator currently is at to 0.
-    // The physical elevator should be all the way down when this is set.
-    shooterPitchMotor.setPosition(0);
-    encoder.setPosition(0);
+  public void stop() {
+    pitchMotor.stopMotor();
   }
 
   @Override
   public void periodic() {
-    shooterPitchMotor.setControl(m_request.withPosition(setPointPosition));
-  }
+    if (LNNOverride.getAsBoolean()) {
+      setManualDutyCycle(LNNTarget.getAsDouble());
+    }
 
-  public void setAngle(double position) {
-    this.setPointPosition = position; // TODO: Limit updates to a margin of error (i.e. 2%)
+    Logger.recordOutput("ShooterPitch/TargetRotations", targetPositionRotations);
+    Logger.recordOutput("ShooterPitch/ActualRotations", pitchMotor.getPosition().getValueAsDouble());
+    Logger.recordOutput("ShooterPitch/StatorCurrent", pitchMotor.getStatorCurrent().getValueAsDouble());
   }
 
   public boolean readyToShoot() {
-    return (shooterPitchMotor.getPosition().getValueAsDouble()
-            >= ((1.00 - ShooterPitchConstants.PITCH_MOE)) * setPointPosition)
-        && (shooterPitchMotor.getPosition().getValueAsDouble()
-            <= ((1.00 + ShooterPitchConstants.PITCH_MOE) * setPointPosition));
+    double currentPos = pitchMotor.getPosition().getValueAsDouble();
+    return Math.abs(currentPos - targetPositionRotations) <= ShooterPitchConstants.PITCH_MOE;
   }
 }
