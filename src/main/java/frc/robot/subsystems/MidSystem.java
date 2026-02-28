@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.MidSystemConstants; // TODO: new constants 
+import frc.robot.Constants.RobotConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
@@ -43,30 +45,22 @@ public class MidSystem extends SubsystemBase {
 
   // Target State
   private Translation3d currentTarget;
-  private boolean inScoringArea = false;
 
   public MidSystem(
       Shooter shooter,
       ShooterPitch pitch,
       Indexer indexer,
       Drive drive,
-      Intake intake,
-      Supplier<Pose2d> robotPoseSupplier,
-      Supplier<ChassisSpeeds> robotSpeedSupplier) {
+      Intake intake) {
     this.shooter = shooter;
     this.pitch = pitch;
     this.indexer = indexer;
     this.drive = drive;
     this.intake = intake;
-    this.robotPoseSupplier = robotPoseSupplier;
-    this.robotSpeedSupplier = robotSpeedSupplier;
+    this.robotPoseSupplier = drive::getPose;
+    this.robotSpeedSupplier = drive::getChassisSpeeds;
 
     updateAllianceTarget();
-
-    // 10 Hz = 0.1 seconds
-    double calcPeriodSeconds = 1.0 / MidSystemConstants.CALC_RATE_HZ;
-    addPeriodic(this::updateCalculations, calcPeriodSeconds);
-
     // Setup button bindings once on initialization
     configureBindings();
   }
@@ -77,18 +71,22 @@ public class MidSystem extends SubsystemBase {
           : FieldConstants.HUB_RED;
   }
 
-  private void updateCalculations() {
-    Pose2d robotPose = robotPoseSupplier.get();
+  private boolean inScoringArea(){
+    boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
+    return isBlue && robotPoseSupplier.get().getMeasureX()
+      .lt(FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2))) ||
+        !isBlue && robotPoseSupplier.get().getMeasureX()
+          .gt(FieldConstants.FIELD_LENGTH.minus(
+            FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2))));
+  }
 
-    // TODO: DOUBLE CHECK FOR POSITION BETTER
-    double distanceMeters = ControlCalculations.getDistanceToTarget(robotPose, currentTarget).in(Units.Meters);
-    inScoringArea = distanceMeters <= MidSystemConstants.MAX_SHOOT_DISTANCE_METERS;
-
-    if (inScoringArea) {
-      ChassisSpeeds robotSpeed = robotSpeedSupplier.get();
-      LaunchCalc launchData = ControlCalculations.MultiShot(robotPose, robotSpeed, currentTarget, 3);
+  @Override
+  public void periodic() {
+    
+    if (inScoringArea()) {
+      LaunchCalc launchData = ControlCalculations.MultiShot(robotPoseSupplier.get(), robotSpeedSupplier.get(), currentTarget, 3);
       
-      double targetVelocityRPS = launchData.shooterVelocity() / MidSystemConstants.FLYWHEEL_CIRCUMFERENCE_INCHES;  // TODO: Define flywheel for proper math
+      double targetVelocityRPS = launchData.shooterVelocity() / ShooterConstants.FLYWHEEL_CIRCUMFERENCE;  
       
       double targetPitchRotations = launchData.shooterPitch() / 360.0; 
 
@@ -106,7 +104,7 @@ public class MidSystem extends SubsystemBase {
     Pose2d pose = robotPoseSupplier.get();
     Rotation2d desiredAngle = new Rotation2d(currentTarget.getX() - pose.getX(), currentTarget.getY() - pose.getY());
     
-    double errorDegrees = Math.abs(desiredAngle.minus(pose.getRotation()).getDegrees()); // TODO: DETERMINE PROPER GETROTATION
+    double errorDegrees = Math.abs(desiredAngle.minus(pose.getRotation()).getDegrees()); // TODO: Verify
     return errorDegrees < MidSystemConstants.AIM_TOLERANCE_DEGREES;
   }
 

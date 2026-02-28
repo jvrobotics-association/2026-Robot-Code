@@ -91,6 +91,7 @@ public final class Constants {
     }
 
     public static final double SPEED_MOE = 0.05;
+    public static final double FLYWHEEL_CIRCUMFERENCE = 3.0; // TODO: Verify, Inches
   }
 
   public final class IntakeConstants {
@@ -144,17 +145,26 @@ public final class Constants {
   }
 
   public final class MidSystemConstants {
+      public static final double CALCS_PER_SECOND = 10.0; // TODO: Verify
+      public static final double AIM_TOLERANCE_DEGREES = 3.0;
+  }
 
+  public final class RobotConstants {
+    public static final Distance FULL_WIDTH = Inches.of(25); // TODO: Verify // Frame plus bumper
+    public static final Distance FULL_LENGTH = Inches.of(30); // TODO: Verify // Frame plus bumper
   }
 
   public final class FieldConstants {
     public static final Distance FIELD_LENGTH = Inches.of(650.12);
     public static final Distance FIELD_WIDTH = Inches.of(316.64);
+    public static final Distance ALLIANCE_ZONE = Inches.of(156.06);
+
     public static final Translation3d HUB_BLUE =
         new Translation3d(Inches.of(181.56), FIELD_WIDTH.div(2), Inches.of(56.4));
     public static final Translation3d HUB_RED =
         new Translation3d(
             FIELD_LENGTH.minus(Inches.of(181.56)), FIELD_WIDTH.div(2), Inches.of(56.4));
+
     public static final Distance FUNNEL_HEIGHT = Inches.of(72 - 56.4); // TODO: set funnel height
     public static final Distance FUNNEL_RADIUS = Inches.of(24); // TODO: set funnel radius
     public static final Transform3d ROBOT_TO_TURRET_TRANSFORM =

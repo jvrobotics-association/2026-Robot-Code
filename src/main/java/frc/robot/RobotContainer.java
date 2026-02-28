@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.MidSystem;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -47,6 +48,7 @@ public class RobotContainer {
   private final Intake intake;
   private final Climber climber;
   private final ShooterPitch pitch;
+  private final MidSystem midSystem;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -83,6 +85,7 @@ public class RobotContainer {
         intake = new Intake();
         climber = new Climber();
         pitch = new ShooterPitch();
+        midSystem = new MidSystem(shooter, pitch, null, drive, intake);
         break;
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
@@ -97,6 +100,7 @@ public class RobotContainer {
         intake = new Intake();
         climber = new Climber();
         pitch = new ShooterPitch();
+        midSystem = new MidSystem(shooter, pitch, null, drive, intake);
         break;
 
       default:
@@ -112,7 +116,7 @@ public class RobotContainer {
         intake = new Intake();
         climber = new Climber();
         pitch = new ShooterPitch();
-
+        midSystem = new MidSystem(null, null, null, null, null);
         break;
     }
 
@@ -173,13 +177,13 @@ public class RobotContainer {
     //     //  )
     //     Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter));
     // controller.leftTrigger(0.25).whileTrue(() -> intake.runIntake(intake));
-    intakeTrigger.whileTrue(
-        Commands.runEnd(() -> intake.startIntake(), () -> intake.stopIntake(), intake));
+    //intakeTrigger.whileTrue(
+    //     Commands.runEnd(() -> intake.startIntake(), () -> intake.stopIntake(), intake));
 
-    shootTrigger.whileTrue(
-        Commands.sequence(
-            Commands.runOnce(() -> pitch.setAngle(10.0), pitch),
-            Commands.runOnce(() -> pitch.setAngle(10.0), pitch)));
+    // shootTrigger.whileTrue(
+    //     Commands.sequence(
+    //         Commands.runOnce(() -> pitch.setAngle(10.0), pitch),
+    //         Commands.runOnce(() -> pitch.setAngle(10.0), pitch)));
   }
 
   /**
