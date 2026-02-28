@@ -15,10 +15,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IndexerConstants;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -28,14 +26,15 @@ public class Indexer extends SubsystemBase {
   private final TalonFX indexerMotor = new TalonFX(IndexerConstants.INDEXER_MOTOR, "rio");
 
   /* Control Requests */
-  private final MotionMagicVelocityTorqueCurrentFOC velocityRequest = 
+  private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride = new LoggedNetworkBoolean("Indexer Override", false);
+  private final LoggedNetworkBoolean LNNOverride =
+      new LoggedNetworkBoolean("Indexer Override", false);
   private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Indexer Manual Duty", 0.0);
-  
+
   private double targetVelocityRPS = 0;
 
   public Indexer() {
@@ -47,9 +46,9 @@ public class Indexer extends SubsystemBase {
 
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
         .withSensorToMechanismRatio(IndexerConstants.SENSOR_TO_MECH_RATIO);
-    
-    config.MotorOutput
-        .withNeutralMode(NeutralModeValue.Coast) // TODO: COAST TO PREVENT WEAR OR BRAKE TO STOP FASTER
+
+    config.MotorOutput.withNeutralMode(
+            NeutralModeValue.Coast) // TODO: COAST TO PREVENT WEAR OR BRAKE TO STOP FASTER
         .withInverted(InvertedValue.Clockwise_Positive);
 
     config.Slot0.kP = IndexerConstants.PID_KP;
@@ -58,13 +57,14 @@ public class Indexer extends SubsystemBase {
     config.Slot0.kS = IndexerConstants.PID_KS;
     config.Slot0.kV = IndexerConstants.PID_KV;
 
-    config.MotionMagic
-        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(IndexerConstants.MM_ACCELERATION))
+    config.MotionMagic.withMotionMagicAcceleration(
+            RotationsPerSecondPerSecond.of(IndexerConstants.MM_ACCELERATION))
         .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IndexerConstants.MM_JERK));
 
-    config.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(IndexerConstants.FORWARD_TORQUE_AMPS_LIMIT));
+    config.TorqueCurrent.withPeakForwardTorqueCurrent(
+        Amps.of(IndexerConstants.FORWARD_TORQUE_AMPS_LIMIT));
     config.CurrentLimits.withStatorCurrentLimit(Amps.of(IndexerConstants.STATOR_AMP_LIMIT))
-                        .withStatorCurrentLimitEnable(true);
+        .withStatorCurrentLimitEnable(true);
 
     applyConfig(config);
   }
@@ -113,6 +113,7 @@ public class Indexer extends SubsystemBase {
     // AdvantageKit Logging
     Logger.recordOutput("Indexer/TargetVelocityRPS", targetVelocityRPS);
     Logger.recordOutput("Indexer/ActualVelocityRPS", indexerMotor.getVelocity().getValueAsDouble());
-    Logger.recordOutput("Indexer/StatorCurrent", indexerMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput(
+        "Indexer/StatorCurrent", indexerMotor.getStatorCurrent().getValueAsDouble());
   }
 }

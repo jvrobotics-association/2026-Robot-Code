@@ -177,7 +177,7 @@ public class RobotContainer {
     //     //  )
     //     Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter));
     // controller.leftTrigger(0.25).whileTrue(() -> intake.runIntake(intake));
-    //intakeTrigger.whileTrue(
+    // intakeTrigger.whileTrue(
     //     Commands.runEnd(() -> intake.startIntake(), () -> intake.stopIntake(), intake));
 
     // shootTrigger.whileTrue(

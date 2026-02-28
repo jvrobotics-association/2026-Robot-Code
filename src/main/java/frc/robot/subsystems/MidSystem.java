@@ -8,23 +8,21 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.MidSystemConstants; // TODO: new constants 
+import frc.robot.Constants.MidSystemConstants; // TODO: new constants
 import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPitch;
 import frc.robot.util.ControlCalculations;
@@ -34,10 +32,10 @@ import java.util.function.Supplier;
 public class MidSystem extends SubsystemBase {
   private final Shooter shooter;
   private final ShooterPitch pitch;
-  private final Indexer indexer;
-  private final Intake intake;
+  // private final Indexer indexer;
+  // private final Intake intake;
   private final Drive drive;
-  
+
   private final Supplier<Pose2d> robotPoseSupplier;
   private final Supplier<ChassisSpeeds> robotSpeedSupplier;
 
@@ -47,16 +45,12 @@ public class MidSystem extends SubsystemBase {
   private Translation3d currentTarget;
 
   public MidSystem(
-      Shooter shooter,
-      ShooterPitch pitch,
-      Indexer indexer,
-      Drive drive,
-      Intake intake) {
+      Shooter shooter, ShooterPitch pitch, Indexer indexer, Drive drive, Intake intake) {
     this.shooter = shooter;
     this.pitch = pitch;
-    this.indexer = indexer;
+    // this.indexer = indexer;
     this.drive = drive;
-    this.intake = intake;
+    // this.intake = intake;
     this.robotPoseSupplier = drive::getPose;
     this.robotSpeedSupplier = drive::getChassisSpeeds;
 
@@ -66,29 +60,40 @@ public class MidSystem extends SubsystemBase {
   }
 
   private void updateAllianceTarget() {
-    currentTarget = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
-          ? FieldConstants.HUB_BLUE
-          : FieldConstants.HUB_RED;
+    currentTarget =
+        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+            ? FieldConstants.HUB_BLUE
+            : FieldConstants.HUB_RED;
   }
 
-  private boolean inScoringArea(){
+  private boolean inScoringArea() {
     boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
-    return isBlue && robotPoseSupplier.get().getMeasureX()
-      .lt(FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2))) ||
-        !isBlue && robotPoseSupplier.get().getMeasureX()
-          .gt(FieldConstants.FIELD_LENGTH.minus(
-            FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2))));
+    return isBlue
+            && robotPoseSupplier
+                .get()
+                .getMeasureX()
+                .lt(FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2)))
+        || !isBlue
+            && robotPoseSupplier
+                .get()
+                .getMeasureX()
+                .gt(
+                    FieldConstants.FIELD_LENGTH.minus(
+                        FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2))));
   }
 
   @Override
   public void periodic() {
-    
+
     if (inScoringArea()) {
-      LaunchCalc launchData = ControlCalculations.MultiShot(robotPoseSupplier.get(), robotSpeedSupplier.get(), currentTarget, 3);
-      
-      double targetVelocityRPS = launchData.shooterVelocity() / ShooterConstants.FLYWHEEL_CIRCUMFERENCE;  
-      
-      double targetPitchRotations = launchData.shooterPitch() / 360.0; 
+      LaunchCalc launchData =
+          ControlCalculations.MultiShot(
+              robotPoseSupplier.get(), robotSpeedSupplier.get(), currentTarget, 3);
+
+      double targetVelocityRPS =
+          launchData.shooterVelocity() / ShooterConstants.FLYWHEEL_CIRCUMFERENCE;
+
+      double targetPitchRotations = launchData.shooterPitch() / 360.0;
 
       shooter.setTargetVelocity(targetVelocityRPS);
       pitch.setTargetPosition(targetPitchRotations);
@@ -99,15 +104,15 @@ public class MidSystem extends SubsystemBase {
     }
   }
 
-
   private boolean isRobotAimed() {
     Pose2d pose = robotPoseSupplier.get();
-    Rotation2d desiredAngle = new Rotation2d(currentTarget.getX() - pose.getX(), currentTarget.getY() - pose.getY());
-    
-    double errorDegrees = Math.abs(desiredAngle.minus(pose.getRotation()).getDegrees()); // TODO: Verify
+    Rotation2d desiredAngle =
+        new Rotation2d(currentTarget.getX() - pose.getX(), currentTarget.getY() - pose.getY());
+
+    double errorDegrees =
+        Math.abs(desiredAngle.minus(pose.getRotation()).getDegrees()); // TODO: Verify
     return errorDegrees < MidSystemConstants.AIM_TOLERANCE_DEGREES;
   }
-
 
   private void configureBindings() {
     // Triggers
@@ -126,10 +131,11 @@ public class MidSystem extends SubsystemBase {
             () -> -controller.getRightX()));
 
     // Auto-Aim Drive (Hold POV Right to point at speaker while driving)
-    Supplier<Rotation2d> targetAngleSupplier = () -> new Rotation2d(
-        currentTarget.getX() - robotPoseSupplier.get().getX(),
-        currentTarget.getY() - robotPoseSupplier.get().getY()
-    );
+    Supplier<Rotation2d> targetAngleSupplier =
+        () ->
+            new Rotation2d(
+                currentTarget.getX() - robotPoseSupplier.get().getX(),
+                currentTarget.getY() - robotPoseSupplier.get().getY());
 
     aimTrigger.whileTrue(
         DriveCommands.joystickDriveAtAngle(
@@ -140,25 +146,21 @@ public class MidSystem extends SubsystemBase {
 
     // 3. Shoot Sequence
     // Only true if the button is pressed AND all 3 systems are ready.
-    Trigger readyToFire = shootTrigger
-        .and(shooter::readyToShoot)
-        .and(pitch::readyToShoot)
-        .and(this::isRobotAimed);
+    Trigger readyToFire =
+        shootTrigger.and(shooter::readyToShoot).and(pitch::readyToShoot).and(this::isRobotAimed);
 
     // Run the indexer. Should auto-stop when shoot sequence fails
-    readyToFire.whileTrue(
-        Commands.startEnd(indexer::feed, indexer::stop, indexer)
-    );
+    // readyToFire.whileTrue(Commands.startEnd(indexer::feed, indexer::stop, indexer));
 
-    // 4. Intake
-    intakeTrigger.whileTrue(
-        Commands.startEnd(intake::startIntake, intake::stopIntake, intake)
-    );
+    // // 4. Intake
+    // intakeTrigger.whileTrue(Commands.startEnd(intake::startIntake, intake::stopIntake, intake));
 
     // 5. Utility
     lockPositionTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
     resetGyroTrigger.onTrue(
-        Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)), drive)
+        Commands.runOnce(
+                () -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+                drive)
             .ignoringDisable(true));
   }
 }

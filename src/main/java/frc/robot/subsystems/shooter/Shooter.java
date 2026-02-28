@@ -18,10 +18,9 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
-
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
   /* Hardware */
@@ -29,18 +28,19 @@ public class Shooter extends SubsystemBase {
   private final TalonFX rightMotor = new TalonFX(ShooterConstants.RightMotor.CAN_ID, "rio");
 
   /* Control Requests - Distinct objects for separate motor streams */
-  private final MotionMagicVelocityTorqueCurrentFOC leftVelocityRequest = 
+  private final MotionMagicVelocityTorqueCurrentFOC leftVelocityRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
-  private final MotionMagicVelocityTorqueCurrentFOC rightVelocityRequest = 
+  private final MotionMagicVelocityTorqueCurrentFOC rightVelocityRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
-  
+
   private final DutyCycleOut leftDutyCycleRequest = new DutyCycleOut(0);
   private final DutyCycleOut rightDutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride = new LoggedNetworkBoolean("Shooter Override", false);
+  private final LoggedNetworkBoolean LNNOverride =
+      new LoggedNetworkBoolean("Shooter Override", false);
   private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Shooter Speed", 0.0);
-  
+
   private double targetVelocityRPS = 0;
 
   /** Creates a new Shooter */
@@ -58,8 +58,7 @@ public class Shooter extends SubsystemBase {
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.Clockwise_Positive);
 
-    config.CurrentLimits
-        .withStatorCurrentLimitEnable(true)
+    config.CurrentLimits.withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(ShooterConstants.LeftMotor.STATOR_AMP_LIMIT));
 
     config.Slot0.withKP(ShooterConstants.LeftMotor.PID_KP)
@@ -67,10 +66,11 @@ public class Shooter extends SubsystemBase {
         .withKD(ShooterConstants.LeftMotor.PID_KD)
         .withKV(ShooterConstants.LeftMotor.PID_KV)
         .withKS(ShooterConstants.LeftMotor.PID_KS);
-    
-    config.MotionMagic
-        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(ShooterConstants.LeftMotor.MM_ACCELERATION))
-        .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(ShooterConstants.LeftMotor.MM_JERK));
+
+    config.MotionMagic.withMotionMagicAcceleration(
+            RotationsPerSecondPerSecond.of(ShooterConstants.LeftMotor.MM_ACCELERATION))
+        .withMotionMagicJerk(
+            RotationsPerSecondPerSecond.per(Second).of(ShooterConstants.LeftMotor.MM_JERK));
 
     applyConfig(leftMotor, config);
   }
@@ -84,8 +84,7 @@ public class Shooter extends SubsystemBase {
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.CounterClockwise_Positive);
 
-    config.CurrentLimits
-        .withStatorCurrentLimitEnable(true)
+    config.CurrentLimits.withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(ShooterConstants.RightMotor.STATOR_AMP_LIMIT));
 
     config.Slot0.withKP(ShooterConstants.RightMotor.PID_KP)
@@ -94,9 +93,10 @@ public class Shooter extends SubsystemBase {
         .withKV(ShooterConstants.RightMotor.PID_KV)
         .withKS(ShooterConstants.RightMotor.PID_KS);
 
-    config.MotionMagic
-        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(ShooterConstants.RightMotor.MM_ACCELERATION))
-        .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(ShooterConstants.RightMotor.MM_JERK));
+    config.MotionMagic.withMotionMagicAcceleration(
+            RotationsPerSecondPerSecond.of(ShooterConstants.RightMotor.MM_ACCELERATION))
+        .withMotionMagicJerk(
+            RotationsPerSecondPerSecond.per(Second).of(ShooterConstants.RightMotor.MM_JERK));
 
     applyConfig(rightMotor, config);
   }
@@ -149,10 +149,10 @@ public class Shooter extends SubsystemBase {
 
     double currentLeft = leftMotor.getVelocity().getValueAsDouble();
     double currentRight = rightMotor.getVelocity().getValueAsDouble();
-    
+
     // Use a flat minimum floor for tolerance to avoid noise issues at low speeds
     double tolerance = Math.max(targetVelocityRPS * ShooterConstants.SPEED_MOE, 0.5);
-    
+
     return Math.abs(currentLeft - targetVelocityRPS) <= tolerance
         && Math.abs(currentRight - targetVelocityRPS) <= tolerance;
   }

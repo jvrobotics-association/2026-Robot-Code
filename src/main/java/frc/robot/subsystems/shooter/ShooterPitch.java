@@ -4,32 +4,38 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.hardware.TalonFXS;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterPitchConstants;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ShooterPitch extends SubsystemBase {
   /* Hardware */
-  private final TalonFX pitchMotor = new TalonFX(ShooterPitchConstants.MOTOR, "rio");
+  private final TalonFXS pitchMotor = new TalonFXS(ShooterPitchConstants.CAN_ID, "rio");
 
   /* Control Requests */
-  private final MotionMagicTorqueCurrentFOC positionRequest = new MotionMagicTorqueCurrentFOC(0).withSlot(0);
+  private final MotionMagicDutyCycle positionRequest = new MotionMagicDutyCycle(0).withSlot(0);
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride = new LoggedNetworkBoolean("Pitch Override", false);
-  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Pitch Manual Duty", 0.0);
+  private final LoggedNetworkBoolean LNNOverride =
+      new LoggedNetworkBoolean("Pitch Override", false);
+  private final LoggedNetworkBoolean LNNConfig =
+      new LoggedNetworkBoolean("Pitch Config Applied", false);
+  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Pitch Setpoint", 0.0);
+  private final LoggedNetworkNumber LNNCurrent = new LoggedNetworkNumber("Pitch Current", 0.0);
   private double targetPositionRotations = 0;
 
   public ShooterPitch() {
@@ -38,37 +44,37 @@ public class ShooterPitch extends SubsystemBase {
   }
 
   private void configureHardware() {
-    TalonFXConfiguration config = new TalonFXConfiguration();
+    TalonFXSConfiguration config = new TalonFXSConfiguration();
 
-    config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                    .withSensorToMechanismRatio(ShooterPitchConstants.SENSOR_TO_MECH);
+    config.Commutation.withMotorArrangement(MotorArrangementValue.Minion_JST);
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
-    config.CurrentLimits
-        .withStatorCurrentLimitEnable(true)
+    config.CurrentLimits.withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(ShooterPitchConstants.STATOR_AMP_LIMIT));
-    
-    config.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(ShooterPitchConstants.PEAK_FORWARD_TORQUE_CURRENT))
-                        .withPeakReverseTorqueCurrent(Amps.of(ShooterPitchConstants.PEAK_REVERSE_TORQUE_CURRENT));
 
-    config.MotionMagic.MotionMagicCruiseVelocity = ShooterPitchConstants.MM_CRUISE_VEL;
-    config.MotionMagic.MotionMagicAcceleration = ShooterPitchConstants.MM_ACCELERATION;
-    config.MotionMagic.MotionMagicJerk = ShooterPitchConstants.MM_JERK;
-
+    // TODO: Voltage Condigs? External Feedback configs?
     config.Slot0.kP = ShooterPitchConstants.PID_KP;
     config.Slot0.kI = ShooterPitchConstants.PID_KI;
     config.Slot0.kD = ShooterPitchConstants.PID_KD;
     config.Slot0.kS = ShooterPitchConstants.PID_KS;
     config.Slot0.kV = ShooterPitchConstants.PID_KV;
 
+    MotionMagicConfigs MMConf = config.MotionMagic;
+    MMConf.withMotionMagicCruiseVelocity(RotationsPerSecond.of(ShooterPitchConstants.MM_CRUISE_VEL));
+    MMConf.withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(ShooterPitchConstants.MM_ACCELERATION));
+    // config.MotionMagic.MotionMagicJerk = ShooterPitchConstants.MM_JERK;
+
     applyConfig(pitchMotor, config);
   }
 
-  private void applyConfig(TalonFX motor, TalonFXConfiguration config) {
+  private void applyConfig(TalonFXS motor, TalonFXSConfiguration config) {
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       status = motor.getConfigurator().apply(config);
-      if (status.isOK()) break;
+      if (status.isOK()) {
+        LNNConfig.set(true);
+        break;
+      }
     }
   }
 
@@ -82,8 +88,9 @@ public class ShooterPitch extends SubsystemBase {
 
   // Manual Control for Dev
   public void setManualDutyCycle(double output) {
-    this.targetPositionRotations = pitchMotor.getPosition().getValueAsDouble(); 
-    pitchMotor.setControl(dutyCycleRequest.withOutput(output));
+    this.targetPositionRotations = 0;
+    LNNCurrent.set(pitchMotor.getPosition().getValueAsDouble());
+    pitchMotor.setControl(positionRequest.withPosition(output));
   }
 
   public void stop() {
@@ -97,8 +104,10 @@ public class ShooterPitch extends SubsystemBase {
     }
 
     Logger.recordOutput("ShooterPitch/TargetRotations", targetPositionRotations);
-    Logger.recordOutput("ShooterPitch/ActualRotations", pitchMotor.getPosition().getValueAsDouble());
-    Logger.recordOutput("ShooterPitch/StatorCurrent", pitchMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput(
+        "ShooterPitch/ActualRotations", pitchMotor.getPosition().getValueAsDouble());
+    Logger.recordOutput(
+        "ShooterPitch/StatorCurrent", pitchMotor.getStatorCurrent().getValueAsDouble());
   }
 
   public boolean readyToShoot() {
