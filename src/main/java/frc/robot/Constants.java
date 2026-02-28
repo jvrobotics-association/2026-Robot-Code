@@ -107,17 +107,13 @@ public final class Constants {
     public static final int MOTOR = -1; // TODO: set motor ID
     public static final int ENCODER = -1; // TODO: set encoder ID
     public static final double PITCH_MOE = 0.05;
-
     public static final double SENSOR_TO_MECH = 1;
     public static final double STATOR_AMP_LIMIT = 20;
     public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
     public static final double PEAK_REVERSE_TORQUE_CURRENT = -40;
-
-
     public static final double MM_ACCELERATION = 0.0;
     public static final double MM_CRUISE_VEL = 0.0;
     public static final double MM_JERK = 0.0;
-
     public static final double PID_KS = 0.0;
     public static final double PID_KV = 0.0;
     public static final double PID_KA = 0.0;
@@ -144,6 +140,10 @@ public final class Constants {
     public static final int FORWARD_TORQUE_AMPS_LIMIT = 40;
     public static final int SENSOR_TO_MECH_RATIO = -1; // TODO: set ratio
 
+
+  }
+
+  public final class MidSystemConstants {
 
   }
 
