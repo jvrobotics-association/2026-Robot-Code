@@ -64,7 +64,7 @@ public final class Constants {
       public static final double PID_KI = 0.0;
       public static final double PID_KD = 0.0;
 
-      public static final double SENSOR_TO_MECH = 1;
+      public static final double SENSOR_TO_MECH = 1.333;
 
       public static final double STATOR_AMP_LIMIT = 20;
       public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
