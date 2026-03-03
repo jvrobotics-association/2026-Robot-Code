@@ -7,90 +7,119 @@ package frc.robot.subsystems.intake;
 import static edu.wpi.first.units.Units.Amps;
 
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
-import edu.wpi.first.units.measure.Angle;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeExtensionConstants;
 
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 public class IntakeExtension extends SubsystemBase {
-  private static final TalonFX intakeExtensionMotor =
-      new TalonFX(IntakeExtensionConstants.MOTOR, "rio");
+  /* Hardware */
+  private final TalonFX extensionMotor = new TalonFX(IntakeExtensionConstants.MOTOR, "rio");
 
-  private static final CANcoder encoder = new CANcoder(IntakeExtensionConstants.ENCODER, "rio");
+  /* Control Requests */
+  private final MotionMagicTorqueCurrentFOC positionRequest = new MotionMagicTorqueCurrentFOC(0).withSlot(0);
+  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
-  final TalonFXConfiguration intakeExtensionMotorConfig;
-  public final MotionMagicTorqueCurrentFOC m_request = new MotionMagicTorqueCurrentFOC(0);
+  /* State */
+  private final LoggedNetworkBoolean LNNOverride = new LoggedNetworkBoolean("IntakeExt Override", false);
+  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("IntakeExt Manual Duty", 0.0);
+  
+  private double targetPositionRotations = 0;
 
-  /** Creates a new IntakeExtension. */
   public IntakeExtension() {
-    intakeExtensionMotorConfig = new TalonFXConfiguration();
+    configureHardware();
+    extensionMotor.setPosition(0);
+  }
 
-    intakeExtensionMotorConfig
-        .Feedback
-        .withFeedbackRemoteSensorID(IntakeExtensionConstants.ENCODER)
-        .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-        .withSensorToMechanismRatio(1) // TODO: Set Sensor to Mechanism Ratio
-        .withRotorToSensorRatio(1); // TODO: Set Rotor to Sensor Ratio
+  private void configureHardware() {
+    TalonFXConfiguration config = new TalonFXConfiguration();
 
-    // Sets the Neutral Mode to Brake
-    intakeExtensionMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
-    intakeExtensionMotorConfig
-        .CurrentLimits
+    config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                   .withSensorToMechanismRatio(IntakeExtensionConstants.SENSOR_TO_MECH_RATIO); 
+
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake); 
+    config.CurrentLimits
         .withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(20));
-    // Configures the Cruise, Accelerartion, Torque, and Stator limts
-    intakeExtensionMotorConfig.MotionMagic.MotionMagicCruiseVelocity =
-        0.0; // TODO: Set Cruise Velocity
-    intakeExtensionMotorConfig.MotionMagic.MotionMagicAcceleration = 0.0; // TODO: Set Acceleration
-    intakeExtensionMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(40));
-    intakeExtensionMotorConfig.CurrentLimits.withStatorCurrentLimit(Amps.of(50));
+        .withStatorCurrentLimit(Amps.of(IntakeExtensionConstants.STATOR_AMP_LIMIT)); 
+    
+    config.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(IntakeExtensionConstants.PEAK_FORWARD_TORQUE_CURRENT))
+                        .withPeakReverseTorqueCurrent(Amps.of(IntakeExtensionConstants.PEAK_REVERSE_TORQUE_CURRENT));
 
-    // Apply the intake extension config, retry config apply up to 5 times, report if failure
-    StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
+    config.MotionMagic.MotionMagicCruiseVelocity = IntakeExtensionConstants.MM_CRUISE_VEL;
+    config.MotionMagic.MotionMagicAcceleration = IntakeExtensionConstants.MM_ACCELERATION;
+    //config.MotionMagic.MotionMagicJerk = IntakeExtensionConstants.MM_JERK;
+
+    config.Slot0.kP = IntakeExtensionConstants.PID_KP;
+    config.Slot0.kI = IntakeExtensionConstants.PID_KI;
+    config.Slot0.kD = IntakeExtensionConstants.PID_KD;
+    config.Slot0.kS = IntakeExtensionConstants.PID_KS;
+    config.Slot0.kV = IntakeExtensionConstants.PID_KV;
+
+    applyConfig(config);
+  }
+
+  private void applyConfig(TalonFXConfiguration config) {
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      motorStatus = intakeExtensionMotor.getConfigurator().apply(intakeExtensionMotorConfig);
-      if (motorStatus.isOK()) break;
+      status = extensionMotor.getConfigurator().apply(config);
+      if (status.isOK()) break;
     }
-
-    if (!motorStatus.isOK()) {
-      System.out.println(
-          "Could not apply Intake Extension motor config, error code: " + motorStatus.toString());
+    if (!status.isOK()) {
+      System.out.println("Could not apply Intake Extension config, error: " + status.toString());
     }
+  }
 
-    CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
+  public void deploy() {
+    if (LNNOverride.getAsBoolean()) return;
+    this.targetPositionRotations = IntakeExtensionConstants.DEPLOYED_ROTATIONS;
+    extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+  }
 
-    encoderConfig.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive);
+  public void retract() {
+    if (LNNOverride.getAsBoolean()) return;
+    this.targetPositionRotations = IntakeExtensionConstants.RETRACTED_ROTATIONS; // Typically 0
+    extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+  }
 
-    // Apply the encoder config, retry config apply up to 5 times, report if failure
-    StatusCode encoderStatus = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      encoderStatus = encoder.getConfigurator().apply(encoderConfig);
-      if (encoderStatus.isOK()) break;
-    }
-    if (!encoderStatus.isOK()) {
-      System.out.println("Could not apply encoder config, error code: " + encoderStatus.toString());
-    }
+  // PROD
+  public void setTargetPosition(double rotations) {
+    if (LNNOverride.getAsBoolean()) return;
+    this.targetPositionRotations = rotations;
+    extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+  }
 
-    // Reset the position that the elevator currently is at to 0.
-    // The physical elevator should be all the way down when this is set.
-    intakeExtensionMotor.setPosition(0);
-    encoder.setPosition(0);
+  // DEV
+  public void setManualDutyCycle(double output) {
+    this.targetPositionRotations = extensionMotor.getPosition().getValueAsDouble(); 
+    extensionMotor.setControl(dutyCycleRequest.withOutput(output));
+  }
+
+  public void stop() {
+    extensionMotor.stopMotor();
   }
 
   @Override
   public void periodic() {
+    if (LNNOverride.getAsBoolean()) {
+      setManualDutyCycle(LNNTarget.getAsDouble());
+    }
 
-    // This method will be called once per scheduler run
+    Logger.recordOutput("IntakeExtension/TargetRotations", targetPositionRotations);
+    Logger.recordOutput("IntakeExtension/ActualRotations", extensionMotor.getPosition().getValueAsDouble());
+    Logger.recordOutput("IntakeExtension/StatorCurrent", extensionMotor.getStatorCurrent().getValueAsDouble());
   }
 
-  public void setAngle(Angle position) {
-    intakeExtensionMotor.setControl(m_request.withPosition(position));
+  public boolean isAtTarget() {
+    double currentPos = extensionMotor.getPosition().getValueAsDouble();
+    return Math.abs(currentPos - targetPositionRotations) <= IntakeExtensionConstants.TOLERANCE_ROTATIONS;
   }
 }

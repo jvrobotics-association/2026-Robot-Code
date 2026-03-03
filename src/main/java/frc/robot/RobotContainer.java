@@ -29,6 +29,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeExtension;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPitch;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -49,6 +50,7 @@ public class RobotContainer {
   private final Climber climber;
   private final ShooterPitch pitch;
   private final MidSystem midSystem;
+  private final IntakeExtension intakeExt;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -85,7 +87,8 @@ public class RobotContainer {
         intake = new Intake();
         climber = new Climber();
         pitch = new ShooterPitch();
-        midSystem = new MidSystem(shooter, pitch, null, drive, intake);
+        intakeExt = new IntakeExtension();
+        midSystem = new MidSystem(shooter, pitch, null, drive, intake, intakeExt);
         break;
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
@@ -100,7 +103,8 @@ public class RobotContainer {
         intake = new Intake();
         climber = new Climber();
         pitch = new ShooterPitch();
-        midSystem = new MidSystem(shooter, pitch, null, drive, intake);
+        intakeExt = new IntakeExtension();
+        midSystem = new MidSystem(shooter, pitch, null, drive, intake, intakeExt);
         break;
 
       default:
@@ -116,7 +120,8 @@ public class RobotContainer {
         intake = new Intake();
         climber = new Climber();
         pitch = new ShooterPitch();
-        midSystem = new MidSystem(null, null, null, null, null);
+        intakeExt = new IntakeExtension();
+        midSystem = new MidSystem(null, null, null, null, null, null);
         break;
     }
 

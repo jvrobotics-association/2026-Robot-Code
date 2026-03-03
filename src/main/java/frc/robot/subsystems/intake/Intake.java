@@ -9,8 +9,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
@@ -19,86 +17,101 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
+
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Intake extends SubsystemBase {
+  /* Hardware */
+  private final TalonFX intakeMotor = new TalonFX(IntakeConstants.MOTOR, "rio");
 
-  /** Declares the Motor */
-  private static final TalonFX intakeMotor = new TalonFX(IntakeConstants.MOTOR, "rio");
+  /* Control Requests */
+  private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
+      new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
+  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
-  /** Declares Configs */
-  final TalonFXConfiguration intakeMotorConfig;
+  /* State */
+  private final LoggedNetworkBoolean LNNOverride = new LoggedNetworkBoolean("Intake Override", false);
+  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Intake Target Output", 0.0);
 
-  final MotionMagicConfigs intakeMotorMMConfigs;
-  final Slot0Configs intakeMotorSlot0;
+  private double targetDutyCycle = 0;
+  private double targetVelocityRPS = 0;
 
-  /** Motor Control Requests */
-  final MotionMagicVelocityTorqueCurrentFOC m_request =
-      new MotionMagicVelocityTorqueCurrentFOC(IntakeConstants.MM_VEL_TORQUE_CURRENT_FOC);
-
-  final DutyCycleOut m_manualRequest = new DutyCycleOut(0);
-  /************ Class Member Variables ************/
-  private final LoggedNetworkNumber IntakeSpeed = new LoggedNetworkNumber("Intake Speed", 0.0);
-
-  /** Creates a new Intake */
   public Intake() {
+    configureHardware();
+    intakeMotor.setPosition(0);
+  }
 
-    /** Configures the Motor and sets up the Feedback. */
-    intakeMotorConfig = new TalonFXConfiguration();
-    // Get feedback from either the encoder or the CANcoder
-    intakeMotorConfig
-        .Feedback
-        .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-        .withSensorToMechanismRatio(
-            IntakeConstants
-                .SENSOR_TO_MECH_RATIO); // TODO: Verify if this or ShooterMotor's config works
-    // better
-    // Sets Neutral mode to coast
-    intakeMotorConfig.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
-    // Sets the current limits for the
-    intakeMotorConfig
-        .CurrentLimits
+  private void configureHardware() {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+
+    config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+        .withSensorToMechanismRatio(IntakeConstants.SENSOR_TO_MECH_RATIO);
+
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
+
+    config.CurrentLimits
         .withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(IntakeConstants.STATOR_AMP_LIMIT));
+    config.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(IntakeConstants.PEAK_FORWARD_TORQUE_CURRENT));
 
-    intakeMotorConfig.TorqueCurrent.withPeakForwardTorqueCurrent(
-        Amps.of(IntakeConstants.PEAK_FORWARD_TORQUE_CURRENT));
+    config.Slot0.kS = IntakeConstants.PID_KS;
+    config.Slot0.kV = IntakeConstants.PID_KV;
+    config.Slot0.kA = IntakeConstants.PID_KA;
+    config.Slot0.kP = IntakeConstants.PID_KP;
+    config.Slot0.kI = IntakeConstants.PID_KI;
+    config.Slot0.kD = IntakeConstants.PID_KD;
 
-    intakeMotorSlot0 = intakeMotorConfig.Slot0;
-    intakeMotorSlot0.kS = 0.0; // Add 0.25 V output to overcome static friction
-    intakeMotorSlot0.kV = 0.0; // A velocity target of 1 rps results in 0.12 V output
-    intakeMotorSlot0.kA = 0.0; // An acceleration of 1 rps/s requires 0.01 V output
-    intakeMotorSlot0.kP = 0.0; // A position error of 0.2 rotations results in 12 V output
-    intakeMotorSlot0.kI = 0.0; // No output for integrated error
-    intakeMotorSlot0.kD = 0.0; // A velocity error of 1 rps results in 0.5 V output
+    config.MotionMagic
+        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(IntakeConstants.MM_ACCELERATION)); 
+        //.withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IntakeConstants.MM_JERK)); 
 
-    // Configures the Acceleration, Jerk
-    intakeMotorMMConfigs = intakeMotorConfig.MotionMagic;
-    intakeMotorMMConfigs
-        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10))
-        .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
+    applyConfig(config);
+  }
 
-    StatusCode motorStatus = StatusCode.StatusCodeNotInitialized;
+  private void applyConfig(TalonFXConfiguration config) {
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      motorStatus = intakeMotor.getConfigurator().apply(intakeMotorConfig);
-      if (motorStatus.isOK()) break;
+      status = intakeMotor.getConfigurator().apply(config);
+      if (status.isOK()) break;
     }
-    if (!motorStatus.isOK()) {
-      System.out.println(
-          "Could not apply intake motor config, error code: " + motorStatus.toString());
+    if (!status.isOK()) {
+      System.out.println("Could not apply intake motor config, error code: " + status.toString());
     }
+  }
+
+  // Prod control
+  public void startIntake() {
+    if (LNNOverride.getAsBoolean()) return;
+
+    this.targetVelocityRPS = IntakeConstants.INTAKE_SPEED;
+    intakeMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
+  }
+  
+  // Dev control
+  public void setManualDutyCycle(double output) {
+    this.targetDutyCycle = output;
+    intakeMotor.setControl(dutyCycleRequest.withOutput(targetDutyCycle));
+  }
+
+  public void stopIntake() {
+    this.targetVelocityRPS = 0;
+    this.targetDutyCycle = 0;
+    intakeMotor.stopMotor();
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    // Handling Dashboard Override
+    if (LNNOverride.getAsBoolean()) {
+      setManualDutyCycle(LNNTarget.getAsDouble());
+    }
 
-  public void startIntake() {
-    intakeMotor.setControl(m_manualRequest.withOutput(IntakeSpeed.getAsDouble()));
-  }
-
-  public void stopIntake() {
-    intakeMotor.setControl(m_manualRequest.withOutput(0.0));
+    // AdvantageKit Logging
+    Logger.recordOutput("Intake/TargetDutyCycle", targetDutyCycle);
+    Logger.recordOutput("Intake/TargetVelocityRPS", targetVelocityRPS);
+    Logger.recordOutput("Intake/ActualVelocityRPS", intakeMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Intake/StatorCurrent", intakeMotor.getStatorCurrent().getValueAsDouble());
   }
 }
