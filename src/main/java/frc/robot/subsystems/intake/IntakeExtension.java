@@ -10,14 +10,11 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeExtensionConstants;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -27,13 +24,16 @@ public class IntakeExtension extends SubsystemBase {
   private final TalonFX extensionMotor = new TalonFX(IntakeExtensionConstants.MOTOR, "rio");
 
   /* Control Requests */
-  private final MotionMagicTorqueCurrentFOC positionRequest = new MotionMagicTorqueCurrentFOC(0).withSlot(0);
+  private final MotionMagicTorqueCurrentFOC positionRequest =
+      new MotionMagicTorqueCurrentFOC(0).withSlot(0);
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride = new LoggedNetworkBoolean("IntakeExt Override", false);
-  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("IntakeExt Manual Duty", 0.0);
-  
+  private final LoggedNetworkBoolean LNNOverride =
+      new LoggedNetworkBoolean("IntakeExt Override", false);
+  private final LoggedNetworkNumber LNNTarget =
+      new LoggedNetworkNumber("IntakeExt Manual Duty", 0.0);
+
   private double targetPositionRotations = 0;
 
   public IntakeExtension() {
@@ -45,19 +45,20 @@ public class IntakeExtension extends SubsystemBase {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                   .withSensorToMechanismRatio(IntakeExtensionConstants.SENSOR_TO_MECH_RATIO); 
+        .withSensorToMechanismRatio(IntakeExtensionConstants.SENSOR_TO_MECH_RATIO);
 
-    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake); 
-    config.CurrentLimits
-        .withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(IntakeExtensionConstants.STATOR_AMP_LIMIT)); 
-    
-    config.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(IntakeExtensionConstants.PEAK_FORWARD_TORQUE_CURRENT))
-                        .withPeakReverseTorqueCurrent(Amps.of(IntakeExtensionConstants.PEAK_REVERSE_TORQUE_CURRENT));
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+    config.CurrentLimits.withStatorCurrentLimitEnable(true)
+        .withStatorCurrentLimit(Amps.of(IntakeExtensionConstants.STATOR_AMP_LIMIT));
+
+    config.TorqueCurrent.withPeakForwardTorqueCurrent(
+            Amps.of(IntakeExtensionConstants.PEAK_FORWARD_TORQUE_CURRENT))
+        .withPeakReverseTorqueCurrent(
+            Amps.of(IntakeExtensionConstants.PEAK_REVERSE_TORQUE_CURRENT));
 
     config.MotionMagic.MotionMagicCruiseVelocity = IntakeExtensionConstants.MM_CRUISE_VEL;
     config.MotionMagic.MotionMagicAcceleration = IntakeExtensionConstants.MM_ACCELERATION;
-    //config.MotionMagic.MotionMagicJerk = IntakeExtensionConstants.MM_JERK;
+    // config.MotionMagic.MotionMagicJerk = IntakeExtensionConstants.MM_JERK;
 
     config.Slot0.kP = IntakeExtensionConstants.PID_KP;
     config.Slot0.kD = IntakeExtensionConstants.PID_KD;
@@ -99,7 +100,7 @@ public class IntakeExtension extends SubsystemBase {
 
   // DEV
   public void setManualDutyCycle(double output) {
-    this.targetPositionRotations = extensionMotor.getPosition().getValueAsDouble(); 
+    this.targetPositionRotations = extensionMotor.getPosition().getValueAsDouble();
     extensionMotor.setControl(positionRequest.withPosition(output));
   }
 
@@ -114,12 +115,15 @@ public class IntakeExtension extends SubsystemBase {
     }
 
     Logger.recordOutput("IntakeExtension/TargetRotations", targetPositionRotations);
-    Logger.recordOutput("IntakeExtension/ActualRotations", extensionMotor.getPosition().getValueAsDouble());
-    Logger.recordOutput("IntakeExtension/StatorCurrent", extensionMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput(
+        "IntakeExtension/ActualRotations", extensionMotor.getPosition().getValueAsDouble());
+    Logger.recordOutput(
+        "IntakeExtension/StatorCurrent", extensionMotor.getStatorCurrent().getValueAsDouble());
   }
 
   public boolean isAtTarget() {
     double currentPos = extensionMotor.getPosition().getValueAsDouble();
-    return Math.abs(currentPos - targetPositionRotations) <= IntakeExtensionConstants.TOLERANCE_ROTATIONS;
+    return Math.abs(currentPos - targetPositionRotations)
+        <= IntakeExtensionConstants.TOLERANCE_ROTATIONS;
   }
 }

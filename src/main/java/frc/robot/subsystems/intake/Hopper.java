@@ -13,10 +13,8 @@ import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -26,13 +24,15 @@ public class Hopper extends SubsystemBase {
   private final TalonFX hopperMotor = new TalonFX(HopperConstants.MOTOR, "rio");
 
   /* Control Requests */
-  private final MotionMagicTorqueCurrentFOC positionRequest = new MotionMagicTorqueCurrentFOC(0).withSlot(0);
+  private final MotionMagicTorqueCurrentFOC positionRequest =
+      new MotionMagicTorqueCurrentFOC(0).withSlot(0);
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride = new LoggedNetworkBoolean("Hopper Override", false);
+  private final LoggedNetworkBoolean LNNOverride =
+      new LoggedNetworkBoolean("Hopper Override", false);
   private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Hopper Manual Duty", 0.0);
-  
+
   private double targetPositionRotations = 0;
 
   public Hopper() {
@@ -44,15 +44,15 @@ public class Hopper extends SubsystemBase {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                   .withSensorToMechanismRatio(HopperConstants.SENSOR_TO_MECH_RATIO); 
+        .withSensorToMechanismRatio(HopperConstants.SENSOR_TO_MECH_RATIO);
 
-    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake); 
-    config.CurrentLimits
-        .withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(HopperConstants.STATOR_AMP_LIMIT)); 
-    
-    config.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(HopperConstants.PEAK_FORWARD_TORQUE_CURRENT))
-                        .withPeakReverseTorqueCurrent(Amps.of(HopperConstants.PEAK_REVERSE_TORQUE_CURRENT));
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+    config.CurrentLimits.withStatorCurrentLimitEnable(true)
+        .withStatorCurrentLimit(Amps.of(HopperConstants.STATOR_AMP_LIMIT));
+
+    config.TorqueCurrent.withPeakForwardTorqueCurrent(
+            Amps.of(HopperConstants.PEAK_FORWARD_TORQUE_CURRENT))
+        .withPeakReverseTorqueCurrent(Amps.of(HopperConstants.PEAK_REVERSE_TORQUE_CURRENT));
 
     config.MotionMagic.MotionMagicCruiseVelocity = HopperConstants.MM_CRUISE_VEL;
     config.MotionMagic.MotionMagicAcceleration = HopperConstants.MM_ACCELERATION;
@@ -99,7 +99,7 @@ public class Hopper extends SubsystemBase {
 
   // DEV - manual control
   public void setManualDutyCycle(double output) {
-    this.targetPositionRotations = hopperMotor.getPosition().getValueAsDouble(); 
+    this.targetPositionRotations = hopperMotor.getPosition().getValueAsDouble();
     hopperMotor.setControl(positionRequest.withPosition(output));
   }
 

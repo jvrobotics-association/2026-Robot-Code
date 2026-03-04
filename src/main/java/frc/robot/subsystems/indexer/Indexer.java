@@ -12,7 +12,6 @@ import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFXS;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,7 +25,8 @@ public class Indexer extends SubsystemBase {
   private final TalonFXS indexerMotor = new TalonFXS(IndexerConstants.INDEXER_MOTOR, "rio");
 
   /* Control Requests */
-  private final MotionMagicVelocityVoltage velocityRequest = new MotionMagicVelocityVoltage(0).withSlot(0);
+  private final MotionMagicVelocityVoltage velocityRequest =
+      new MotionMagicVelocityVoltage(0).withSlot(0);
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
@@ -44,7 +44,8 @@ public class Indexer extends SubsystemBase {
     TalonFXSConfiguration config = new TalonFXSConfiguration();
 
     config.Commutation.withMotorArrangement(MotorArrangementValue.Minion_JST);
-    config.MotorOutput.withNeutralMode(NeutralModeValue.Coast); // TODO: COAST TO PREVENT WEAR OR BRAKE TO STOP FASTER
+    config.MotorOutput.withNeutralMode(
+        NeutralModeValue.Coast); // TODO: COAST TO PREVENT WEAR OR BRAKE TO STOP FASTER
 
     config.Slot0.kP = IndexerConstants.PID_KP;
     config.Slot0.kS = IndexerConstants.PID_KS;

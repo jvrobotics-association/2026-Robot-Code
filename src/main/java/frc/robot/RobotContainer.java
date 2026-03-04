@@ -47,7 +47,7 @@ public class RobotContainer {
   private final IntakeExtension intakeExt;
   private final Hopper hopper;
   private final Climber climber;
-  
+
   // Superstructure
   private final MidSystem midSystem;
 
@@ -75,8 +75,10 @@ public class RobotContainer {
         intakeExt = new IntakeExtension();
         hopper = new Hopper();
         climber = new Climber();
-        
-        midSystem = new MidSystem(shooter, pitch, indexer, tower, drive, intake, intakeExt, hopper, climber);
+
+        midSystem =
+            new MidSystem(
+                shooter, pitch, indexer, tower, drive, intake, intakeExt, hopper, climber);
         break;
 
       case SIM:
@@ -96,8 +98,10 @@ public class RobotContainer {
         intakeExt = new IntakeExtension();
         hopper = new Hopper();
         climber = new Climber();
-        
-        midSystem = new MidSystem(shooter, pitch, indexer, tower, drive, intake, intakeExt, hopper, climber);
+
+        midSystem =
+            new MidSystem(
+                shooter, pitch, indexer, tower, drive, intake, intakeExt, hopper, climber);
         break;
 
       default:
@@ -117,7 +121,7 @@ public class RobotContainer {
         intakeExt = new IntakeExtension();
         hopper = new Hopper();
         climber = new Climber();
-        
+
         // Pass nulls or empty shells for Replay mode depending on your AdvantageKit setup
         midSystem = new MidSystem(null, null, null, null, null, null, null, null, null);
         break;
@@ -125,7 +129,7 @@ public class RobotContainer {
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    
+
     // Set up SysId routines
     autoChooser.addOption(
         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));

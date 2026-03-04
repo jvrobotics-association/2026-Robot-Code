@@ -11,7 +11,6 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
@@ -60,8 +59,10 @@ public class ShooterPitch extends SubsystemBase {
     config.Slot0.kV = ShooterPitchConstants.PID_KV;
 
     MotionMagicConfigs MMConf = config.MotionMagic;
-    MMConf.withMotionMagicCruiseVelocity(RotationsPerSecond.of(ShooterPitchConstants.MM_CRUISE_VEL));
-    MMConf.withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(ShooterPitchConstants.MM_ACCELERATION));
+    MMConf.withMotionMagicCruiseVelocity(
+        RotationsPerSecond.of(ShooterPitchConstants.MM_CRUISE_VEL));
+    MMConf.withMotionMagicAcceleration(
+        RotationsPerSecondPerSecond.of(ShooterPitchConstants.MM_ACCELERATION));
     // config.MotionMagic.MotionMagicJerk = ShooterPitchConstants.MM_JERK;
 
     applyConfig(pitchMotor, config);

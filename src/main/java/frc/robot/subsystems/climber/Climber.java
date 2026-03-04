@@ -13,10 +13,8 @@ import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -26,13 +24,15 @@ public class Climber extends SubsystemBase {
   private final TalonFX climberMotor = new TalonFX(ClimberConstants.MOTOR, "rio");
 
   /* Control Requests */
-  private final MotionMagicTorqueCurrentFOC positionRequest = new MotionMagicTorqueCurrentFOC(0).withSlot(0);
+  private final MotionMagicTorqueCurrentFOC positionRequest =
+      new MotionMagicTorqueCurrentFOC(0).withSlot(0);
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride = new LoggedNetworkBoolean("Climber Override", false);
+  private final LoggedNetworkBoolean LNNOverride =
+      new LoggedNetworkBoolean("Climber Override", false);
   private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Climber Manual Duty", 0.0);
-  
+
   private double targetPositionRotations = 0;
 
   public Climber() {
@@ -44,15 +44,15 @@ public class Climber extends SubsystemBase {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                   .withSensorToMechanismRatio(ClimberConstants.SENSOR_TO_MECH_RATIO); 
+        .withSensorToMechanismRatio(ClimberConstants.SENSOR_TO_MECH_RATIO);
 
-    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake); 
-    config.CurrentLimits
-        .withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(ClimberConstants.STATOR_AMP_LIMIT)); 
-    
-    config.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(ClimberConstants.PEAK_FORWARD_TORQUE_CURRENT))
-                        .withPeakReverseTorqueCurrent(Amps.of(ClimberConstants.PEAK_REVERSE_TORQUE_CURRENT));
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+    config.CurrentLimits.withStatorCurrentLimitEnable(true)
+        .withStatorCurrentLimit(Amps.of(ClimberConstants.STATOR_AMP_LIMIT));
+
+    config.TorqueCurrent.withPeakForwardTorqueCurrent(
+            Amps.of(ClimberConstants.PEAK_FORWARD_TORQUE_CURRENT))
+        .withPeakReverseTorqueCurrent(Amps.of(ClimberConstants.PEAK_REVERSE_TORQUE_CURRENT));
 
     config.MotionMagic.MotionMagicCruiseVelocity = ClimberConstants.MM_CRUISE_VEL;
     config.MotionMagic.MotionMagicAcceleration = ClimberConstants.MM_ACCELERATION;
@@ -86,7 +86,7 @@ public class Climber extends SubsystemBase {
   // Moves climber down to setpoint
   public void climb() {
     if (LNNOverride.getAsBoolean()) return;
-    this.targetPositionRotations = ClimberConstants.CLIMB_ROTATIONS; 
+    this.targetPositionRotations = ClimberConstants.CLIMB_ROTATIONS;
     climberMotor.setControl(positionRequest.withPosition(targetPositionRotations));
   }
 
@@ -99,7 +99,7 @@ public class Climber extends SubsystemBase {
 
   // Dev control
   public void setManualDutyCycle(double output) {
-    this.targetPositionRotations = climberMotor.getPosition().getValueAsDouble(); 
+    this.targetPositionRotations = climberMotor.getPosition().getValueAsDouble();
     climberMotor.setControl(positionRequest.withPosition(output));
   }
 
@@ -115,7 +115,8 @@ public class Climber extends SubsystemBase {
 
     Logger.recordOutput("Climber/TargetRotations", targetPositionRotations);
     Logger.recordOutput("Climber/ActualRotations", climberMotor.getPosition().getValueAsDouble());
-    Logger.recordOutput("Climber/StatorCurrent", climberMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput(
+        "Climber/StatorCurrent", climberMotor.getStatorCurrent().getValueAsDouble());
   }
 
   public boolean isAtTarget() {

@@ -6,7 +6,6 @@ package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -17,7 +16,6 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -32,8 +30,10 @@ public class Intake extends SubsystemBase {
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride = new LoggedNetworkBoolean("Intake Override", false);
-  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Intake Target Output", 0.0);
+  private final LoggedNetworkBoolean LNNOverride =
+      new LoggedNetworkBoolean("Intake Override", false);
+  private final LoggedNetworkNumber LNNTarget =
+      new LoggedNetworkNumber("Intake Target Output", 0.0);
 
   private double targetDutyCycle = 0;
   private double targetVelocityRPS = 0;
@@ -51,18 +51,18 @@ public class Intake extends SubsystemBase {
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
 
-    config.CurrentLimits
-        .withStatorCurrentLimitEnable(true)
+    config.CurrentLimits.withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(IntakeConstants.STATOR_AMP_LIMIT));
-    config.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(IntakeConstants.PEAK_FORWARD_TORQUE_CURRENT));
+    config.TorqueCurrent.withPeakForwardTorqueCurrent(
+        Amps.of(IntakeConstants.PEAK_FORWARD_TORQUE_CURRENT));
 
     config.Slot0.kS = IntakeConstants.PID_KS;
     config.Slot0.kV = IntakeConstants.PID_KV;
     config.Slot0.kP = IntakeConstants.PID_KP;
 
-    config.MotionMagic
-        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(IntakeConstants.MM_ACCELERATION)); 
-        //.withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IntakeConstants.MM_JERK)); 
+    config.MotionMagic.withMotionMagicAcceleration(
+        RotationsPerSecondPerSecond.of(IntakeConstants.MM_ACCELERATION));
+    // .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IntakeConstants.MM_JERK));
 
     applyConfig(config);
   }
@@ -85,7 +85,7 @@ public class Intake extends SubsystemBase {
     this.targetVelocityRPS = IntakeConstants.INTAKE_SPEED;
     intakeMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
   }
-  
+
   // Dev control
   public void setManualDutyCycle(double output) {
     this.targetDutyCycle = output;

@@ -100,7 +100,7 @@ public final class Constants {
     public static final double INTAKE_SPEED = 500;
     public static final int STATOR_AMP_LIMIT = 20;
     public static final int SENSOR_TO_MECH_RATIO = 1; // TODO: set ratio
-    //public static final int MM_VEL_TORQUE_CURRENT_FOC = -1; // TODO: set current
+    // public static final int MM_VEL_TORQUE_CURRENT_FOC = -1; // TODO: set current
     public static final int PEAK_FORWARD_TORQUE_CURRENT = 40;
     public static final double MM_ACCELERATION = 360.0;
     public static final double MM_JERK = 0.0; // not used
@@ -129,7 +129,7 @@ public final class Constants {
     public static final double PID_KI = 0.0; // not used
     public static final double PID_KD = 0.05;
     public static final double MIN_ROTATION = 0.0;
-    public static final double MAX_ROTATION = 4.9; 
+    public static final double MAX_ROTATION = 4.9;
     public static final double MAX_SHOT_ANGLE = 90.0;
     public static final double MIN_SHOT_ANGLE = 45.0;
   }
@@ -137,7 +137,7 @@ public final class Constants {
   public final class IntakeExtensionConstants {
     public static final int MOTOR = -1; // TODO: set motor ID
     public static final int ENCODER = -1; // TODO: set encoder ID
-    
+
     public static final double PEAK_FORWARD_TORQUE_CURRENT = 0;
     public static final double PEAK_REVERSE_TORQUE_CURRENT = 0;
     public static final double STATOR_AMP_LIMIT = 0;
@@ -154,7 +154,6 @@ public final class Constants {
     public static final double TOLERANCE_ROTATIONS = 0;
     public static final double RETRACTED_ROTATIONS = 0;
     public static final double DEPLOYED_ROTATIONS = 0;
-    
   }
 
   public final class ClimberConstants {
@@ -176,7 +175,6 @@ public final class Constants {
     public static final double TOLERANCE_ROTATIONS = 0;
     public static final double CLIMB_ROTATIONS = 0;
     public static final double PREPARE_ROTATIONS = 0;
-    
   }
 
   public final class TowerConstants {
@@ -216,7 +214,6 @@ public final class Constants {
     public static final double DEPLOYED_ROTATIONS = 0;
     public static final double RETRACTED_ROTATIONS = 0;
     public static final double TOLERANCE_ROTATIONS = 0;
-
   }
 
   public final class MidSystemConstants {

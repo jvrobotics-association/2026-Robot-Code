@@ -6,7 +6,6 @@ package frc.robot.subsystems.indexer;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -16,10 +15,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TowerConstants;
-
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -29,13 +26,15 @@ public class Tower extends SubsystemBase {
   private final TalonFX towerMotor = new TalonFX(TowerConstants.MOTOR, "rio");
 
   /* Control Requests */
-  private final MotionMagicVelocityTorqueCurrentFOC velocityRequest = new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
+  private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
+      new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride = new LoggedNetworkBoolean("Tower Override", false);
+  private final LoggedNetworkBoolean LNNOverride =
+      new LoggedNetworkBoolean("Tower Override", false);
   private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Tower Manual Duty", 0.0);
-  
+
   private double targetVelocityRPS = 0;
 
   /** Creates a new Tower. */
@@ -48,23 +47,23 @@ public class Tower extends SubsystemBase {
 
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
         .withSensorToMechanismRatio(TowerConstants.SENSOR_TO_MECH_RATIO);
-    
-    config.MotorOutput
-        .withNeutralMode(NeutralModeValue.Coast) 
+
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.Clockwise_Positive); // TODO: VERIFY
-    
-    config.TorqueCurrent.withPeakForwardTorqueCurrent(Amps.of(TowerConstants.FORWARD_TORQUE_AMPS_LIMIT));
+
+    config.TorqueCurrent.withPeakForwardTorqueCurrent(
+        Amps.of(TowerConstants.FORWARD_TORQUE_AMPS_LIMIT));
     config.CurrentLimits.withStatorCurrentLimit(Amps.of(TowerConstants.STATOR_AMP_LIMIT))
-                        .withStatorCurrentLimitEnable(true);
+        .withStatorCurrentLimitEnable(true);
 
     config.Slot0.kP = TowerConstants.PID_KP;
     config.Slot0.kS = TowerConstants.PID_KS;
     config.Slot0.kV = TowerConstants.PID_KV;
 
     // Motion Magic Profile
-    config.MotionMagic
-        .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(TowerConstants.MM_ACCELERATION));
-        applyConfig(config);
+    config.MotionMagic.withMotionMagicAcceleration(
+        RotationsPerSecondPerSecond.of(TowerConstants.MM_ACCELERATION));
+    applyConfig(config);
   }
 
   private void applyConfig(TalonFXConfiguration config) {
@@ -94,7 +93,7 @@ public class Tower extends SubsystemBase {
     towerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
   }
 
-  // Dev 
+  // Dev
   public void setManualDutyCycle(double output) {
     this.targetVelocityRPS = 0;
     towerMotor.setControl(velocityRequest.withVelocity(output));

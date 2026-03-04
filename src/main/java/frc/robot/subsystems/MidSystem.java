@@ -55,19 +55,19 @@ public class MidSystem extends SubsystemBase {
   // Target State
   private Translation3d currentTarget;
   private double currentTowerRPS = 0;
-  private boolean isClimbPrepared = false; 
+  private boolean isClimbPrepared = false;
 
   public MidSystem(
-      Shooter shooter, 
-      ShooterPitch pitch, 
-      Indexer indexer, 
+      Shooter shooter,
+      ShooterPitch pitch,
+      Indexer indexer,
       Tower tower,
-      Drive drive, 
+      Drive drive,
       Intake intake,
       IntakeExtension intakeExt,
       Hopper hopper,
       Climber climber) {
-    
+
     this.shooter = shooter;
     this.pitch = pitch;
     this.indexer = indexer;
@@ -77,7 +77,7 @@ public class MidSystem extends SubsystemBase {
     this.intakeExt = intakeExt;
     this.hopper = hopper;
     this.climber = climber;
-    
+
     this.robotPoseSupplier = drive::getPose;
     this.robotSpeedSupplier = drive::getChassisSpeeds;
 
@@ -95,47 +95,62 @@ public class MidSystem extends SubsystemBase {
   private boolean inScoringArea() {
     boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
     return isBlue
-            && robotPoseSupplier.get().getMeasureX().lt(FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2)))
+            && robotPoseSupplier
+                .get()
+                .getMeasureX()
+                .lt(FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2)))
         || !isBlue
-            && robotPoseSupplier.get().getMeasureX().gt(FieldConstants.FIELD_LENGTH.minus(FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2))));
+            && robotPoseSupplier
+                .get()
+                .getMeasureX()
+                .gt(
+                    FieldConstants.FIELD_LENGTH.minus(
+                        FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2))));
   }
 
   private double calculatePitchRotations(double targetAngleDegrees) {
-    if (ShooterPitchConstants.MAX_SHOT_ANGLE == ShooterPitchConstants.MIN_SHOT_ANGLE) return 0; 
+    if (ShooterPitchConstants.MAX_SHOT_ANGLE == ShooterPitchConstants.MIN_SHOT_ANGLE) return 0;
 
-    double slope = (ShooterPitchConstants.MIN_ROTATION - ShooterPitchConstants.MAX_ROTATION) 
-                 / (ShooterPitchConstants.MAX_SHOT_ANGLE - ShooterPitchConstants.MIN_SHOT_ANGLE);
-    
-    double rawRotations = ShooterPitchConstants.MAX_ROTATION + slope * (targetAngleDegrees - ShooterPitchConstants.MIN_SHOT_ANGLE);
-    return MathUtil.clamp(rawRotations, ShooterPitchConstants.MIN_ROTATION, ShooterPitchConstants.MAX_ROTATION);
+    double slope =
+        (ShooterPitchConstants.MIN_ROTATION - ShooterPitchConstants.MAX_ROTATION)
+            / (ShooterPitchConstants.MAX_SHOT_ANGLE - ShooterPitchConstants.MIN_SHOT_ANGLE);
+
+    double rawRotations =
+        ShooterPitchConstants.MAX_ROTATION
+            + slope * (targetAngleDegrees - ShooterPitchConstants.MIN_SHOT_ANGLE);
+    return MathUtil.clamp(
+        rawRotations, ShooterPitchConstants.MIN_ROTATION, ShooterPitchConstants.MAX_ROTATION);
   }
 
   @Override
   public void periodic() {
     // Auto-Spooling when in scoring area
     if (inScoringArea() && !isClimbPrepared) {
-      LaunchCalc launchData = ControlCalculations.MultiShot(
+      LaunchCalc launchData =
+          ControlCalculations.MultiShot(
               robotPoseSupplier.get(), robotSpeedSupplier.get(), currentTarget, 3);
 
-      double targetVelocityRPS = launchData.shooterVelocity() / ShooterConstants.FLYWHEEL_CIRCUMFERENCE;
+      double targetVelocityRPS =
+          launchData.shooterVelocity() / ShooterConstants.FLYWHEEL_CIRCUMFERENCE;
       double targetPitchRotations = calculatePitchRotations(launchData.shooterPitch());
 
       shooter.setTargetVelocity(targetVelocityRPS);
       pitch.setTargetPosition(targetPitchRotations);
-      
+
       // Calculate Tower speed (50% less than shooter)
       currentTowerRPS = targetVelocityRPS * 0.5;
     } else {
       shooter.stop();
-      pitch.setTargetPosition(0); 
+      pitch.setTargetPosition(0);
       currentTowerRPS = 0;
     }
   }
 
   private boolean isRobotAimed() {
     Pose2d pose = robotPoseSupplier.get();
-    Rotation2d desiredAngle = new Rotation2d(currentTarget.getX() - pose.getX(), currentTarget.getY() - pose.getY());
-    double errorDegrees = Math.abs(desiredAngle.minus(pose.getRotation()).getDegrees()); 
+    Rotation2d desiredAngle =
+        new Rotation2d(currentTarget.getX() - pose.getX(), currentTarget.getY() - pose.getY());
+    double errorDegrees = Math.abs(desiredAngle.minus(pose.getRotation()).getDegrees());
     return errorDegrees < MidSystemConstants.AIM_TOLERANCE_DEGREES;
   }
 
@@ -146,7 +161,7 @@ public class MidSystem extends SubsystemBase {
     Trigger resetGyroTrigger = controller.b();
     Trigger lockPositionTrigger = controller.x();
     Trigger aimTrigger = controller.povRight();
-    Trigger climbTrigger = controller.y(); 
+    Trigger climbTrigger = controller.y();
 
     // DRIVE BINDINGS
     drive.setDefaultCommand(
@@ -156,7 +171,9 @@ public class MidSystem extends SubsystemBase {
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
 
-    Supplier<Rotation2d> targetAngleSupplier = () -> new Rotation2d(
+    Supplier<Rotation2d> targetAngleSupplier =
+        () ->
+            new Rotation2d(
                 currentTarget.getX() - robotPoseSupplier.get().getX(),
                 currentTarget.getY() - robotPoseSupplier.get().getY());
 
@@ -168,15 +185,14 @@ public class MidSystem extends SubsystemBase {
             targetAngleSupplier));
 
     // SHOOTING BINDINGS
-    Trigger readyToFire = shootTrigger.and(shooter::readyToShoot).and(pitch::readyToShoot).and(this::isRobotAimed);
-    
+    Trigger readyToFire =
+        shootTrigger.and(shooter::readyToShoot).and(pitch::readyToShoot).and(this::isRobotAimed);
+
     // When ready to fire, spin both Indexer and Tower
     readyToFire.whileTrue(
         Commands.parallel(
             Commands.startEnd(indexer::feed, indexer::stop, indexer),
-            Commands.startEnd(() -> tower.setVelocity(currentTowerRPS), tower::stop, tower)
-        )
-    );
+            Commands.startEnd(() -> tower.setVelocity(currentTowerRPS), tower::stop, tower)));
 
     // INTAKE BINDINGS
     intakeTrigger.whileTrue(Commands.startEnd(intake::startIntake, intake::stopIntake, intake));
@@ -186,38 +202,36 @@ public class MidSystem extends SubsystemBase {
     isEnabled.onTrue(
         Commands.parallel(
             Commands.runOnce(intakeExt::deploy, intakeExt),
-            Commands.runOnce(hopper::deploy, hopper)
-        )
-    );
+            Commands.runOnce(hopper::deploy, hopper)));
 
     // ENDGAME CLIMB SEQUENCE
     // Stage 1: Retract Intake/Hopper -> Wait for them to finish -> Prepare Climber
-    Command prepareClimbCommand = Commands.sequence(
-        Commands.parallel(
-            Commands.runOnce(intakeExt::retract, intakeExt),
-            Commands.runOnce(hopper::retract, hopper)
-        ),
-        //  Wait until mechanisms are physically out of the way before moving the climber arm
-        Commands.waitUntil(() -> intakeExt.isAtTarget() && hopper.isAtTarget()),
-        Commands.runOnce(climber::prepareToClimb, climber),
-        Commands.runOnce(() -> isClimbPrepared = true) 
-    );
+    Command prepareClimbCommand =
+        Commands.sequence(
+            Commands.parallel(
+                Commands.runOnce(intakeExt::retract, intakeExt),
+                Commands.runOnce(hopper::retract, hopper)),
+            //  Wait until mechanisms are physically out of the way before moving the climber arm
+            Commands.waitUntil(() -> intakeExt.isAtTarget() && hopper.isAtTarget()),
+            Commands.runOnce(climber::prepareToClimb, climber),
+            Commands.runOnce(() -> isClimbPrepared = true));
 
     // Stage 2: Pull the robot up
-    Command executeClimbCommand = Commands.sequence(
-        Commands.runOnce(climber::climb, climber),
-        Commands.runOnce(() -> isClimbPrepared = false) 
-    );
+    Command executeClimbCommand =
+        Commands.sequence(
+            Commands.runOnce(climber::climb, climber),
+            Commands.runOnce(() -> isClimbPrepared = false));
 
     // If 'isClimbPrepared' is false, run Stage 1. If it's true, run Stage 2.
     climbTrigger.onTrue(
-        Commands.either(executeClimbCommand, prepareClimbCommand, () -> isClimbPrepared)
-    );
+        Commands.either(executeClimbCommand, prepareClimbCommand, () -> isClimbPrepared));
 
     // util
     lockPositionTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
     resetGyroTrigger.onTrue(
-        Commands.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)), drive)
+        Commands.runOnce(
+                () -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+                drive)
             .ignoringDisable(true));
   }
 }
