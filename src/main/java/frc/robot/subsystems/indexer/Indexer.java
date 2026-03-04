@@ -8,12 +8,12 @@ import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IndexerConstants;
@@ -23,11 +23,10 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Indexer extends SubsystemBase {
   /* Hardware */
-  private final TalonFX indexerMotor = new TalonFX(IndexerConstants.INDEXER_MOTOR, "rio");
+  private final TalonFXS indexerMotor = new TalonFXS(IndexerConstants.INDEXER_MOTOR, "rio");
 
   /* Control Requests */
-  private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
-      new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
+  private final MotionMagicVelocityVoltage velocityRequest = new MotionMagicVelocityVoltage(0).withSlot(0);
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
@@ -42,14 +41,10 @@ public class Indexer extends SubsystemBase {
   }
 
   private void configureHardware() {
-    TalonFXConfiguration config = new TalonFXConfiguration();
+    TalonFXSConfiguration config = new TalonFXSConfiguration();
 
-    config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-        .withSensorToMechanismRatio(IndexerConstants.SENSOR_TO_MECH_RATIO);
-
-    config.MotorOutput.withNeutralMode(
-            NeutralModeValue.Coast) // TODO: COAST TO PREVENT WEAR OR BRAKE TO STOP FASTER
-        .withInverted(InvertedValue.Clockwise_Positive);
+    config.Commutation.withMotorArrangement(MotorArrangementValue.Minion_JST);
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Coast); // TODO: COAST TO PREVENT WEAR OR BRAKE TO STOP FASTER
 
     config.Slot0.kP = IndexerConstants.PID_KP;
     config.Slot0.kI = IndexerConstants.PID_KI;
@@ -61,19 +56,20 @@ public class Indexer extends SubsystemBase {
             RotationsPerSecondPerSecond.of(IndexerConstants.MM_ACCELERATION))
         .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IndexerConstants.MM_JERK));
 
-    config.TorqueCurrent.withPeakForwardTorqueCurrent(
-        Amps.of(IndexerConstants.FORWARD_TORQUE_AMPS_LIMIT));
     config.CurrentLimits.withStatorCurrentLimit(Amps.of(IndexerConstants.STATOR_AMP_LIMIT))
         .withStatorCurrentLimitEnable(true);
 
     applyConfig(config);
   }
 
-  private void applyConfig(TalonFXConfiguration config) {
+  private void applyConfig(TalonFXSConfiguration config) {
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       status = indexerMotor.getConfigurator().apply(config);
       if (status.isOK()) break;
+    }
+    if (!status.isOK()) {
+      System.out.println("Could not apply Indexer motor config, error: " + status.toString());
     }
   }
 
