@@ -97,7 +97,7 @@ public class Tower extends SubsystemBase {
   // Dev 
   public void setManualDutyCycle(double output) {
     this.targetVelocityRPS = 0;
-    towerMotor.setControl(dutyCycleRequest.withOutput(output));
+    towerMotor.setControl(velocityRequest.withVelocity(output));
   }
 
   public void stop() {
