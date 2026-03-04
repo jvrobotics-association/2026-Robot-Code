@@ -9,8 +9,6 @@ package frc.robot.util;
 
 import static edu.wpi.first.units.Units.Inches;
 
-import com.fasterxml.jackson.databind.jsontype.impl.StdTypeResolverBuilder;
-
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -50,10 +48,7 @@ public final class Constants {
 
     public static final double PID_KS = 0.0;
     public static final double PID_KV = 0.0;
-    public static final double PID_KA = 0.0;
     public static final double PID_KP = 0.0;
-    public static final double PID_KI = 0.0;
-    public static final double PID_KD = 0.0;
   }
 
   public final class ShooterConstants {
@@ -61,10 +56,7 @@ public final class Constants {
       public static final int CAN_ID = 30;
       public static final double PID_KS = 0.0;
       public static final double PID_KV = 0.0;
-      public static final double PID_KA = 0.0;
       public static final double PID_KP = 0.0;
-      public static final double PID_KI = 0.0;
-      public static final double PID_KD = 0.0;
 
       public static final double SENSOR_TO_MECH = 1;
 
@@ -79,10 +71,7 @@ public final class Constants {
       public static final int CAN_ID = 40;
       public static final double PID_KS = 0.0;
       public static final double PID_KV = 0.0;
-      public static final double PID_KA = 0.0;
       public static final double PID_KP = 0.0;
-      public static final double PID_KI = 0.0;
-      public static final double PID_KD = 0.0;
 
       public static final double SENSOR_TO_MECH = 1;
 
@@ -118,9 +107,7 @@ public final class Constants {
     public static final double MM_JERK = 0.0;
     public static final double PID_KS = 0.0;
     public static final double PID_KV = 0.0;
-    public static final double PID_KA = 0.0;
     public static final double PID_KP = 0.0;
-    public static final double PID_KI = 0.0;
     public static final double PID_KD = 0.0;
     public static final double MIN_POSITION = 0;
     public static final double MAX_POSITION = -4.976562;

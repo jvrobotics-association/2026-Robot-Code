@@ -58,10 +58,7 @@ public class Intake extends SubsystemBase {
 
     config.Slot0.kS = IntakeConstants.PID_KS;
     config.Slot0.kV = IntakeConstants.PID_KV;
-    config.Slot0.kA = IntakeConstants.PID_KA;
     config.Slot0.kP = IntakeConstants.PID_KP;
-    config.Slot0.kI = IntakeConstants.PID_KI;
-    config.Slot0.kD = IntakeConstants.PID_KD;
 
     config.MotionMagic
         .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(IntakeConstants.MM_ACCELERATION)); 

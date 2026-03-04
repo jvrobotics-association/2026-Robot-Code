@@ -60,7 +60,6 @@ public class IntakeExtension extends SubsystemBase {
     //config.MotionMagic.MotionMagicJerk = IntakeExtensionConstants.MM_JERK;
 
     config.Slot0.kP = IntakeExtensionConstants.PID_KP;
-    config.Slot0.kI = IntakeExtensionConstants.PID_KI;
     config.Slot0.kD = IntakeExtensionConstants.PID_KD;
     config.Slot0.kS = IntakeExtensionConstants.PID_KS;
     config.Slot0.kV = IntakeExtensionConstants.PID_KV;

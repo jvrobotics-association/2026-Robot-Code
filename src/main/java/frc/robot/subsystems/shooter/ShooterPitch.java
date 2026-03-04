@@ -55,7 +55,6 @@ public class ShooterPitch extends SubsystemBase {
 
     // TODO: Voltage Condigs? External Feedback configs?
     config.Slot0.kP = ShooterPitchConstants.PID_KP;
-    //config.Slot0.kI = ShooterPitchConstants.PID_KI;
     config.Slot0.kD = ShooterPitchConstants.PID_KD;
     config.Slot0.kS = ShooterPitchConstants.PID_KS;
     config.Slot0.kV = ShooterPitchConstants.PID_KV;

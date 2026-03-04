@@ -47,8 +47,6 @@ public class Indexer extends SubsystemBase {
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast); // TODO: COAST TO PREVENT WEAR OR BRAKE TO STOP FASTER
 
     config.Slot0.kP = IndexerConstants.PID_KP;
-    config.Slot0.kI = IndexerConstants.PID_KI;
-    config.Slot0.kD = IndexerConstants.PID_KD;
     config.Slot0.kS = IndexerConstants.PID_KS;
     config.Slot0.kV = IndexerConstants.PID_KV;
 
