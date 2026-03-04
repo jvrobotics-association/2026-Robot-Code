@@ -158,17 +158,65 @@ public final class Constants {
   }
 
   public final class ClimberConstants {
-    public static final int LEFT_MOTOR = -1; // TODO: set left motor ID
-    public static final int LEFT_ENCODER = -1; // TODO: set encoder ID
-    public static final int RIGHT_MOTOR = -1; // TODO: set right motor ID
-    public static final int RIGHT_ENCODER = -1; // TODO: set encoder ID
-    public static final int CLIMBER_POSITION = -1; // TODO: set position
-    public static final int MM_ACCELERATION = -1; // TODO: set value
-    public static final int MM_CRUISE_VEL = -1; // TODO: set value
-    public static final int STATOR_AMPS = 20;
-    public static final int STATOR_CURRENT_LIMIT = 50;
-    public static final int FORWARD_TORQUE_AMPS_LIMIT = 40;
-    public static final int SENSOR_TO_MECH_RATIO = -1; // TODO: set ratio
+    public static final int MOTOR = -1;
+
+    public static final double STATOR_AMP_LIMIT = 0;
+    public static final double PEAK_FORWARD_TORQUE_CURRENT = 0;
+    public static final double PEAK_REVERSE_TORQUE_CURRENT = 0;
+    public static final double SENSOR_TO_MECH_RATIO = 1;
+
+    public static final double MM_CRUISE_VEL = 0;
+    public static final double MM_ACCELERATION = 0;
+
+    public static final double PID_KP = 0;
+    public static final double PID_KD = 0;
+    public static final double PID_KS = 0;
+    public static final double PID_KV = 0;
+
+    public static final double TOLERANCE_ROTATIONS = 0;
+    public static final double CLIMB_ROTATIONS = 0;
+    public static final double PREPARE_ROTATIONS = 0;
+    
+  }
+
+  public final class TowerConstants {
+
+    public static final int MOTOR = -1;
+
+    public static final double SENSOR_TO_MECH_RATIO = 1;
+    public static final double FORWARD_TORQUE_AMPS_LIMIT = 40;
+    public static final double STATOR_AMP_LIMIT = 50;
+
+    public static final double PID_KP = 0;
+    public static final double PID_KS = 0;
+    public static final double PID_KV = 0;
+
+    public static final double MM_ACCELERATION = 0;
+
+    public static final double TOWER_SPEED = 0;
+  }
+
+  public final class HopperConstants {
+
+    public static final int MOTOR = 0;
+
+    public static final double SENSOR_TO_MECH_RATIO = 1;
+    public static final double STATOR_AMP_LIMIT = 40;
+    public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
+    public static final double PEAK_REVERSE_TORQUE_CURRENT = 40;
+
+    public static final double MM_CRUISE_VEL = 0;
+    public static final double MM_ACCELERATION = 0;
+
+    public static final double PID_KP = 0;
+    public static final double PID_KD = 0;
+    public static final double PID_KV = 0;
+    public static final double PID_KS = 0;
+
+    public static final double DEPLOYED_ROTATIONS = 0;
+    public static final double RETRACTED_ROTATIONS = 0;
+    public static final double TOLERANCE_ROTATIONS = 0;
+
   }
 
   public final class MidSystemConstants {

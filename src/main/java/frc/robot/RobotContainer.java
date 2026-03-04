@@ -8,16 +8,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.MidSystem;
@@ -28,6 +20,9 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.Tower;
+import frc.robot.subsystems.intake.Hopper;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeExtension;
 import frc.robot.subsystems.shooter.Shooter;
@@ -40,42 +35,31 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-
 public class RobotContainer {
 
   // Subsystems
   private final Drive drive;
   private final Shooter shooter;
-  private final Intake intake;
-  private final Climber climber;
   private final ShooterPitch pitch;
-  private final MidSystem midSystem;
+  private final Indexer indexer;
+  private final Tower tower;
+  private final Intake intake;
   private final IntakeExtension intakeExt;
-
-  // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
-
-  // Binding
-  private final Trigger shootTrigger =
-      controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD);
-  private final Trigger intakeTrigger =
-      controller.leftTrigger(ControllerConstants.TRIGGER_THRESHOLD);
-  private final Trigger resetGyroTrigger = controller.b();
-  private final Trigger lock0DriveTrigger = controller.a();
-  private final Trigger lockPositionTrigger = controller.x();
-  private final Trigger climbTrigger = controller.y();
-  private final Trigger aimTrigger = controller.povRight();
+  private final Hopper hopper;
+  private final Climber climber;
+  
+  // Superstructure
+  private final MidSystem midSystem;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
-        // a CANcoder
         drive =
             new Drive(
                 new GyroIOPigeon2(),
@@ -84,12 +68,17 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
         shooter = new Shooter();
-        intake = new Intake();
-        climber = new Climber();
         pitch = new ShooterPitch();
+        indexer = new Indexer();
+        tower = new Tower();
+        intake = new Intake();
         intakeExt = new IntakeExtension();
-        midSystem = new MidSystem(shooter, pitch, null, drive, intake, intakeExt);
+        hopper = new Hopper();
+        climber = new Climber();
+        
+        midSystem = new MidSystem(shooter, pitch, indexer, tower, drive, intake, intakeExt, hopper, climber);
         break;
+
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         drive =
@@ -100,11 +89,15 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
         shooter = new Shooter();
-        intake = new Intake();
-        climber = new Climber();
         pitch = new ShooterPitch();
+        indexer = new Indexer();
+        tower = new Tower();
+        intake = new Intake();
         intakeExt = new IntakeExtension();
-        midSystem = new MidSystem(shooter, pitch, null, drive, intake, intakeExt);
+        hopper = new Hopper();
+        climber = new Climber();
+        
+        midSystem = new MidSystem(shooter, pitch, indexer, tower, drive, intake, intakeExt, hopper, climber);
         break;
 
       default:
@@ -117,16 +110,22 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         shooter = new Shooter();
-        intake = new Intake();
-        climber = new Climber();
         pitch = new ShooterPitch();
+        indexer = new Indexer();
+        tower = new Tower();
+        intake = new Intake();
         intakeExt = new IntakeExtension();
-        midSystem = new MidSystem(null, null, null, null, null, null);
+        hopper = new Hopper();
+        climber = new Climber();
+        
+        // Pass nulls or empty shells for Replay mode depending on your AdvantageKit setup
+        midSystem = new MidSystem(null, null, null, null, null, null, null, null, null);
         break;
     }
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    
     // Set up SysId routines
     autoChooser.addOption(
         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
@@ -142,53 +141,6 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-    // Configure the button bindings
-    configureButtonBindings();
-  }
-
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
-    // Default command, normal field-relative drive
-    drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
-    lock0DriveTrigger.whileTrue(
-        DriveCommands.joystickDriveAtAngle(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> Rotation2d.kZero));
-    lockPositionTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
-    resetGyroTrigger.onTrue(
-        Commands.runOnce(
-                () -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                drive)
-            .ignoringDisable(true));
-
-    // shootTrigger.whileTrue(
-    //     //   Commands.parallel(
-    //     //     Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(),
-    // shooter),
-    //     //     Commands.runEnd(() -> pitch.setAngle(30.0), () -> pitch.setAngle(0.0), pitch)
-    //     //  )
-    //     Commands.runEnd(() -> shooter.startShooter(), () -> shooter.stopShooter(), shooter));
-    // controller.leftTrigger(0.25).whileTrue(() -> intake.runIntake(intake));
-    // intakeTrigger.whileTrue(
-    //     Commands.runEnd(() -> intake.startIntake(), () -> intake.stopIntake(), intake));
-
-    // shootTrigger.whileTrue(
-    //     Commands.sequence(
-    //         Commands.runOnce(() -> pitch.setAngle(10.0), pitch),
-    //         Commands.runOnce(() -> pitch.setAngle(10.0), pitch)));
   }
 
   /**
