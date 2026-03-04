@@ -91,7 +91,7 @@ public class Indexer extends SubsystemBase {
   // Manual Control for Dev
   public void setManualDutyCycle(double output) {
     this.targetVelocityRPS = 0;
-    indexerMotor.setControl(dutyCycleRequest.withOutput(output));
+    indexerMotor.setControl(velocityRequest.withVelocity(output));
   }
 
   public void stop() {

@@ -10,6 +10,7 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -100,7 +101,7 @@ public class IntakeExtension extends SubsystemBase {
   // DEV
   public void setManualDutyCycle(double output) {
     this.targetPositionRotations = extensionMotor.getPosition().getValueAsDouble(); 
-    extensionMotor.setControl(dutyCycleRequest.withOutput(output));
+    extensionMotor.setControl(positionRequest.withPosition(output));
   }
 
   public void stop() {

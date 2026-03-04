@@ -92,7 +92,7 @@ public class Intake extends SubsystemBase {
   // Dev control
   public void setManualDutyCycle(double output) {
     this.targetDutyCycle = output;
-    intakeMotor.setControl(dutyCycleRequest.withOutput(targetDutyCycle));
+    intakeMotor.setControl(velocityRequest.withVelocity(output));
   }
 
   public void stopIntake() {

@@ -121,8 +121,8 @@ public class Shooter extends SubsystemBase {
   /** Sets open-loop duty cycle (for testing/override). */
   public void setDutyCycle(double output) {
     this.targetVelocityRPS = 0; // Invalidate velocity setpoint
-    leftMotor.setControl(leftDutyCycleRequest.withOutput(output));
-    rightMotor.setControl(rightDutyCycleRequest.withOutput(output));
+    leftMotor.setControl(leftVelocityRequest.withVelocity(output));
+    rightMotor.setControl(rightVelocityRequest.withVelocity(output));
   }
 
   public void stop() {

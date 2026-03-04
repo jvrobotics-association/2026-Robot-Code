@@ -100,7 +100,7 @@ public class Hopper extends SubsystemBase {
   // DEV - manual control
   public void setManualDutyCycle(double output) {
     this.targetPositionRotations = hopperMotor.getPosition().getValueAsDouble(); 
-    hopperMotor.setControl(dutyCycleRequest.withOutput(output));
+    hopperMotor.setControl(positionRequest.withPosition(output));
   }
 
   public void stop() {

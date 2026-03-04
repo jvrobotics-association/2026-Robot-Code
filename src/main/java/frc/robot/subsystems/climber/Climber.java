@@ -100,7 +100,7 @@ public class Climber extends SubsystemBase {
   // Dev control
   public void setManualDutyCycle(double output) {
     this.targetPositionRotations = climberMotor.getPosition().getValueAsDouble(); 
-    climberMotor.setControl(dutyCycleRequest.withOutput(output));
+    climberMotor.setControl(positionRequest.withPosition(output));
   }
 
   public void stop() {
