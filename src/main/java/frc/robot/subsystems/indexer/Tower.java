@@ -5,7 +5,6 @@
 package frc.robot.subsystems.indexer;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -56,13 +55,13 @@ public class Tower extends SubsystemBase {
     config.CurrentLimits.withStatorCurrentLimit(Amps.of(TowerConstants.STATOR_AMP_LIMIT))
         .withStatorCurrentLimitEnable(true);
 
-    config.Slot0.kP = TowerConstants.PID_KP;
-    config.Slot0.kS = TowerConstants.PID_KS;
-    config.Slot0.kV = TowerConstants.PID_KV;
+    // config.Slot0.kP = TowerConstants.PID_KP;
+    // config.Slot0.kS = TowerConstants.PID_KS;
+    // config.Slot0.kV = TowerConstants.PID_KV;
 
     // Motion Magic Profile
-    config.MotionMagic.withMotionMagicAcceleration(
-        RotationsPerSecondPerSecond.of(TowerConstants.MM_ACCELERATION));
+    // config.MotionMagic.withMotionMagicAcceleration(
+    //    RotationsPerSecondPerSecond.of(TowerConstants.MM_ACCELERATION));
     applyConfig(config);
   }
 
@@ -81,7 +80,7 @@ public class Tower extends SubsystemBase {
   public void feed() {
     if (LNNOverride.getAsBoolean()) return;
 
-    this.targetVelocityRPS = TowerConstants.TOWER_SPEED;
+    this.targetVelocityRPS = 0; // TowerConstants.TOWER_SPEED;
     towerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
   }
 
@@ -89,14 +88,14 @@ public class Tower extends SubsystemBase {
   public void setVelocity(double velocityRPS) {
     if (LNNOverride.getAsBoolean()) return;
 
-    this.targetVelocityRPS = velocityRPS;
-    towerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
+    this.targetVelocityRPS = 0; // velocityRPS;
+    // towerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
   }
 
   // Dev
   public void setManualDutyCycle(double output) {
     this.targetVelocityRPS = 0;
-    towerMotor.setControl(velocityRequest.withVelocity(output));
+    // towerMotor.setControl(dutyCycleRequest.withOutput(output));
   }
 
   public void stop() {

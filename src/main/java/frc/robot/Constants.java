@@ -179,7 +179,7 @@ public final class Constants {
 
   public final class TowerConstants {
 
-    public static final int MOTOR = -1;
+    public static final int MOTOR = 3;
 
     public static final double SENSOR_TO_MECH_RATIO = 1;
     public static final double FORWARD_TORQUE_AMPS_LIMIT = 40;
