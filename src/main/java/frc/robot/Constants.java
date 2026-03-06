@@ -36,6 +36,7 @@ public final class Constants {
   }
 
   public final class IndexerConstants {
+    public static final int CAN_ID = 10;
     public static final int INDEXER_MOTOR = -1;
     public static final double INDEXER_SPEED = 0.5; // TODO: set speed
 
@@ -57,29 +58,24 @@ public final class Constants {
   public final class ShooterConstants {
     public final class LeftMotor {
       public static final int CAN_ID = 30;
-      public static final double PID_KS = 0.0;
-      public static final double PID_KV = 0.0;
-      public static final double PID_KA = 0.0;
-      public static final double PID_KP = 0.0;
-      public static final double PID_KI = 0.0;
-      public static final double PID_KD = 0.0;
+      public static final double PID_KS = 0.32;
+      public static final double PID_KV = 0.11;
+      public static final double PID_KP = 9.5;
 
       public static final double SENSOR_TO_MECH = 1.333;
 
       public static final double STATOR_AMP_LIMIT = 20;
       public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
 
-      public static final double MM_ACCELERATION = 10;
-      public static final double MM_JERK = 100;
+      public static final double MM_ACCELERATION = 80;
+      public static final double MM_JERK = 0;
     }
 
     public final class RightMotor {
       public static final int CAN_ID = 40;
-      public static final double PID_KS = 0.0;
-      public static final double PID_KV = 0.0;
-      public static final double PID_KA = 0.0;
-      public static final double PID_KP = 0.0;
-      public static final double PID_KI = 0.0;
+      public static final double PID_KS = 0.32;
+      public static final double PID_KV = 0.11;
+      public static final double PID_KP = 9.5;
       public static final double PID_KD = 0.0;
 
       public static final double SENSOR_TO_MECH = 1;
@@ -87,8 +83,8 @@ public final class Constants {
       public static final double STATOR_AMP_LIMIT = 20;
       public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
 
-      public static final double MM_ACCELERATION = 10;
-      public static final double MM_JERK = 100;
+      public static final double MM_ACCELERATION = 80;
+      public static final double MM_JERK = 0;
     }
 
     public static final double SPEED_MOE = 0.05;

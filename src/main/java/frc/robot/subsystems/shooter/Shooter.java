@@ -62,7 +62,6 @@ public class Shooter extends SubsystemBase {
         .withStatorCurrentLimit(Amps.of(ShooterConstants.LeftMotor.STATOR_AMP_LIMIT));
 
     config.Slot0.withKP(ShooterConstants.LeftMotor.PID_KP)
-        .withKI(ShooterConstants.LeftMotor.PID_KI)
         .withKV(ShooterConstants.LeftMotor.PID_KV)
         .withKS(ShooterConstants.LeftMotor.PID_KS);
 
@@ -87,7 +86,6 @@ public class Shooter extends SubsystemBase {
         .withStatorCurrentLimit(Amps.of(ShooterConstants.RightMotor.STATOR_AMP_LIMIT));
 
     config.Slot0.withKP(ShooterConstants.RightMotor.PID_KP)
-        .withKI(ShooterConstants.RightMotor.PID_KI)
         .withKV(ShooterConstants.RightMotor.PID_KV)
         .withKS(ShooterConstants.RightMotor.PID_KS);
 
