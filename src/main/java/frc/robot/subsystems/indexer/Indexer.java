@@ -9,9 +9,9 @@ import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFXS;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,12 +22,11 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Indexer extends SubsystemBase {
   /* Hardware */
-  private final TalonFXS indexerMotor = new TalonFXS(IndexerConstants.INDEXER_MOTOR, "rio");
+  private final TalonFXS indexerMotor = new TalonFXS(IndexerConstants.CAN_ID, "rio");
 
   /* Control Requests */
   private final MotionMagicVelocityVoltage velocityRequest =
       new MotionMagicVelocityVoltage(0).withSlot(0);
-  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
   private final LoggedNetworkBoolean LNNOverride =
@@ -44,19 +43,20 @@ public class Indexer extends SubsystemBase {
     TalonFXSConfiguration config = new TalonFXSConfiguration();
 
     config.Commutation.withMotorArrangement(MotorArrangementValue.Minion_JST);
-    config.MotorOutput.withNeutralMode(
-        NeutralModeValue.Coast); // TODO: COAST TO PREVENT WEAR OR BRAKE TO STOP FASTER
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
+        .withInverted(InvertedValue.CounterClockwise_Positive);
 
-    config.Slot0.kP = IndexerConstants.PID_KP;
-    config.Slot0.kS = IndexerConstants.PID_KS;
-    config.Slot0.kV = IndexerConstants.PID_KV;
+    config.ExternalFeedback.withSensorToMechanismRatio(IndexerConstants.SENSOR_TO_MECH_RATIO);
+    config.CurrentLimits.withStatorCurrentLimit(Amps.of(IndexerConstants.STATOR_AMP_LIMIT))
+        .withStatorCurrentLimitEnable(true);
+
+    config.Slot0.withKP(IndexerConstants.PID_KP)
+        .withKS(IndexerConstants.PID_KS)
+        .withKV(IndexerConstants.PID_KV);
 
     config.MotionMagic.withMotionMagicAcceleration(
             RotationsPerSecondPerSecond.of(IndexerConstants.MM_ACCELERATION))
         .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IndexerConstants.MM_JERK));
-
-    config.CurrentLimits.withStatorCurrentLimit(Amps.of(IndexerConstants.STATOR_AMP_LIMIT))
-        .withStatorCurrentLimitEnable(true);
 
     applyConfig(config);
   }

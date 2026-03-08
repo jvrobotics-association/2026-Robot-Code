@@ -7,26 +7,31 @@ package frc.robot.subsystems.intake;
 import static edu.wpi.first.units.Units.Amps;
 
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeExtensionConstants;
+import frc.robot.Constants.IntakeExtensionConstants.ExtensionEncoder;
+import frc.robot.Constants.IntakeExtensionConstants.ExtensionMotor;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class IntakeExtension extends SubsystemBase {
   /* Hardware */
-  private final TalonFX extensionMotor = new TalonFX(IntakeExtensionConstants.MOTOR, "rio");
+  private final TalonFX extensionMotor = new TalonFX(ExtensionMotor.CAN_ID, "rio");
+  private final CANcoder extensionEncoder = new CANcoder(ExtensionEncoder.CAN_ID, "rio");
 
   /* Control Requests */
   private final MotionMagicTorqueCurrentFOC positionRequest =
       new MotionMagicTorqueCurrentFOC(0).withSlot(0);
-  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
   private final LoggedNetworkBoolean LNNOverride =
@@ -37,45 +42,72 @@ public class IntakeExtension extends SubsystemBase {
   private double targetPositionRotations = 0;
 
   public IntakeExtension() {
-    configureHardware();
+    configureEncoder();
+    configureMotor();
     extensionMotor.setPosition(0);
   }
 
-  private void configureHardware() {
-    TalonFXConfiguration config = new TalonFXConfiguration();
+  private void configureEncoder() {
+    CANcoderConfiguration config = new CANcoderConfiguration();
 
-    config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-        .withSensorToMechanismRatio(IntakeExtensionConstants.SENSOR_TO_MECH_RATIO);
+    config.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive)
+        .withMagnetOffset(ExtensionEncoder.MAGNET_OFFSET)
+        .withAbsoluteSensorDiscontinuityPoint(ExtensionEncoder.ABSOLUTE_SENSOR_DISCONTINUITY);
 
-    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
-    config.CurrentLimits.withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(IntakeExtensionConstants.STATOR_AMP_LIMIT));
-
-    config.TorqueCurrent.withPeakForwardTorqueCurrent(
-            Amps.of(IntakeExtensionConstants.PEAK_FORWARD_TORQUE_CURRENT))
-        .withPeakReverseTorqueCurrent(
-            Amps.of(IntakeExtensionConstants.PEAK_REVERSE_TORQUE_CURRENT));
-
-    config.MotionMagic.MotionMagicCruiseVelocity = IntakeExtensionConstants.MM_CRUISE_VEL;
-    config.MotionMagic.MotionMagicAcceleration = IntakeExtensionConstants.MM_ACCELERATION;
-    // config.MotionMagic.MotionMagicJerk = IntakeExtensionConstants.MM_JERK;
-
-    config.Slot0.kP = IntakeExtensionConstants.PID_KP;
-    config.Slot0.kD = IntakeExtensionConstants.PID_KD;
-    config.Slot0.kS = IntakeExtensionConstants.PID_KS;
-    config.Slot0.kV = IntakeExtensionConstants.PID_KV;
-
-    applyConfig(config);
+    applyEncoderConfig(config);
   }
 
-  private void applyConfig(TalonFXConfiguration config) {
+  private void configureMotor() {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+
+    config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+        .withFeedbackRemoteSensorID(ExtensionEncoder.CAN_ID)
+        .withRotorToSensorRatio(ExtensionMotor.ROTOR_TO_SENSOR_RATIO);
+
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+
+    config.CurrentLimits.withStatorCurrentLimitEnable(true)
+        .withStatorCurrentLimit(Amps.of(ExtensionMotor.STATOR_AMP_LIMIT));
+
+    config.TorqueCurrent.withPeakForwardTorqueCurrent(
+            Amps.of(ExtensionMotor.PEAK_FORWARD_TORQUE_CURRENT))
+        .withPeakReverseTorqueCurrent(Amps.of(ExtensionMotor.PEAK_REVERSE_TORQUE_CURRENT));
+
+    config.MotionMagic.withMotionMagicCruiseVelocity(ExtensionMotor.MM_CRUISE_VEL)
+        .withMotionMagicAcceleration(ExtensionMotor.MM_ACCELERATION);
+
+    config.Slot0.withKP(ExtensionMotor.PID_KP)
+        .withKD(ExtensionMotor.PID_KD)
+        .withKS(ExtensionMotor.PID_KS)
+        .withKV(ExtensionMotor.PID_KV)
+        .withKG(ExtensionMotor.PID_KG)
+        .withGravityType(GravityTypeValue.Arm_Cosine)
+        .withGravityArmPositionOffset(ExtensionMotor.PID_ARM_OFFSET);
+
+    applyMotorConfig(config);
+  }
+
+  private void applyMotorConfig(TalonFXConfiguration config) {
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       status = extensionMotor.getConfigurator().apply(config);
       if (status.isOK()) break;
     }
     if (!status.isOK()) {
-      System.out.println("Could not apply Intake Extension config, error: " + status.toString());
+      System.out.println(
+          "Could not apply Intake Extension motor config, error: " + status.toString());
+    }
+  }
+
+  private void applyEncoderConfig(CANcoderConfiguration config) {
+    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i) {
+      status = extensionEncoder.getConfigurator().apply(config);
+      if (status.isOK()) break;
+    }
+    if (!status.isOK()) {
+      System.out.println(
+          "Could not apply Intake Extension encoder config, error: " + status.toString());
     }
   }
 
@@ -91,14 +123,12 @@ public class IntakeExtension extends SubsystemBase {
     extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
   }
 
-  // PROD
   public void setTargetPosition(double rotations) {
     if (LNNOverride.getAsBoolean()) return;
     this.targetPositionRotations = rotations;
     extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
   }
 
-  // DEV
   public void setManualDutyCycle(double output) {
     this.targetPositionRotations = extensionMotor.getPosition().getValueAsDouble();
     extensionMotor.setControl(positionRequest.withPosition(output));

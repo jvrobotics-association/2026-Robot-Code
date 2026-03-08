@@ -10,7 +10,6 @@ import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -32,9 +31,6 @@ public class Shooter extends SubsystemBase {
       new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
   private final MotionMagicVelocityTorqueCurrentFOC rightVelocityRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
-
-  private final DutyCycleOut leftDutyCycleRequest = new DutyCycleOut(0);
-  private final DutyCycleOut rightDutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
   private final LoggedNetworkBoolean LNNOverride =
@@ -105,13 +101,16 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  /** Sets target velocity and updates the motor control immediately. */
+  /** Sets target velocity */
   public void setTargetVelocity(double velocityRPS) {
     if (LNNOverride.getAsBoolean()) return;
 
     this.targetVelocityRPS = velocityRPS;
-    leftMotor.setControl(leftVelocityRequest.withVelocity(velocityRPS));
-    rightMotor.setControl(rightVelocityRequest.withVelocity(velocityRPS));
+  }
+
+  public void shoot() {
+    leftMotor.setControl(leftVelocityRequest.withVelocity(targetVelocityRPS));
+    rightMotor.setControl(rightVelocityRequest.withVelocity(targetVelocityRPS));
   }
 
   /** Sets open-loop duty cycle (for testing/override). */

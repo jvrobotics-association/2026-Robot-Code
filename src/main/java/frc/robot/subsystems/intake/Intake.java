@@ -6,6 +6,7 @@ package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -13,6 +14,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
@@ -22,7 +24,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Intake extends SubsystemBase {
   /* Hardware */
-  private final TalonFX intakeMotor = new TalonFX(IntakeConstants.MOTOR, "rio");
+  private final TalonFX intakeMotor = new TalonFX(IntakeConstants.CAN_ID, "rio");
 
   /* Control Requests */
   private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
@@ -35,7 +37,6 @@ public class Intake extends SubsystemBase {
   private final LoggedNetworkNumber LNNTarget =
       new LoggedNetworkNumber("Intake Target Output", 0.0);
 
-  private double targetDutyCycle = 0;
   private double targetVelocityRPS = 0;
 
   public Intake() {
@@ -49,20 +50,22 @@ public class Intake extends SubsystemBase {
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
         .withSensorToMechanismRatio(IntakeConstants.SENSOR_TO_MECH_RATIO);
 
-    config.MotorOutput.withNeutralMode(NeutralModeValue.Coast);
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
+        .withInverted(InvertedValue.Clockwise_Positive);
 
     config.CurrentLimits.withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(IntakeConstants.STATOR_AMP_LIMIT));
+
     config.TorqueCurrent.withPeakForwardTorqueCurrent(
         Amps.of(IntakeConstants.PEAK_FORWARD_TORQUE_CURRENT));
 
-    config.Slot0.kS = IntakeConstants.PID_KS;
-    config.Slot0.kV = IntakeConstants.PID_KV;
-    config.Slot0.kP = IntakeConstants.PID_KP;
+    config.Slot0.withKS(IntakeConstants.PID_KS)
+        .withKV(IntakeConstants.PID_KV)
+        .withKP(IntakeConstants.PID_KP);
 
     config.MotionMagic.withMotionMagicAcceleration(
-        RotationsPerSecondPerSecond.of(IntakeConstants.MM_ACCELERATION));
-    // .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IntakeConstants.MM_JERK));
+            RotationsPerSecondPerSecond.of(IntakeConstants.MM_ACCELERATION))
+        .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IntakeConstants.MM_JERK));
 
     applyConfig(config);
   }
@@ -88,13 +91,11 @@ public class Intake extends SubsystemBase {
 
   // Dev control
   public void setManualDutyCycle(double output) {
-    this.targetDutyCycle = output;
-    intakeMotor.setControl(velocityRequest.withVelocity(output));
+    intakeMotor.setControl(dutyCycleRequest.withOutput(output));
   }
 
   public void stopIntake() {
     this.targetVelocityRPS = 0;
-    this.targetDutyCycle = 0;
     intakeMotor.stopMotor();
   }
 
@@ -106,7 +107,6 @@ public class Intake extends SubsystemBase {
     }
 
     // AdvantageKit Logging
-    Logger.recordOutput("Intake/TargetDutyCycle", targetDutyCycle);
     Logger.recordOutput("Intake/TargetVelocityRPS", targetVelocityRPS);
     Logger.recordOutput("Intake/ActualVelocityRPS", intakeMotor.getVelocity().getValueAsDouble());
     Logger.recordOutput("Intake/StatorCurrent", intakeMotor.getStatorCurrent().getValueAsDouble());

@@ -22,7 +22,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Tower extends SubsystemBase {
   /* Hardware */
-  private final TalonFX towerMotor = new TalonFX(TowerConstants.MOTOR, "rio");
+  private final TalonFX towerMotor = new TalonFX(TowerConstants.CAN_ID, "rio");
 
   /* Control Requests */
   private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
@@ -48,20 +48,21 @@ public class Tower extends SubsystemBase {
         .withSensorToMechanismRatio(TowerConstants.SENSOR_TO_MECH_RATIO);
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
-        .withInverted(InvertedValue.Clockwise_Positive); // TODO: VERIFY
+        .withInverted(InvertedValue.Clockwise_Positive);
+
+    config.CurrentLimits.withStatorCurrentLimitEnable(false)
+        .withStatorCurrentLimit(Amps.of(TowerConstants.STATOR_AMP_LIMIT));
 
     config.TorqueCurrent.withPeakForwardTorqueCurrent(
-        Amps.of(TowerConstants.FORWARD_TORQUE_AMPS_LIMIT));
-    config.CurrentLimits.withStatorCurrentLimit(Amps.of(TowerConstants.STATOR_AMP_LIMIT))
-        .withStatorCurrentLimitEnable(true);
+            Amps.of(TowerConstants.PEAK_FORWARD_TORQUE_CURRENT))
+        .withPeakReverseTorqueCurrent(Amps.of(TowerConstants.PEAK_REVERSE_TORQUE_CURRENT));
 
-    // config.Slot0.kP = TowerConstants.PID_KP;
-    // config.Slot0.kS = TowerConstants.PID_KS;
-    // config.Slot0.kV = TowerConstants.PID_KV;
+    config.MotionMagic.withMotionMagicAcceleration(TowerConstants.MM_ACCELERATION);
 
-    // Motion Magic Profile
-    // config.MotionMagic.withMotionMagicAcceleration(
-    //    RotationsPerSecondPerSecond.of(TowerConstants.MM_ACCELERATION));
+    config.Slot0.withKP(TowerConstants.PID_KP)
+        .withKS(TowerConstants.PID_KS)
+        .withKV(TowerConstants.PID_KV);
+
     applyConfig(config);
   }
 
@@ -95,7 +96,7 @@ public class Tower extends SubsystemBase {
   // Dev
   public void setManualDutyCycle(double output) {
     this.targetVelocityRPS = 0;
-    // towerMotor.setControl(dutyCycleRequest.withOutput(output));
+    towerMotor.setControl(dutyCycleRequest.withOutput(output));
   }
 
   public void stop() {

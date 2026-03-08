@@ -27,6 +27,11 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeExtension;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPitch;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /*
@@ -39,6 +44,7 @@ public class RobotContainer {
 
   // Subsystems
   private final Drive drive;
+  private final Vision vision;
   private final Shooter shooter;
   private final ShooterPitch pitch;
   private final Indexer indexer;
@@ -49,6 +55,7 @@ public class RobotContainer {
   private final Climber climber;
 
   // Superstructure
+  @SuppressWarnings("unused")
   private final MidSystem midSystem;
 
   // Dashboard inputs
@@ -67,6 +74,11 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.FrontRight),
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVision(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0));
         shooter = new Shooter();
         pitch = new ShooterPitch();
         indexer = new Indexer();
@@ -78,7 +90,7 @@ public class RobotContainer {
 
         midSystem =
             new MidSystem(
-                shooter, pitch, indexer, tower, drive, intake, intakeExt, hopper, climber);
+                shooter, pitch, indexer, tower, drive, vision, intake, intakeExt, hopper, climber);
         break;
 
       case SIM:
@@ -90,6 +102,11 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose));
         shooter = new Shooter();
         pitch = new ShooterPitch();
         indexer = new Indexer();
@@ -101,7 +118,7 @@ public class RobotContainer {
 
         midSystem =
             new MidSystem(
-                shooter, pitch, indexer, tower, drive, intake, intakeExt, hopper, climber);
+                shooter, pitch, indexer, tower, drive, vision, intake, intakeExt, hopper, climber);
         break;
 
       default:
@@ -113,6 +130,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
         shooter = new Shooter();
         pitch = new ShooterPitch();
         indexer = new Indexer();
@@ -123,7 +141,7 @@ public class RobotContainer {
         climber = new Climber();
 
         // Pass nulls or empty shells for Replay mode depending on your AdvantageKit setup
-        midSystem = new MidSystem(null, null, null, null, null, null, null, null, null);
+        midSystem = new MidSystem(null, null, null, null, null, null, null, null, null, null);
         break;
     }
 

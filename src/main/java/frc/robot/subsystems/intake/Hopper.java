@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
@@ -21,7 +22,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Hopper extends SubsystemBase {
   /* Hardware */
-  private final TalonFX hopperMotor = new TalonFX(HopperConstants.MOTOR, "rio");
+  private final TalonFX hopperMotor = new TalonFX(HopperConstants.CAN_ID, "rio");
 
   /* Control Requests */
   private final MotionMagicTorqueCurrentFOC positionRequest =
@@ -46,7 +47,9 @@ public class Hopper extends SubsystemBase {
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
         .withSensorToMechanismRatio(HopperConstants.SENSOR_TO_MECH_RATIO);
 
-    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake)
+        .withInverted(InvertedValue.Clockwise_Positive);
+
     config.CurrentLimits.withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(HopperConstants.STATOR_AMP_LIMIT));
 
@@ -54,13 +57,13 @@ public class Hopper extends SubsystemBase {
             Amps.of(HopperConstants.PEAK_FORWARD_TORQUE_CURRENT))
         .withPeakReverseTorqueCurrent(Amps.of(HopperConstants.PEAK_REVERSE_TORQUE_CURRENT));
 
-    config.MotionMagic.MotionMagicCruiseVelocity = HopperConstants.MM_CRUISE_VEL;
-    config.MotionMagic.MotionMagicAcceleration = HopperConstants.MM_ACCELERATION;
+    config.MotionMagic.withMotionMagicCruiseVelocity(HopperConstants.MM_CRUISE_VEL)
+        .withMotionMagicAcceleration(HopperConstants.MM_ACCELERATION);
 
-    config.Slot0.kP = HopperConstants.PID_KP;
-    config.Slot0.kD = HopperConstants.PID_KD;
-    config.Slot0.kS = HopperConstants.PID_KS;
-    config.Slot0.kV = HopperConstants.PID_KV;
+    config.Slot0.withKP(HopperConstants.PID_KP)
+        .withKD(HopperConstants.PID_KD)
+        .withKS(HopperConstants.PID_KS)
+        .withKV(HopperConstants.PID_KV);
 
     applyConfig(config);
   }
@@ -100,7 +103,7 @@ public class Hopper extends SubsystemBase {
   // DEV - manual control
   public void setManualDutyCycle(double output) {
     this.targetPositionRotations = hopperMotor.getPosition().getValueAsDouble();
-    hopperMotor.setControl(positionRequest.withPosition(output));
+    hopperMotor.setControl(dutyCycleRequest.withOutput(output));
   }
 
   public void stop() {

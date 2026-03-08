@@ -8,11 +8,10 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFXS;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,7 +26,6 @@ public class ShooterPitch extends SubsystemBase {
 
   /* Control Requests */
   private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0).withSlot(0);
-  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
   private final LoggedNetworkBoolean LNNOverride =
@@ -36,6 +34,7 @@ public class ShooterPitch extends SubsystemBase {
       new LoggedNetworkBoolean("Pitch Config Applied", false);
   private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Pitch Setpoint", 0.0);
   private final LoggedNetworkNumber LNNCurrent = new LoggedNetworkNumber("Pitch Current", 0.0);
+
   private double targetPositionRotations = 0;
 
   public ShooterPitch() {
@@ -48,22 +47,21 @@ public class ShooterPitch extends SubsystemBase {
 
     config.Commutation.withMotorArrangement(MotorArrangementValue.Minion_JST);
 
-    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake)
+        .withInverted(InvertedValue.Clockwise_Positive);
+
     config.CurrentLimits.withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(ShooterPitchConstants.STATOR_AMP_LIMIT));
 
-    // TODO: Voltage Condigs? External Feedback configs?
-    config.Slot0.kP = ShooterPitchConstants.PID_KP;
-    config.Slot0.kD = ShooterPitchConstants.PID_KD;
-    config.Slot0.kS = ShooterPitchConstants.PID_KS;
-    config.Slot0.kV = ShooterPitchConstants.PID_KV;
+    config.Slot0.withKP(ShooterPitchConstants.PID_KP)
+        .withKD(ShooterPitchConstants.PID_KD)
+        .withKS(ShooterPitchConstants.PID_KS)
+        .withKV(ShooterPitchConstants.PID_KV);
 
-    MotionMagicConfigs MMConf = config.MotionMagic;
-    MMConf.withMotionMagicCruiseVelocity(
-        RotationsPerSecond.of(ShooterPitchConstants.MM_CRUISE_VEL));
-    MMConf.withMotionMagicAcceleration(
-        RotationsPerSecondPerSecond.of(ShooterPitchConstants.MM_ACCELERATION));
-    // config.MotionMagic.MotionMagicJerk = ShooterPitchConstants.MM_JERK;
+    config.MotionMagic.withMotionMagicCruiseVelocity(
+            RotationsPerSecond.of(ShooterPitchConstants.MM_CRUISE_VEL))
+        .withMotionMagicAcceleration(
+            RotationsPerSecondPerSecond.of(ShooterPitchConstants.MM_ACCELERATION));
 
     applyConfig(pitchMotor, config);
   }
@@ -84,7 +82,14 @@ public class ShooterPitch extends SubsystemBase {
     if (LNNOverride.getAsBoolean()) return;
 
     this.targetPositionRotations = rotations;
+  }
+
+  public void moveToPosition() {
     pitchMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+  }
+
+  public void movetoMinPosition() {
+    pitchMotor.setControl(positionRequest.withPosition(ShooterPitchConstants.MIN_ROTATION));
   }
 
   // Manual Control for Dev

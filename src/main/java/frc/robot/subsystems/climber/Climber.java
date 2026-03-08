@@ -8,10 +8,10 @@ import static edu.wpi.first.units.Units.Amps;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
@@ -26,7 +26,6 @@ public class Climber extends SubsystemBase {
   /* Control Requests */
   private final MotionMagicTorqueCurrentFOC positionRequest =
       new MotionMagicTorqueCurrentFOC(0).withSlot(0);
-  private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
   private final LoggedNetworkBoolean LNNOverride =
@@ -46,7 +45,9 @@ public class Climber extends SubsystemBase {
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
         .withSensorToMechanismRatio(ClimberConstants.SENSOR_TO_MECH_RATIO);
 
-    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake)
+        .withInverted(InvertedValue.Clockwise_Positive);
+
     config.CurrentLimits.withStatorCurrentLimitEnable(true)
         .withStatorCurrentLimit(Amps.of(ClimberConstants.STATOR_AMP_LIMIT));
 
@@ -54,13 +55,13 @@ public class Climber extends SubsystemBase {
             Amps.of(ClimberConstants.PEAK_FORWARD_TORQUE_CURRENT))
         .withPeakReverseTorqueCurrent(Amps.of(ClimberConstants.PEAK_REVERSE_TORQUE_CURRENT));
 
-    config.MotionMagic.MotionMagicCruiseVelocity = ClimberConstants.MM_CRUISE_VEL;
-    config.MotionMagic.MotionMagicAcceleration = ClimberConstants.MM_ACCELERATION;
+    config.MotionMagic.withMotionMagicCruiseVelocity(ClimberConstants.MM_CRUISE_VEL)
+        .withMotionMagicAcceleration(ClimberConstants.MM_ACCELERATION);
 
-    config.Slot0.kP = ClimberConstants.PID_KP;
-    config.Slot0.kD = ClimberConstants.PID_KD;
-    config.Slot0.kS = ClimberConstants.PID_KS;
-    config.Slot0.kV = ClimberConstants.PID_KV;
+    config.Slot0.withKP(ClimberConstants.PID_KP)
+        .withKD(ClimberConstants.PID_KD)
+        .withKS(ClimberConstants.PID_KS)
+        .withKV(ClimberConstants.PID_KV);
 
     applyConfig(config);
   }
