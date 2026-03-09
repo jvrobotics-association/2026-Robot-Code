@@ -85,10 +85,10 @@ public final class Constants {
     public static final double MM_CRUISE_VEL = 12;
     public static final double PID_KS = 0.3;
     public static final double PID_KV = 0.096;
-    public static final double PID_KP = 45.0;
+    public static final double PID_KP = 3.5;
     public static final double PID_KD = 0.0;
     public static final double MIN_ROTATION = 0.0;
-    public static final double MAX_ROTATION = 5.1;
+    public static final double MAX_ROTATION = 5.09;
     public static final double MAX_SHOT_ANGLE = 90.0;
     public static final double MIN_SHOT_ANGLE = 45.0;
   }
@@ -178,8 +178,8 @@ public final class Constants {
     public static final double PID_KD = 15;
     public static final double PID_KV = 2.9;
     public static final double PID_KS = 0.49;
-    public static final double DEPLOYED_ROTATIONS = 5.18;
-    public static final double RETRACTED_ROTATIONS = 0.015;
+    public static final double DEPLOYED_ROTATIONS = 5.2;
+    public static final double RETRACTED_ROTATIONS = 0.02;
     public static final double TOLERANCE_ROTATIONS = 0.005;
   }
 

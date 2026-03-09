@@ -49,7 +49,7 @@ public class DriveCommands {
     Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
 
     // Square magnitude for more precise control
-    linearMagnitude = linearMagnitude * linearMagnitude;
+    linearMagnitude = (linearMagnitude * linearMagnitude) * 0.8;
 
     // Return new linear velocity
     return new Pose2d(Translation2d.kZero, linearDirection)
@@ -75,7 +75,7 @@ public class DriveCommands {
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
           // Square rotation value for more precise control
-          omega = Math.copySign(omega * omega * omega, omega);
+          omega = Math.copySign((omega * omega) * 0.6, omega);
 
           // Convert to field relative speeds & send command
           ChassisSpeeds speeds =
