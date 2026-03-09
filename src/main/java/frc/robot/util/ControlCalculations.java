@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.Constants.FieldConstants;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class ControlCalculations {
   /**
@@ -33,6 +34,7 @@ public class ControlCalculations {
    * @param target is the Translation3d of the target hub
    * @return the linear distance in Meters
    */
+  @AutoLogOutput
   public static Distance getDistanceToTarget(Pose2d robot, Translation3d target) {
     return Meters.of(robot.getTranslation().getDistance(target.toTranslation2d()));
   }

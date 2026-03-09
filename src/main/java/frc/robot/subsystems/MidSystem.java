@@ -313,7 +313,7 @@ public class MidSystem extends SubsystemBase {
                 Commands.run(pitch::moveToPosition, pitch),
                 Commands.run(shooter::shoot, shooter),
                 Commands.sequence(
-                    Commands.waitSeconds(2),
+                    Commands.waitSeconds(3),
                     Commands.parallel(
                         Commands.startEnd(indexer::feed, indexer::stop, indexer),
                         Commands.runEnd(() -> tower.setManualDutyCycle(0.8), tower::stop, tower))))
