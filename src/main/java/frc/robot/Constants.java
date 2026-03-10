@@ -74,7 +74,7 @@ public final class Constants {
     }
 
     public static final double SPEED_MOE = 0.05;
-    public static final double FLYWHEEL_CIRCUMFERENCE = 3.0;
+    public static final double FLYWHEEL_CIRCUMFERENCE = 4.5;
   }
 
   public final class ShooterPitchConstants {

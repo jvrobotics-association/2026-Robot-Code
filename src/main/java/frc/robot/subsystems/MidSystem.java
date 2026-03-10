@@ -35,6 +35,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.ControlCalculations;
 import frc.robot.util.ControlCalculations.LaunchCalc;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class MidSystem extends SubsystemBase {
   private final Shooter shooter;
@@ -119,11 +120,21 @@ public class MidSystem extends SubsystemBase {
         (ShooterPitchConstants.MIN_ROTATION - ShooterPitchConstants.MAX_ROTATION)
             / (ShooterPitchConstants.MAX_SHOT_ANGLE - ShooterPitchConstants.MIN_SHOT_ANGLE);
 
+    Logger.recordOutput("Control Calcs/Slope", slope);
+
     double rawRotations =
         ShooterPitchConstants.MAX_ROTATION
             + slope * (targetAngleDegrees - ShooterPitchConstants.MIN_SHOT_ANGLE);
-    return MathUtil.clamp(
-        rawRotations, ShooterPitchConstants.MIN_ROTATION, ShooterPitchConstants.MAX_ROTATION);
+
+    Logger.recordOutput("Control Calcs/rawRotations", rawRotations);
+
+    double distance =
+        MathUtil.clamp(
+            rawRotations, ShooterPitchConstants.MIN_ROTATION, ShooterPitchConstants.MAX_ROTATION);
+
+    Logger.recordOutput("Control Calcs/distance", distance);
+
+    return distance;
   }
 
   // public boolean isHubActive() {
