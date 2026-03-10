@@ -37,7 +37,7 @@ public final class Constants {
 
   public final class IndexerConstants {
     public static final int CAN_ID = 22;
-    public static final double INDEXER_SPEED = 15;
+    public static final double INDEXER_SPEED = 25;
     public static final int SENSOR_TO_MECH_RATIO = 4;
     public static final int STATOR_AMP_LIMIT = 20;
     public static final int FORWARD_TORQUE_AMPS_LIMIT = 25;
@@ -74,6 +74,7 @@ public final class Constants {
     }
 
     public static final double SPEED_MOE = 0.05;
+    public static final double SPEED = 65;
     public static final double FLYWHEEL_CIRCUMFERENCE = 4.5;
   }
 
@@ -85,12 +86,13 @@ public final class Constants {
     public static final double MM_CRUISE_VEL = 12;
     public static final double PID_KS = 0.3;
     public static final double PID_KV = 0.096;
-    public static final double PID_KP = 3.5;
+    public static final double PID_KP = 10;
     public static final double PID_KD = 0.0;
     public static final double MIN_ROTATION = 0.0;
     public static final double MAX_ROTATION = 5.09;
     public static final double MAX_SHOT_ANGLE = 90.0;
     public static final double MIN_SHOT_ANGLE = 45.0;
+    public static final double SHOOT_ANGLE = 0.8;
   }
 
   public final class IntakeConstants {
@@ -163,7 +165,7 @@ public final class Constants {
     public static final double PID_KS = 0;
     public static final double PID_KV = 0;
     public static final double MM_ACCELERATION = 0;
-    public static final double TOWER_SPEED = 0.70;
+    public static final double TOWER_SPEED = 0.85;
   }
 
   public final class HopperConstants {

@@ -19,8 +19,8 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.MidSystemConstants;
 import frc.robot.Constants.RobotConstants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.ShooterPitchConstants;
+import frc.robot.commands.AutoAlignLeftWithTrench;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
@@ -32,8 +32,6 @@ import frc.robot.subsystems.intake.IntakeExtension;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPitch;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.util.ControlCalculations;
-import frc.robot.util.ControlCalculations.LaunchCalc;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -221,16 +219,16 @@ public class MidSystem extends SubsystemBase {
     //   pitch.setTargetPosition(0);
     //   currentTowerRPS = 0;
     // }
-    LaunchCalc launchData =
-        ControlCalculations.MultiShot(
-            robotPoseSupplier.get(), robotSpeedSupplier.get(), currentTarget, 3);
+    // LaunchCalc launchData =
+    //     ControlCalculations.MultiShot(
+    //         robotPoseSupplier.get(), robotSpeedSupplier.get(), currentTarget, 3);
 
-    double targetVelocityRPS =
-        launchData.shooterVelocity() / ShooterConstants.FLYWHEEL_CIRCUMFERENCE;
-    double targetPitchRotations = calculatePitchRotations(launchData.shooterPitch());
+    // double targetVelocityRPS =
+    //     launchData.shooterVelocity() / ShooterConstants.FLYWHEEL_CIRCUMFERENCE;
+    // double targetPitchRotations = calculatePitchRotations(launchData.shooterPitch());
 
-    shooter.setTargetVelocity(targetVelocityRPS);
-    pitch.setTargetPosition(targetPitchRotations);
+    // shooter.setTargetVelocity(targetVelocityRPS);
+    // pitch.setTargetPosition(targetPitchRotations);
   }
 
   private boolean isRobotAimed() {
@@ -246,7 +244,7 @@ public class MidSystem extends SubsystemBase {
     Trigger shootTrigger = controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD);
     Trigger intakeTrigger = controller.leftTrigger(ControllerConstants.TRIGGER_THRESHOLD);
     Trigger resetGyroTrigger = controller.start();
-    Trigger lockPositionTrigger = controller.x();
+    // Trigger lockPositionTrigger = controller.x();
     Trigger aimTrigger = controller.leftBumper();
     Trigger climbTrigger = controller.b();
     Trigger hopperManualInTrigger = controller.povDown();
@@ -254,6 +252,7 @@ public class MidSystem extends SubsystemBase {
     Trigger hopperManualOutTrigger = controller.povUp();
     Trigger intakeManualOuttake = controller.povLeft();
     Trigger raiseArm = controller.rightBumper();
+    Trigger followPathToShoot = controller.x();
 
     Supplier<Rotation2d> targetAngleSupplier =
         () ->
@@ -267,6 +266,8 @@ public class MidSystem extends SubsystemBase {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
+
+    followPathToShoot.whileTrue(new AutoAlignLeftWithTrench(drive));
 
     hopperOverrideInTrigger.whileTrue(
         Commands.runEnd(() -> hopper.setManualDutyCycle(-0.1), hopper::stop, hopper));
@@ -324,7 +325,7 @@ public class MidSystem extends SubsystemBase {
                 Commands.run(pitch::moveToPosition, pitch),
                 Commands.run(shooter::shoot, shooter),
                 Commands.sequence(
-                    Commands.waitSeconds(3),
+                    Commands.waitSeconds(1.5),
                     Commands.parallel(
                         Commands.startEnd(indexer::feed, indexer::stop, indexer),
                         Commands.runEnd(() -> tower.setManualDutyCycle(0.8), tower::stop, tower))))
@@ -356,7 +357,7 @@ public class MidSystem extends SubsystemBase {
             () -> isClimbPrepared));
 
     // util
-    lockPositionTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // lockPositionTrigger.onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     resetGyroTrigger.onTrue(
         Commands.runOnce(

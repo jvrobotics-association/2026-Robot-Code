@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Second;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -31,6 +32,8 @@ public class Shooter extends SubsystemBase {
       new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
   private final MotionMagicVelocityTorqueCurrentFOC rightVelocityRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
+
+  private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(true);
 
   /* State */
   private final LoggedNetworkBoolean LNNOverride =
@@ -54,7 +57,7 @@ public class Shooter extends SubsystemBase {
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.Clockwise_Positive);
 
-    config.CurrentLimits.withStatorCurrentLimitEnable(true)
+    config.CurrentLimits.withStatorCurrentLimitEnable(false)
         .withStatorCurrentLimit(Amps.of(ShooterConstants.LeftMotor.STATOR_AMP_LIMIT));
 
     config.Slot0.withKP(ShooterConstants.LeftMotor.PID_KP)
@@ -78,7 +81,7 @@ public class Shooter extends SubsystemBase {
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.CounterClockwise_Positive);
 
-    config.CurrentLimits.withStatorCurrentLimitEnable(true)
+    config.CurrentLimits.withStatorCurrentLimitEnable(false)
         .withStatorCurrentLimit(Amps.of(ShooterConstants.RightMotor.STATOR_AMP_LIMIT));
 
     config.Slot0.withKP(ShooterConstants.RightMotor.PID_KP)
@@ -109,8 +112,14 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shoot() {
-    leftMotor.setControl(leftVelocityRequest.withVelocity(targetVelocityRPS));
-    rightMotor.setControl(rightVelocityRequest.withVelocity(targetVelocityRPS));
+    // leftMotor.setControl(leftVelocityRequest.withVelocity(targetVelocityRPS));
+    // rightMotor.setControl(rightVelocityRequest.withVelocity(targetVelocityRPS));
+
+    leftMotor.setControl(leftVelocityRequest.withVelocity(ShooterConstants.SPEED));
+    rightMotor.setControl(rightVelocityRequest.withVelocity(ShooterConstants.SPEED));
+
+    // leftMotor.setControl(voltageRequest.withOutput(8));
+    // rightMotor.setControl(voltageRequest.withOutput(8));
   }
 
   /** Sets open-loop duty cycle (for testing/override). */
