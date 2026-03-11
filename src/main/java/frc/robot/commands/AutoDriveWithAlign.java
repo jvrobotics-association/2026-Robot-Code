@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
@@ -27,9 +28,7 @@ import org.littletonrobotics.junction.Logger;
 public class AutoDriveWithAlign extends Command {
   private Drive drive;
   private PathPlannerPath leftShootFromNeutralZonePath;
-  private PathPlannerPath leftShootFromAllianceZonePath;
   private PathPlannerPath rightShootFromNeutralZonePath;
-  private PathPlannerPath rightShootFromAllianceZonePath;
   private Command pathCommand;
   private Pose2d robotPose;
 
@@ -43,35 +42,13 @@ public class AutoDriveWithAlign extends Command {
   @Override
   public void initialize() {
     try {
-      // Left Shoot Red:
-      // x: 13.657
-      // y: 2.274
-      // rot: 135.19
-
-      // Left Shoot Blue:
-      // x: 2.48
-      // y: 5.828
-      // rot: -44.94
-
-      // Right Shoot Blue:
-      // x: 2.957
-      // y: 2.406
-      // rot: 44.10
-
-      // Right Shoot Red:
-      // x: 13.59
-      // y: 5.65
-      // rot: -135.6
-
       leftShootFromNeutralZonePath = PathPlannerPath.fromPathFile("LS-NZ");
-      leftShootFromAllianceZonePath = PathPlannerPath.fromPathFile("LS-AZ");
       rightShootFromNeutralZonePath = PathPlannerPath.fromPathFile("RS-NZ");
-      rightShootFromAllianceZonePath = PathPlannerPath.fromPathFile("RS-AZ");
 
       PathConstraints constraints =
           new PathConstraints(
-              LinearVelocity.ofBaseUnits(2, MetersPerSecond),
-              LinearAcceleration.ofBaseUnits(2.5, MetersPerSecondPerSecond),
+              LinearVelocity.ofBaseUnits(3.5, MetersPerSecond),
+              LinearAcceleration.ofBaseUnits(4.9, MetersPerSecondPerSecond),
               AngularVelocity.ofBaseUnits(540, DegreesPerSecond),
               AngularAcceleration.ofBaseUnits(720, DegreesPerSecondPerSecond));
 
@@ -100,14 +77,12 @@ public class AutoDriveWithAlign extends Command {
       if (isNeutralZone && isLeft) {
         pathCommand = AutoBuilder.pathfindThenFollowPath(leftShootFromNeutralZonePath, constraints);
       } else if (!isNeutralZone && isLeft) {
-        pathCommand =
-            AutoBuilder.pathfindThenFollowPath(leftShootFromAllianceZonePath, constraints);
+        pathCommand = AutoBuilder.pathfindToPoseFlipped(FieldConstants.LEFT_SHOOT_POS, constraints);
       } else if (isNeutralZone && !isLeft) {
         pathCommand =
             AutoBuilder.pathfindThenFollowPath(rightShootFromNeutralZonePath, constraints);
       } else {
-        pathCommand =
-            AutoBuilder.pathfindThenFollowPath(rightShootFromAllianceZonePath, constraints);
+        pathCommand = AutoBuilder.pathfindToPoseFlipped(FieldConstants.RIGHT_SHOOT_POS, constraints);
       }
 
       CommandScheduler.getInstance().schedule(pathCommand);

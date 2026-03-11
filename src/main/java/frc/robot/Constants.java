@@ -7,11 +7,16 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -212,6 +217,18 @@ public final class Constants {
         new Transform3d(
             new Translation3d(Inches.zero(), Inches.of(-6), Inches.of(20.625)), Rotation3d.kZero);
     public static final Distance DISTANCE_ABOVE_FUNNEL = Inches.of(6);
+
+    public static final Pose2d LEFT_SHOOT_POS = new Pose2d(
+      Distance.ofBaseUnits(2.75, Meters),
+      Distance.ofBaseUnits(5.78, Meters),
+      new Rotation2d(Angle.ofBaseUnits(-45, Degree))
+    );
+
+    public static final Pose2d RIGHT_SHOOT_POS = new Pose2d(
+      Distance.ofBaseUnits(2.75, Meters),
+      Distance.ofBaseUnits(2.25, Meters),
+      new Rotation2d(Angle.ofBaseUnits(45, Degree))
+    );
   }
 
   public final class ControllerConstants {

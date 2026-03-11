@@ -3,41 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.510209553571428,
-        "y": 0.5451150446428574
+        "x": 5.5,
+        "y": 0.639
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.14568132758802,
-        "y": 0.5451150446428574
+        "x": 5.0,
+        "y": 0.6390000000000001
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 4.018397008928572,
-        "y": 0.5451150446428574
+        "x": 3.5,
+        "y": 0.639
       },
       "prevControl": {
-        "x": 4.521366972569917,
-        "y": 0.5451150446428574
+        "x": 4.0,
+        "y": 0.6389999999999999
       },
       "nextControl": {
-        "x": 2.4439825488461344,
-        "y": 0.5451150446428574
+        "x": 2.5,
+        "y": 0.6390000000000001
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.9366878188775507,
-        "y": 2.3861854671556126
+        "x": 2.75,
+        "y": 2.25
       },
       "prevControl": {
-        "x": 2.472822104591837,
-        "y": 2.2694092171556135
+        "x": 1.8661165235168151,
+        "y": 1.366116523516816
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,12 +46,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.0,
-      "rotationDegrees": 180.0
-    },
-    {
-      "waypointRelativePos": 1.0459291470125762,
-      "rotationDegrees": 180.0
+      "waypointRelativePos": 1.15,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
@@ -62,7 +58,7 @@
         "y": 4.034536
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 1.3693895870736146,
+      "minWaypointRelativePos": 1.65,
       "maxWaypointRelativePos": 2.0,
       "name": "Point Towards Zone"
     }
@@ -78,13 +74,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 44.102277211665694
+    "rotation": 45.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Telop",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 180.0
+    "velocity": 1.0,
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }
