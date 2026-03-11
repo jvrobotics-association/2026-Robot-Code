@@ -3,62 +3,66 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.4178674698795195,
-        "y": 0.6364819277108438
+        "x": 5.510209553571428,
+        "y": 0.5451150446428574
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.111891566265059,
-        "y": 0.6036987951807224
+        "x": 5.14568132758802,
+        "y": 0.5451150446428574
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.101192771084338,
-        "y": 0.7676144578313244
+        "x": 4.018397008928572,
+        "y": 0.5451150446428574
       },
       "prevControl": {
-        "x": 4.070344126506024,
-        "y": 0.6337499999999988
+        "x": 4.521366972569917,
+        "y": 0.5451150446428574
       },
       "nextControl": {
-        "x": 2.1320414156626515,
-        "y": 0.9014789156626499
+        "x": 2.4439825488461344,
+        "y": 0.5451150446428574
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.9702891566265057,
-        "y": 0.9752409638554218
+        "x": 2.9366878188775507,
+        "y": 2.3861854671556126
       },
       "prevControl": {
-        "x": 1.2216265060240963,
-        "y": 1.1828674698795192
+        "x": 2.472822104591837,
+        "y": 2.2694092171556135
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Right Shoot Position"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1,
-      "rotationDegrees": 175.12610357779528
+      "waypointRelativePos": 0.0,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 1.0459291470125762,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [
     {
       "fieldPosition": {
-        "x": 4.656,
-        "y": 4.035
+        "x": 4.625594,
+        "y": 4.034536
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 1.2,
+      "minWaypointRelativePos": 1.3693895870736146,
       "maxWaypointRelativePos": 2.0,
       "name": "Point Towards Zone"
     }
@@ -74,13 +78,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 40.2747860563711
+    "rotation": 44.102277211665694
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -177.61405596961117
+    "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

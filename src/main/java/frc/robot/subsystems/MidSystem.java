@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -17,10 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.MidSystemConstants;
-import frc.robot.Constants.RobotConstants;
-import frc.robot.Constants.ShooterPitchConstants;
-import frc.robot.commands.AutoAlignLeftWithTrench;
+import frc.robot.commands.AutoDriveWithAlign;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
@@ -33,7 +29,6 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPitch;
 import frc.robot.subsystems.vision.Vision;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 
 public class MidSystem extends SubsystemBase {
   private final Shooter shooter;
@@ -54,7 +49,6 @@ public class MidSystem extends SubsystemBase {
 
   // Target State
   private Translation3d currentTarget;
-  private double currentTowerRPS = 0;
   private boolean isClimbPrepared = false;
 
   public MidSystem(
@@ -94,46 +88,47 @@ public class MidSystem extends SubsystemBase {
             : FieldConstants.HUB_RED;
   }
 
-  private boolean inScoringArea() {
-    boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
-    return isBlue
-            && robotPoseSupplier
-                .get()
-                .getMeasureX()
-                .lt(FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2)))
-        || !isBlue
-            && robotPoseSupplier
-                .get()
-                .getMeasureX()
-                .gt(
-                    FieldConstants.FIELD_LENGTH.minus(
-                        FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2))));
-  }
+  //   private boolean inScoringArea() {
+  //     boolean isBlue = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
+  //     return isBlue
+  //             && robotPoseSupplier
+  //                 .get()
+  //                 .getMeasureX()
+  //                 .lt(FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2)))
+  //         || !isBlue
+  //             && robotPoseSupplier
+  //                 .get()
+  //                 .getMeasureX()
+  //                 .gt(
+  //                     FieldConstants.FIELD_LENGTH.minus(
+  //                         FieldConstants.ALLIANCE_ZONE.plus(RobotConstants.FULL_WIDTH.div(2))));
+  //   }
 
-  private double calculatePitchRotations(double targetAngleDegrees) {
-    // if (ShooterPitchConstants.MAX_SHOT_ANGLE == ShooterPitchConstants.MIN_SHOT_ANGLE) {
-    //     return 0;
-    // }
-    double slope =
-        (ShooterPitchConstants.MIN_ROTATION - ShooterPitchConstants.MAX_ROTATION)
-            / (ShooterPitchConstants.MAX_SHOT_ANGLE - ShooterPitchConstants.MIN_SHOT_ANGLE);
+  //   private double calculatePitchRotations(double targetAngleDegrees) {
+  //     // if (ShooterPitchConstants.MAX_SHOT_ANGLE == ShooterPitchConstants.MIN_SHOT_ANGLE) {
+  //     //     return 0;
+  //     // }
+  //     double slope =
+  //         (ShooterPitchConstants.MIN_ROTATION - ShooterPitchConstants.MAX_ROTATION)
+  //             / (ShooterPitchConstants.MAX_SHOT_ANGLE - ShooterPitchConstants.MIN_SHOT_ANGLE);
 
-    Logger.recordOutput("Control Calcs/Slope", slope);
+  //     Logger.recordOutput("Control Calcs/Slope", slope);
 
-    double rawRotations =
-        ShooterPitchConstants.MAX_ROTATION
-            + slope * (targetAngleDegrees - ShooterPitchConstants.MIN_SHOT_ANGLE);
+  //     double rawRotations =
+  //         ShooterPitchConstants.MAX_ROTATION
+  //             + slope * (targetAngleDegrees - ShooterPitchConstants.MIN_SHOT_ANGLE);
 
-    Logger.recordOutput("Control Calcs/rawRotations", rawRotations);
+  //     Logger.recordOutput("Control Calcs/rawRotations", rawRotations);
 
-    double distance =
-        MathUtil.clamp(
-            rawRotations, ShooterPitchConstants.MIN_ROTATION, ShooterPitchConstants.MAX_ROTATION);
+  //     double distance =
+  //         MathUtil.clamp(
+  //             rawRotations, ShooterPitchConstants.MIN_ROTATION,
+  // ShooterPitchConstants.MAX_ROTATION);
 
-    Logger.recordOutput("Control Calcs/distance", distance);
+  //     Logger.recordOutput("Control Calcs/distance", distance);
 
-    return distance;
-  }
+  //     return distance;
+  //   }
 
   // public boolean isHubActive() {
   //   Optional<Alliance> alliance = DriverStation.getAlliance();
@@ -229,15 +224,17 @@ public class MidSystem extends SubsystemBase {
 
     // shooter.setTargetVelocity(targetVelocityRPS);
     // pitch.setTargetPosition(targetPitchRotations);
+
+    updateAllianceTarget();
   }
 
-  private boolean isRobotAimed() {
-    Pose2d pose = robotPoseSupplier.get();
-    Rotation2d desiredAngle =
-        new Rotation2d(currentTarget.getX() - pose.getX(), currentTarget.getY() - pose.getY());
-    double errorDegrees = Math.abs(desiredAngle.minus(pose.getRotation()).getDegrees());
-    return errorDegrees < MidSystemConstants.AIM_TOLERANCE_DEGREES;
-  }
+  //   private boolean isRobotAimed() {
+  //     Pose2d pose = robotPoseSupplier.get();
+  //     Rotation2d desiredAngle =
+  //         new Rotation2d(currentTarget.getX() - pose.getX(), currentTarget.getY() - pose.getY());
+  //     double errorDegrees = Math.abs(desiredAngle.minus(pose.getRotation()).getDegrees());
+  //     return errorDegrees < MidSystemConstants.AIM_TOLERANCE_DEGREES;
+  //   }
 
   private void configureBindings() {
     // Controller Inputs
@@ -267,7 +264,7 @@ public class MidSystem extends SubsystemBase {
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
 
-    followPathToShoot.whileTrue(new AutoAlignLeftWithTrench(drive));
+    followPathToShoot.whileTrue(new AutoDriveWithAlign(drive));
 
     hopperOverrideInTrigger.whileTrue(
         Commands.runEnd(() -> hopper.setManualDutyCycle(-0.1), hopper::stop, hopper));

@@ -3,57 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.581783132530121,
-        "y": 7.400734939759036
+        "x": 2.2263431696428575,
+        "y": 6.399354642857142
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.217254906546713,
-        "y": 7.400734939759036
+        "x": 3.107104955357143,
+        "y": 5.611762812500001
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.9098433734939757,
-        "y": 7.400734939759036
-      },
-      "prevControl": {
-        "x": 4.412739416999651,
-        "y": 7.3921120776058205
-      },
-      "nextControl": {
-        "x": 2.3356603008479695,
-        "y": 7.427726529401952
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 2.806144578313253,
+        "x": 2.806,
         "y": 5.870855421686747
       },
       "prevControl": {
-        "x": 2.3471807228915655,
-        "y": 6.154975903614457
+        "x": 2.534092698472462,
+        "y": 6.152804508928572
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Shoot Position"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.0,
-      "rotationDegrees": 180.0
-    },
-    {
-      "waypointRelativePos": 1.0459291470125762,
-      "rotationDegrees": 180.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [
     {
@@ -62,8 +37,8 @@
         "y": 4.034536
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 1.3693895870736146,
-      "maxWaypointRelativePos": 2.0,
+      "minWaypointRelativePos": 0.7,
+      "maxWaypointRelativePos": 1.0,
       "name": "Point Towards Zone"
     }
   ],
@@ -84,7 +59,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -42.02346070365512
   },
   "useDefaultConstraints": false
 }
