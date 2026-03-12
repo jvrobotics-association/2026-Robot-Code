@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -45,7 +46,6 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /*
@@ -168,6 +168,25 @@ public class RobotContainer {
         break;
     }
 
+    // Create the named commands for PathPlanner Autos
+    NamedCommands.registerCommand(
+        "runIntake", Commands.startEnd(intake::startIntake, intake::stopIntake, intake));
+    NamedCommands.registerCommand(
+        "runShooter",
+        Commands.parallel(
+                Commands.run(pitch::moveToPosition, pitch),
+                Commands.run(shooter::shoot, shooter),
+                Commands.sequence(
+                    Commands.waitSeconds(1.5),
+                    Commands.parallel(
+                        Commands.startEnd(indexer::feed, indexer::stop, indexer),
+                        Commands.runEnd(() -> tower.setManualDutyCycle(0.8), tower::stop, tower))))
+            .finallyDo(
+                () -> {
+                  pitch.movetoMinPosition();
+                  shooter.stop();
+                }));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -262,7 +281,7 @@ public class RobotContainer {
     ///////////////////////////////////
     //////// CONTROLLER INPUTS ////////
     ///////////////////////////////////
-    
+
     // Default for the drive command to field oriented drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -354,7 +373,8 @@ public class RobotContainer {
     hubTarget =
         DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
             ? FieldConstants.HUB_BLUE
-            : FieldConstants.HUB_RED;;
+            : FieldConstants.HUB_RED;
+    ;
   }
 
   /** Schedules the hopperExtendCommand to extend the hopper and intake arm */
