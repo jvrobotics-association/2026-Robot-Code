@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -115,10 +116,9 @@ public class Hopper extends SubsystemBase {
       setManualDutyCycle(LNNTarget.getAsDouble());
     }
 
-    // Logger.recordOutput("Hopper/TargetRotations", targetPositionRotations);
-    // Logger.recordOutput("Hopper/ActualRotations", hopperMotor.getPosition().getValueAsDouble());
-    // Logger.recordOutput("Hopper/StatorCurrent",
-    // hopperMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput("Hopper/TargetRotations", targetPositionRotations);
+    Logger.recordOutput("Hopper/ActualRotations", hopperMotor.getPosition().getValueAsDouble());
+    Logger.recordOutput("Hopper/StatorCurrent", hopperMotor.getStatorCurrent().getValueAsDouble());
   }
 
   public boolean isAtTarget() {

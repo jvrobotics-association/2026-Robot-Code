@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeExtensionConstants;
 import frc.robot.Constants.IntakeExtensionConstants.ExtensionEncoder;
 import frc.robot.Constants.IntakeExtensionConstants.ExtensionMotor;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -143,11 +144,11 @@ public class IntakeExtension extends SubsystemBase {
       setManualDutyCycle(LNNTarget.getAsDouble());
     }
 
-    // Logger.recordOutput("IntakeExtension/TargetRotations", targetPositionRotations);
-    // Logger.recordOutput(
-    //     "IntakeExtension/ActualRotations", extensionMotor.getPosition().getValueAsDouble());
-    // Logger.recordOutput(
-    //     "IntakeExtension/StatorCurrent", extensionMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput("IntakeExtension/TargetRotations", targetPositionRotations);
+    Logger.recordOutput(
+        "IntakeExtension/ActualRotations", extensionMotor.getPosition().getValueAsDouble());
+    Logger.recordOutput(
+        "IntakeExtension/StatorCurrent", extensionMotor.getStatorCurrent().getValueAsDouble());
   }
 
   public boolean isAtTarget() {

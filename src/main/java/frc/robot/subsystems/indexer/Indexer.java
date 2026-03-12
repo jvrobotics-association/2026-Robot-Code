@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IndexerConstants;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -105,10 +106,9 @@ public class Indexer extends SubsystemBase {
     }
 
     // AdvantageKit Logging
-    // Logger.recordOutput("Indexer/TargetVelocityRPS", targetVelocityRPS);
-    // Logger.recordOutput("Indexer/ActualVelocityRPS",
-    // indexerMotor.getVelocity().getValueAsDouble());
-    // Logger.recordOutput(
-    //     "Indexer/StatorCurrent", indexerMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput("Indexer/TargetVelocityRPS", targetVelocityRPS);
+    Logger.recordOutput("Indexer/ActualVelocityRPS", indexerMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput(
+        "Indexer/StatorCurrent", indexerMotor.getStatorCurrent().getValueAsDouble());
   }
 }

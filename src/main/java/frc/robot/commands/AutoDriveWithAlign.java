@@ -47,8 +47,8 @@ public class AutoDriveWithAlign extends Command {
 
       PathConstraints constraints =
           new PathConstraints(
-              LinearVelocity.ofBaseUnits(3.5, MetersPerSecond),
-              LinearAcceleration.ofBaseUnits(4.9, MetersPerSecondPerSecond),
+              LinearVelocity.ofBaseUnits(100, MetersPerSecond),
+              LinearAcceleration.ofBaseUnits(200, MetersPerSecondPerSecond),
               AngularVelocity.ofBaseUnits(540, DegreesPerSecond),
               AngularAcceleration.ofBaseUnits(720, DegreesPerSecondPerSecond));
 
@@ -70,9 +70,9 @@ public class AutoDriveWithAlign extends Command {
           isBlue && yPos.gte(Distance.ofRelativeUnits(158.84, Inch))
               || !isBlue && yPos.lte(Distance.ofRelativeUnits(158.84, Inch));
 
-      // Logger.recordOutput("AutoDriveWithAlign/isNeutralZone", isNeutralZone);
-      // Logger.recordOutput("AutoDriveWithAlign/isBlue", isBlue);
-      // Logger.recordOutput("AutoDriveWithAlign/isLeft", isLeft);
+      Logger.recordOutput("AutoDriveWithAlign/isNeutralZone", isNeutralZone);
+      Logger.recordOutput("AutoDriveWithAlign/isBlue", isBlue);
+      Logger.recordOutput("AutoDriveWithAlign/isLeft", isLeft);
 
       if (isNeutralZone && isLeft) {
         pathCommand = AutoBuilder.pathfindThenFollowPath(leftShootFromNeutralZonePath, constraints);

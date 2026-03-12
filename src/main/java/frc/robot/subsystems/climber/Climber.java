@@ -15,6 +15,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimberConstants;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -113,11 +114,10 @@ public class Climber extends SubsystemBase {
       setManualDutyCycle(LNNTarget.getAsDouble());
     }
 
-    // Logger.recordOutput("Climber/TargetRotations", targetPositionRotations);
-    // Logger.recordOutput("Climber/ActualRotations",
-    // climberMotor.getPosition().getValueAsDouble());
-    // Logger.recordOutput(
-    //     "Climber/StatorCurrent", climberMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput("Climber/TargetRotations", targetPositionRotations);
+    Logger.recordOutput("Climber/ActualRotations", climberMotor.getPosition().getValueAsDouble());
+    Logger.recordOutput(
+        "Climber/StatorCurrent", climberMotor.getStatorCurrent().getValueAsDouble());
   }
 
   public boolean isAtTarget() {

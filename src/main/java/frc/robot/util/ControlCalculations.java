@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.Constants.FieldConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class ControlCalculations {
   /**
@@ -35,7 +36,7 @@ public class ControlCalculations {
    */
   public static Distance getDistanceToTarget(Pose2d robot, Translation3d target) {
     Distance distance = Meters.of(robot.getTranslation().getDistance(target.toTranslation2d()));
-    // Logger.recordOutput("Control Calcs/Distance to Target", distance);
+    Logger.recordOutput("Control Calcs/Distance to Target", distance);
     return distance;
   }
 
