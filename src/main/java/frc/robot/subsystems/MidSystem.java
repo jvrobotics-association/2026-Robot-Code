@@ -262,8 +262,6 @@ public class MidSystem extends SubsystemBase {
     Trigger intakeManualOuttake = operatorPanel.button(12);
     Trigger lockPositionTrigger = operatorPanel.button(14);
 
-
-
     Supplier<Rotation2d> targetAngleSupplier =
         () ->
             new Rotation2d(
