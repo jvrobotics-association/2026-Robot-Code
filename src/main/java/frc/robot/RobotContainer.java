@@ -171,6 +171,12 @@ public class RobotContainer {
     // Create the named commands for PathPlanner Autos
     NamedCommands.registerCommand(
         "runIntake", Commands.startEnd(intake::startIntake, intake::stopIntake, intake));
+    NamedCommands.registerCommand("raiseIntakeArm", Commands.sequence(
+                Commands.runOnce(intakeExt::retract, intakeExt),
+                Commands.runOnce(intake::startIntake, intake),
+                Commands.waitSeconds(1),
+                Commands.runOnce(intakeExt::deploy, intakeExt))
+            .finallyDo(() -> intake.stopIntake()));
     NamedCommands.registerCommand(
         "runShooter",
         Commands.parallel(
