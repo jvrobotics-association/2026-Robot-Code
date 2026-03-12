@@ -3,6 +3,7 @@
   "waypoints": [
     {
       "anchor": {
+<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/LS-NZ.path
         "x": 5.5,
         "y": 7.426
       },
@@ -10,12 +11,22 @@
       "nextControl": {
         "x": 5.0,
         "y": 7.426
+=======
+        "x": 6.1351973684210535,
+        "y": 7.3045175438596495
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.9524013157894755,
+        "y": 7.3429824561403505
+>>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/Left Center to Shoot.path
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
+<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/LS-NZ.path
         "x": 3.5,
         "y": 7.426
       },
@@ -26,6 +37,18 @@
       "nextControl": {
         "x": 2.5,
         "y": 7.426
+=======
+        "x": 3.8946162280701753,
+        "y": 7.3045175438596495
+      },
+      "prevControl": {
+        "x": 4.831395661593744,
+        "y": 7.467938305854999
+      },
+      "nextControl": {
+        "x": 2.343625275927111,
+        "y": 7.033947851382797
+>>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/Left Center to Shoot.path
       },
       "isLocked": false,
       "linkedName": null
@@ -46,8 +69,13 @@
   ],
   "rotationTargets": [
     {
+<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/LS-NZ.path
       "waypointRelativePos": 1.15,
       "rotationDegrees": 0.0
+=======
+      "waypointRelativePos": 1,
+      "rotationDegrees": -172.33080180599381
+>>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/Left Center to Shoot.path
     }
   ],
   "constraintZones": [],
@@ -74,13 +102,22 @@
   },
   "goalEndState": {
     "velocity": 0,
+<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/LS-NZ.path
     "rotation": -45.0
+=======
+    "rotation": -43.905808971414885
+>>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/Left Center to Shoot.path
   },
   "reversed": false,
   "folder": "Telop",
   "idealStartingState": {
+<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/LS-NZ.path
     "velocity": 1.0,
     "rotation": 0.0
+=======
+    "velocity": 0,
+    "rotation": 177.18444331578885
+>>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/Left Center to Shoot.path
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
