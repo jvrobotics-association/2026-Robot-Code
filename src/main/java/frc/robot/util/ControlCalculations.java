@@ -16,7 +16,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.Constants.FieldConstants;
-import org.littletonrobotics.junction.Logger;
 
 public class ControlCalculations {
   /**

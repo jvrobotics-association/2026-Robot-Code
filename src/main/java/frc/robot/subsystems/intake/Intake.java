@@ -18,7 +18,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -108,7 +107,9 @@ public class Intake extends SubsystemBase {
 
     // AdvantageKit Logging
     // Logger.recordOutput("Intake/TargetVelocityRPS", targetVelocityRPS);
-    // Logger.recordOutput("Intake/ActualVelocityRPS", intakeMotor.getVelocity().getValueAsDouble());
-    // Logger.recordOutput("Intake/StatorCurrent", intakeMotor.getStatorCurrent().getValueAsDouble());
+    // Logger.recordOutput("Intake/ActualVelocityRPS",
+    // intakeMotor.getVelocity().getValueAsDouble());
+    // Logger.recordOutput("Intake/StatorCurrent",
+    // intakeMotor.getStatorCurrent().getValueAsDouble());
   }
 }
