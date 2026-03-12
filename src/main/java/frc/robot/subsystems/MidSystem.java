@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
@@ -46,6 +47,7 @@ public class MidSystem extends SubsystemBase {
   private final Supplier<ChassisSpeeds> robotSpeedSupplier;
 
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandGenericHID operatorPanel = new CommandGenericHID(1);
 
   // Target State
   private Translation3d currentTarget;
@@ -239,17 +241,28 @@ public class MidSystem extends SubsystemBase {
   private void configureBindings() {
     // Controller Inputs
     Trigger shootTrigger = controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD);
-    Trigger intakeTrigger = controller.leftTrigger(ControllerConstants.TRIGGER_THRESHOLD);
+    // Trigger intakeTrigger = controller.leftTrigger(ControllerConstants.TRIGGER_THRESHOLD);
     Trigger resetGyroTrigger = controller.start();
     // Trigger lockPositionTrigger = controller.x();
     Trigger aimTrigger = controller.leftBumper();
     Trigger climbTrigger = controller.b();
-    Trigger hopperManualInTrigger = controller.povDown();
+    // Trigger hopperManualInTrigger = controller.povDown();
     Trigger hopperOverrideInTrigger = controller.button(7);
-    Trigger hopperManualOutTrigger = controller.povUp();
-    Trigger intakeManualOuttake = controller.povLeft();
-    Trigger raiseArm = controller.rightBumper();
+    // Trigger hopperManualOutTrigger = controller.povUp();
+    // Trigger intakeManualOuttake = controller.povLeft();
+    // Trigger raiseArm = controller.rightBumper();
     Trigger followPathToShoot = controller.x();
+
+    // Operator Panel Inputs
+    Trigger shootButton = operatorPanel.button(1);
+    Trigger intakeTrigger = operatorPanel.button(4);
+    Trigger hopperManualInTrigger = operatorPanel.button(13);
+    Trigger hopperManualOutTrigger = operatorPanel.button(6);
+    Trigger raiseArm = operatorPanel.button(2);
+    Trigger intakeManualOuttake = operatorPanel.button(12);
+    Trigger lockPositionTrigger = operatorPanel.button(14);
+
+
 
     Supplier<Rotation2d> targetAngleSupplier =
         () ->
@@ -318,6 +331,21 @@ public class MidSystem extends SubsystemBase {
     //             }));
 
     shootTrigger.whileTrue(
+        Commands.parallel(
+                Commands.run(pitch::moveToPosition, pitch),
+                Commands.run(shooter::shoot, shooter),
+                Commands.sequence(
+                    Commands.waitSeconds(1.5),
+                    Commands.parallel(
+                        Commands.startEnd(indexer::feed, indexer::stop, indexer),
+                        Commands.runEnd(() -> tower.setManualDutyCycle(0.8), tower::stop, tower))))
+            .finallyDo(
+                () -> {
+                  pitch.movetoMinPosition();
+                  shooter.stop();
+                }));
+
+    shootButton.whileTrue(
         Commands.parallel(
                 Commands.run(pitch::moveToPosition, pitch),
                 Commands.run(shooter::shoot, shooter),
