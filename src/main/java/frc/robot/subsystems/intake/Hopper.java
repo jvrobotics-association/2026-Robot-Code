@@ -116,9 +116,9 @@ public class Hopper extends SubsystemBase {
       setManualDutyCycle(LNNTarget.getAsDouble());
     }
 
-    Logger.recordOutput("Hopper/TargetRotations", targetPositionRotations);
-    Logger.recordOutput("Hopper/ActualRotations", hopperMotor.getPosition().getValueAsDouble());
-    Logger.recordOutput("Hopper/StatorCurrent", hopperMotor.getStatorCurrent().getValueAsDouble());
+    // Logger.recordOutput("Hopper/TargetRotations", targetPositionRotations);
+    // Logger.recordOutput("Hopper/ActualRotations", hopperMotor.getPosition().getValueAsDouble());
+    // Logger.recordOutput("Hopper/StatorCurrent", hopperMotor.getStatorCurrent().getValueAsDouble());
   }
 
   public boolean isAtTarget() {

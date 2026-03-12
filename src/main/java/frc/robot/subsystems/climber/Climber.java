@@ -114,10 +114,10 @@ public class Climber extends SubsystemBase {
       setManualDutyCycle(LNNTarget.getAsDouble());
     }
 
-    Logger.recordOutput("Climber/TargetRotations", targetPositionRotations);
-    Logger.recordOutput("Climber/ActualRotations", climberMotor.getPosition().getValueAsDouble());
-    Logger.recordOutput(
-        "Climber/StatorCurrent", climberMotor.getStatorCurrent().getValueAsDouble());
+    // Logger.recordOutput("Climber/TargetRotations", targetPositionRotations);
+    // Logger.recordOutput("Climber/ActualRotations", climberMotor.getPosition().getValueAsDouble());
+    // Logger.recordOutput(
+    //     "Climber/StatorCurrent", climberMotor.getStatorCurrent().getValueAsDouble());
   }
 
   public boolean isAtTarget() {

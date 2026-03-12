@@ -106,9 +106,9 @@ public class Indexer extends SubsystemBase {
     }
 
     // AdvantageKit Logging
-    Logger.recordOutput("Indexer/TargetVelocityRPS", targetVelocityRPS);
-    Logger.recordOutput("Indexer/ActualVelocityRPS", indexerMotor.getVelocity().getValueAsDouble());
-    Logger.recordOutput(
-        "Indexer/StatorCurrent", indexerMotor.getStatorCurrent().getValueAsDouble());
+    // Logger.recordOutput("Indexer/TargetVelocityRPS", targetVelocityRPS);
+    // Logger.recordOutput("Indexer/ActualVelocityRPS", indexerMotor.getVelocity().getValueAsDouble());
+    // Logger.recordOutput(
+    //     "Indexer/StatorCurrent", indexerMotor.getStatorCurrent().getValueAsDouble());
   }
 }

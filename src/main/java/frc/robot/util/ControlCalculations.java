@@ -36,7 +36,7 @@ public class ControlCalculations {
    */
   public static Distance getDistanceToTarget(Pose2d robot, Translation3d target) {
     Distance distance = Meters.of(robot.getTranslation().getDistance(target.toTranslation2d()));
-    Logger.recordOutput("Control Calcs/Distance to Targer", distance);
+    // Logger.recordOutput("Control Calcs/Distance to Target", distance);
     return distance;
   }
 

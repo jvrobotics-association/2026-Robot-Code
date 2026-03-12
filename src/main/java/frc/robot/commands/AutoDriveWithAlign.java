@@ -92,8 +92,6 @@ public class AutoDriveWithAlign extends Command {
       CommandScheduler.getInstance().schedule(pathCommand);
     } catch (Exception e) {
       Logger.recordOutput("AutoDriveWithAlign", e.getStackTrace().toString());
-      System.out.println("Unable to run auto");
-      e.printStackTrace();
     }
   }
 

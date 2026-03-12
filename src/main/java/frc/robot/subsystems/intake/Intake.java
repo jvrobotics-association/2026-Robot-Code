@@ -107,8 +107,8 @@ public class Intake extends SubsystemBase {
     }
 
     // AdvantageKit Logging
-    Logger.recordOutput("Intake/TargetVelocityRPS", targetVelocityRPS);
-    Logger.recordOutput("Intake/ActualVelocityRPS", intakeMotor.getVelocity().getValueAsDouble());
-    Logger.recordOutput("Intake/StatorCurrent", intakeMotor.getStatorCurrent().getValueAsDouble());
+    // Logger.recordOutput("Intake/TargetVelocityRPS", targetVelocityRPS);
+    // Logger.recordOutput("Intake/ActualVelocityRPS", intakeMotor.getVelocity().getValueAsDouble());
+    // Logger.recordOutput("Intake/StatorCurrent", intakeMotor.getStatorCurrent().getValueAsDouble());
   }
 }

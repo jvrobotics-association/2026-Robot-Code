@@ -110,8 +110,8 @@ public class Tower extends SubsystemBase {
       setManualDutyCycle(LNNTarget.getAsDouble());
     }
 
-    Logger.recordOutput("Tower/TargetVelocityRPS", targetVelocityRPS);
-    Logger.recordOutput("Tower/ActualVelocityRPS", towerMotor.getVelocity().getValueAsDouble());
-    Logger.recordOutput("Tower/StatorCurrent", towerMotor.getStatorCurrent().getValueAsDouble());
+    // Logger.recordOutput("Tower/TargetVelocityRPS", targetVelocityRPS);
+    // Logger.recordOutput("Tower/ActualVelocityRPS", towerMotor.getVelocity().getValueAsDouble());
+    // Logger.recordOutput("Tower/StatorCurrent", towerMotor.getStatorCurrent().getValueAsDouble());
   }
 }
