@@ -296,7 +296,7 @@ public class RobotContainer {
     controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD).whileTrue(shootCommand);
 
     // Raise the intake arm so that balls in the front of the hopper are moved to the back
-    controller.rightBumper().onTrue(raiseIntakeArmCommand);
+    // controller.rightBumper().onTrue(raiseIntakeArmCommand);
 
     // Manually pull the hopper back in when the zeroing is incorrect
     controller
@@ -318,18 +318,18 @@ public class RobotContainer {
     //////// OPERATOR PANEL INPUTS ////////
     ///////////////////////////////////////
 
-    // Manuually cycle the hopper/intake arm to retract
-    operatorPanel.button(3).onTrue(hopperRetractCommand);
+    // Manually cycle the hopper/intake arm to retract
+    operatorPanel.button(13).onTrue(hopperRetractCommand);
 
-    // Manuually cycle the hopper/intake arm to extend
-    operatorPanel.button(4).onTrue(hopperExtendCommand);
+    // Manually cycle the hopper/intake arm to extend
+    operatorPanel.button(6).onTrue(hopperExtendCommand);
 
     // Run the intake
-    operatorPanel.button(1).whileTrue(runIntakeCommand);
+    operatorPanel.button(4).whileTrue(runIntakeCommand);
 
     // Manually outake fuel by running the indexer and intake in reverse
     operatorPanel
-        .button(4)
+        .button(12)
         .whileTrue(
             Commands.parallel(
                 Commands.startEnd(
@@ -337,13 +337,13 @@ public class RobotContainer {
                 Commands.startEnd(() -> indexer.setManualDutyCycle(-20), indexer::stop, indexer)));
 
     // Raise the intake arm so that balls in the front of the hopper are moved to the back
-    operatorPanel.button(5).onTrue(raiseIntakeArmCommand);
+    operatorPanel.button(2).onTrue(raiseIntakeArmCommand);
 
     // Shoot the balls once the robot is aligned
-    operatorPanel.button(2).whileTrue(shootCommand);
+    operatorPanel.button(1).whileTrue(shootCommand);
 
     // Lock the drive modules to an X configuration to help avoid getting bumped around
-    operatorPanel.button(7).onTrue(xLockWheelsCommand);
+    operatorPanel.button(14).onTrue(xLockWheelsCommand);
   }
 
   /**
@@ -355,8 +355,6 @@ public class RobotContainer {
         DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
             ? FieldConstants.HUB_BLUE
             : FieldConstants.HUB_RED;;
-    Logger.recordOutput("Robot Container/Hub Target", hubTarget);
-    System.out.println("Update hub target");
   }
 
   /** Schedules the hopperExtendCommand to extend the hopper and intake arm */
