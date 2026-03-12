@@ -63,26 +63,30 @@ public class AutoDriveWithAlign extends Command {
                   && xPos.gte(Distance.ofRelativeUnits(182.11, Inch))
                   && xPos.lte(Distance.ofRelativeUnits(469.11, Inch))
               || !isBlue
-                  && xPos.lte(Distance.ofRelativeUnits(469.11, Inch))
-                  && xPos.gte(Distance.ofBaseUnits(182.11, Inch));
+                  && xPos.gte(Distance.ofRelativeUnits(182.11, Inch))
+                  && xPos.lte(Distance.ofRelativeUnits(469.11, Inch));
 
       boolean isLeft =
           isBlue && yPos.gte(Distance.ofRelativeUnits(158.84, Inch))
               || !isBlue && yPos.lte(Distance.ofRelativeUnits(158.84, Inch));
 
-      Logger.recordOutput("AutoDriveWithAlign/isNeutralZone", isNeutralZone);
-      Logger.recordOutput("AutoDriveWithAlign/isBlue", isBlue);
-      Logger.recordOutput("AutoDriveWithAlign/isLeft", isLeft);
+      // Logger.recordOutput("AutoDriveWithAlign/isNeutralZone", isNeutralZone);
+      // Logger.recordOutput("AutoDriveWithAlign/isBlue", isBlue);
+      // Logger.recordOutput("AutoDriveWithAlign/isLeft", isLeft);
 
       if (isNeutralZone && isLeft) {
         pathCommand = AutoBuilder.pathfindThenFollowPath(leftShootFromNeutralZonePath, constraints);
-      } else if (!isNeutralZone && isLeft) {
-        pathCommand = AutoBuilder.pathfindToPoseFlipped(FieldConstants.LEFT_SHOOT_POS, constraints);
+      } else if (isBlue && !isNeutralZone && isLeft) {
+        pathCommand = AutoBuilder.pathfindToPose(FieldConstants.LEFT_SHOOT_POS_BLUE, constraints);
+      } else if (!isBlue && !isNeutralZone && isLeft) {
+        pathCommand = AutoBuilder.pathfindToPose(FieldConstants.LEFT_SHOOT_POS_RED, constraints);
       } else if (isNeutralZone && !isLeft) {
         pathCommand =
             AutoBuilder.pathfindThenFollowPath(rightShootFromNeutralZonePath, constraints);
-      } else {
-        pathCommand = AutoBuilder.pathfindToPoseFlipped(FieldConstants.RIGHT_SHOOT_POS, constraints);
+      } else if (isBlue && !isNeutralZone && !isLeft) {
+        pathCommand = AutoBuilder.pathfindToPose(FieldConstants.RIGHT_SHOOT_POS_BLUE, constraints);
+      } else if (!isBlue && !isNeutralZone && !isLeft) {
+        pathCommand = AutoBuilder.pathfindToPose(FieldConstants.RIGHT_SHOOT_POS_RED, constraints);
       }
 
       CommandScheduler.getInstance().schedule(pathCommand);
