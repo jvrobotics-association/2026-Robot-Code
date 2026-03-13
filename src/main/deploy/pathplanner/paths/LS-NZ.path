@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.5,
-        "y": 7.33
+        "x": 5.953980028530669,
+        "y": 7.426
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.0,
-        "y": 7.33
+        "x": 5.453980028530669,
+        "y": 7.426
       },
       "isLocked": false,
       "linkedName": null
@@ -17,27 +17,27 @@
     {
       "anchor": {
         "x": 3.5,
-        "y": 7.33
+        "y": 7.426
       },
       "prevControl": {
-        "x": 4.0,
-        "y": 7.33
+        "x": 4.103751783166904,
+        "y": 7.431398002853067
       },
       "nextControl": {
-        "x": 2.25,
-        "y": 7.33
+        "x": 2.5000399662439303,
+        "y": 7.41705959226016
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.8357631954350926,
-        "y": 5.658801711840229
+        "x": 3.1592296718972896,
+        "y": 5.619985734664765
       },
       "prevControl": {
-        "x": 1.9518797189519077,
-        "y": 6.5426851883234125
+        "x": 2.2753461954141048,
+        "y": 6.503869211147949
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +47,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.15,
-      "rotationDegrees": 0.0
+      "rotationDegrees": 178.76745547368543
     }
   ],
   "constraintZones": [],
@@ -74,13 +74,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -45.0
+    "rotation": -47.42633583160238
   },
   "reversed": false,
   "folder": "Telop",
   "idealStartingState": {
-    "velocity": 1.0,
-    "rotation": 0.0
+    "velocity": 0.0,
+    "rotation": -178.78633490705582
   },
   "useDefaultConstraints": false
 }
