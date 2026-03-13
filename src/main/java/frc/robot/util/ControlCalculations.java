@@ -10,12 +10,16 @@ import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Constants.FieldConstants.DISTANCE_ABOVE_FUNNEL;
 import static frc.robot.Constants.FieldConstants.ROBOT_TO_TURRET_TRANSFORM;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.ShooterPitchConstants;
+
 import org.littletonrobotics.junction.Logger;
 
 public class ControlCalculations {
@@ -80,7 +84,15 @@ public class ControlCalculations {
     double g = 386; // gravity inches/sec^2
     double exitVelocity = Math.sqrt(-g / (2 * a * (Math.cos(theta)) * (Math.cos(theta))));
 
-    return new LaunchCalc(pitchAngle, exitVelocity);
+    // convert from angle to rotations
+    double slope = (ShooterPitchConstants.MIN_ROTATION - ShooterPitchConstants.MAX_ROTATION) / (ShooterPitchConstants.MAX_SHOT_ANGLE - ShooterPitchConstants.MIN_SHOT_ANGLE);
+    double rawRotations = ShooterPitchConstants.MAX_ROTATION + slope * (pitchAngle - ShooterPitchConstants.MIN_SHOT_ANGLE);
+    double rotations = MathUtil.clamp( rawRotations, ShooterPitchConstants.MIN_ROTATION, ShooterPitchConstants.MAX_ROTATION);
+
+    // convert from inches/sec to rotations/sec
+    double exitRPS = exitVelocity / ShooterConstants.FLYWHEEL_CIRCUMFERENCE;
+
+    return new LaunchCalc(rotations, exitRPS);
   }
 
   public static LaunchCalc MultiShot(

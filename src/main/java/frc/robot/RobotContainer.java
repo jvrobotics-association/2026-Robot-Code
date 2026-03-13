@@ -46,6 +46,9 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.util.ControlCalculations;
+import frc.robot.util.ControlCalculations.LaunchCalc;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /*
@@ -81,6 +84,10 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+
+  // launch
+  double calcPitch = 0;
+  double calcVel = 0;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -295,6 +302,35 @@ public class RobotContainer {
 
     // Locks the wheels to an X pattern to make the robot harder to move
     Command xLockWheelsCommand = Commands.runOnce(drive::stopWithX, drive);
+
+
+    
+
+    
+
+    Command testShootCommand =
+        Commands.sequence(
+            // seq 1
+            Commands.run(() -> {
+                calcPitch = ControlCalculations.SingleShot(drive.getPose(), hubTarget).shooterPitch();
+                calcVel = ControlCalculations.SingleShot(drive.getPose(), hubTarget).shooterVelocity();
+            }),
+            // seq 2
+            Commands.parallel(
+                Commands.run(()->pitch.moveToTestPosition(calcPitch), pitch),
+                Commands.run(()->shooter.testShoot(calcVel), shooter),
+                Commands.sequence(
+                    Commands.waitSeconds(1.5),
+                    Commands.parallel(
+                        Commands.startEnd(indexer::feed, indexer::stop, indexer),
+                        Commands.runEnd(() -> tower.setManualDutyCycle(0.8), tower::stop, tower))))
+            .finallyDo(
+                () -> {
+                pitch.movetoMinPosition();
+                shooter.stop();
+                }
+            )
+        );
 
     ///////////////////////////////////
     //////// CONTROLLER INPUTS ////////

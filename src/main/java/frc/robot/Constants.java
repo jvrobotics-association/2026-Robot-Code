@@ -80,7 +80,7 @@ public final class Constants {
 
     public static final double SPEED_MOE = 0.05;
     public static final double SPEED = 65;
-    public static final double FLYWHEEL_CIRCUMFERENCE = 4.5;
+    public static final double FLYWHEEL_CIRCUMFERENCE = 9.42478;
   }
 
   public final class ShooterPitchConstants {
@@ -216,7 +216,7 @@ public final class Constants {
     public static final Transform3d ROBOT_TO_TURRET_TRANSFORM =
         new Transform3d(
             new Translation3d(Inches.zero(), Inches.of(-6), Inches.of(20.625)), Rotation3d.kZero);
-    public static final Distance DISTANCE_ABOVE_FUNNEL = Inches.of(6);
+    public static final Distance DISTANCE_ABOVE_FUNNEL = Inches.of(10);
 
     public static final Pose2d LEFT_SHOOT_POS_BLUE =
         new Pose2d(

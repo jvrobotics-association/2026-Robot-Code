@@ -89,6 +89,11 @@ public class ShooterPitch extends SubsystemBase {
     pitchMotor.setControl(positionRequest.withPosition(ShooterPitchConstants.SHOOT_ANGLE));
   }
 
+   public void moveToTestPosition(double angle) {
+    // pitchMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+    pitchMotor.setControl(positionRequest.withPosition(angle));
+  }
+
   public void movetoMinPosition() {
     pitchMotor.setControl(positionRequest.withPosition(ShooterPitchConstants.MIN_ROTATION));
   }
