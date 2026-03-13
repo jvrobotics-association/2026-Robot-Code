@@ -47,8 +47,8 @@ public class AutoDriveWithAlign extends Command {
 
       PathConstraints constraints =
           new PathConstraints(
-              LinearVelocity.ofBaseUnits(100, MetersPerSecond),
-              LinearAcceleration.ofBaseUnits(200, MetersPerSecondPerSecond),
+              LinearVelocity.ofBaseUnits(3.5, MetersPerSecond),
+              LinearAcceleration.ofBaseUnits(6, MetersPerSecondPerSecond),
               AngularVelocity.ofBaseUnits(540, DegreesPerSecond),
               AngularAcceleration.ofBaseUnits(720, DegreesPerSecondPerSecond));
 

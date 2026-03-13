@@ -194,6 +194,16 @@ public class RobotContainer {
                   pitch.movetoMinPosition();
                   shooter.stop();
                 }));
+    NamedCommands.registerCommand(
+        "extendHopperAndIntake",
+        Commands.sequence(
+            Commands.runOnce(hopper::deploy, hopper),
+            Commands.waitSeconds(1),
+            Commands.runOnce(intakeExt::deploy, intakeExt)
+            // Commands.waitSeconds(1),
+            // Commands.runOnce(hopper::stop, hopper),
+            // Commands.runOnce(intakeExt::stop, intakeExt)));
+            ));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());

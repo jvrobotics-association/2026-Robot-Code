@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 5.5,
-        "y": 0.639
+        "y": 0.65
       },
       "prevControl": null,
       "nextControl": {
         "x": 5.0,
-        "y": 0.6390000000000001
+        "y": 0.6500000000000001
       },
       "isLocked": false,
       "linkedName": null
@@ -17,15 +17,15 @@
     {
       "anchor": {
         "x": 3.5,
-        "y": 0.639
+        "y": 0.65
       },
       "prevControl": {
         "x": 4.0,
-        "y": 0.6389999999999999
+        "y": 0.6499999999999999
       },
       "nextControl": {
-        "x": 2.5,
-        "y": 0.6390000000000001
+        "x": 2.25,
+        "y": 0.6500000000000001
       },
       "isLocked": false,
       "linkedName": null
@@ -79,7 +79,7 @@
   "reversed": false,
   "folder": "Telop",
   "idealStartingState": {
-    "velocity": 0.0,
+    "velocity": 1.0,
     "rotation": 0.0
   },
   "useDefaultConstraints": false
