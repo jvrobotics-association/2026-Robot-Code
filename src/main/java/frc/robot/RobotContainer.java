@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.commands.AutoDriveUnderTrench;
 import frc.robot.commands.AutoDriveWithAlign;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -314,6 +315,8 @@ public class RobotContainer {
     // Automatically follow a path or pathfind to a specific pose to align for shooting. Locks the
     // wheels to the X pattern once at destination
     controller.x().whileTrue(Commands.sequence(new AutoDriveWithAlign(drive), xLockWheelsCommand));
+
+    controller.y().whileTrue(new AutoDriveUnderTrench(drive));
 
     // Aim the robot at the hub, this does not follow a path and simply aims the bot while allowing
     // for X & Y travel

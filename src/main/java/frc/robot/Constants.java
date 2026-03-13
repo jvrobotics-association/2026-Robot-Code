@@ -220,27 +220,27 @@ public final class Constants {
 
     public static final Pose2d LEFT_SHOOT_POS_BLUE =
         new Pose2d(
-            Distance.ofBaseUnits(2.75, Meters),
-            Distance.ofBaseUnits(5.78, Meters),
-            new Rotation2d(Angle.ofRelativeUnits(-45, Degree)));
-
-    public static final Pose2d LEFT_SHOOT_POS_RED =
-        new Pose2d(
-            Distance.ofBaseUnits(13.791, Meters),
-            Distance.ofBaseUnits(2.25, Meters),
-            new Rotation2d(Angle.ofRelativeUnits(135, Degree)));
+            Distance.ofBaseUnits(2.544, Meters),
+            Distance.ofBaseUnits(5.665, Meters),
+            new Rotation2d(Angle.ofRelativeUnits(-42, Degree)));
 
     public static final Pose2d RIGHT_SHOOT_POS_BLUE =
         new Pose2d(
-            Distance.ofBaseUnits(2.75, Meters),
-            Distance.ofBaseUnits(2.25, Meters),
-            new Rotation2d(Angle.ofRelativeUnits(45, Degree)));
+            Distance.ofBaseUnits(2.544, Meters),
+            Distance.ofBaseUnits(2.403, Meters),
+            new Rotation2d(Angle.ofRelativeUnits(42, Degree)));
+
+    public static final Pose2d LEFT_SHOOT_POS_RED =
+        new Pose2d(
+            Distance.ofBaseUnits(13.996, Meters),
+            Distance.ofBaseUnits(2.403, Meters),
+            new Rotation2d(Angle.ofRelativeUnits(138, Degree)));
 
     public static final Pose2d RIGHT_SHOOT_POS_RED =
         new Pose2d(
-            Distance.ofBaseUnits(13.791, Meters),
-            Distance.ofBaseUnits(5.78, Meters),
-            new Rotation2d(Angle.ofRelativeUnits(-135, Degree)));
+            Distance.ofBaseUnits(13.996, Meters),
+            Distance.ofBaseUnits(5.665, Meters),
+            new Rotation2d(Angle.ofRelativeUnits(-138, Degree)));
   }
 
   public final class ControllerConstants {

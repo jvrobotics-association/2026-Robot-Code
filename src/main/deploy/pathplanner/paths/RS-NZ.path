@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.541069900142652,
-        "y": 0.612724679029958
+        "x": 5.540366700532809,
+        "y": 0.6389999999999999
       },
       "isLocked": false,
       "linkedName": null
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 3.3403708987161194,
-        "y": 2.2947503566333807
+        "x": 2.544,
+        "y": 2.403
       },
       "prevControl": {
-        "x": 2.4564874222329345,
-        "y": 1.4108668801501967
+        "x": 1.6150689681532573,
+        "y": 1.5665867420514272
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +47,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.15,
-      "rotationDegrees": -179.50004114769476
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],
@@ -74,7 +74,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 53.673174047879755
+    "rotation": 42.0
   },
   "reversed": false,
   "folder": "Telop",

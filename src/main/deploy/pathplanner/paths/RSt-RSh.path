@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.401590361445783,
+        "x": 4.353946517857143,
         "y": 0.5927710843373495
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.401590361445782,
+        "x": 5.353946517857142,
         "y": 0.5927710843373495
       },
       "isLocked": false,
@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 7.247845934379456,
+        "x": 7.54877108433735,
         "y": 0.7239036144578312
       },
       "prevControl": {
-        "x": 6.54582235360844,
-        "y": 0.5739087018544944
+        "x": 6.637264381417482,
+        "y": 0.3251194319303876
       },
       "nextControl": {
-        "x": 7.621109624622617,
-        "y": 0.8036554292537559
+        "x": 7.898457831325301,
+        "y": 0.8768915662650603
       },
       "isLocked": false,
       "linkedName": null
@@ -36,56 +36,56 @@
         "y": 3.2919156626506028
       },
       "prevControl": {
-        "x": 7.912718231119257,
-        "y": 3.5026740666590097
+        "x": 7.94963220204488,
+        "y": 2.8206228901597217
       },
       "nextControl": {
-        "x": 7.571312410841653,
-        "y": 2.967560627674751
+        "x": 7.690831325301204,
+        "y": 3.5323253012048186
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.199814550641939,
-        "y": 0.7239036144578312
+        "x": 6.2124057142857145,
+        "y": 0.5927710843373495
       },
       "prevControl": {
-        "x": 7.0796433666191145,
-        "y": 0.8973751783166914
+        "x": 7.684418125000001,
+        "y": 0.6145572321428574
       },
       "nextControl": {
-        "x": 4.969664272408759,
-        "y": 0.4813608735616775
+        "x": 4.958710216948215,
+        "y": 0.5742160808541646
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.2756776034236803,
-        "y": 0.7239036144578312
+        "x": 2.4673855421686746,
+        "y": 0.9643132530120488
       },
       "prevControl": {
-        "x": 4.019076101664197,
-        "y": 0.5450934815657572
+        "x": 2.96618490366688,
+        "y": 0.42214003399225863
       },
       "nextControl": {
-        "x": 2.124136947218259,
-        "y": 1.0008844507845935
+        "x": 2.2160481927710847,
+        "y": 1.2375060240963864
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.3403708987161194,
-        "y": 2.2947503566333807
+        "x": 2.544,
+        "y": 2.403
       },
       "prevControl": {
-        "x": 2.7174913806438306,
-        "y": 1.89042505542856
+        "x": 1.9588215784884757,
+        "y": 1.9458085103311569
       },
       "nextControl": null,
       "isLocked": false,
@@ -103,18 +103,18 @@
     },
     {
       "waypointRelativePos": 3,
-      "rotationDegrees": 179.5285002478596
+      "rotationDegrees": 180.0
     },
     {
-      "waypointRelativePos": 4,
-      "rotationDegrees": 179.44776862342476
+      "waypointRelativePos": 3.558464770047165,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 1.1938031591737566,
-      "maxWaypointRelativePos": 1.8256379100850795,
+      "minWaypointRelativePos": 0.8327153232405891,
+      "maxWaypointRelativePos": 2.1871164075286416,
       "constraints": {
         "maxVelocity": 1.75,
         "maxAcceleration": 8.0,
@@ -128,7 +128,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
+    "maxVelocity": 2.25,
     "maxAcceleration": 8.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -137,7 +137,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 53.673174047879755
+    "rotation": 42.0
   },
   "reversed": false,
   "folder": "Auto",
@@ -145,5 +145,5 @@
     "velocity": 0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
