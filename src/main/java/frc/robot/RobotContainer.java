@@ -380,27 +380,39 @@ public class RobotContainer {
     operatorPanel.button(1).whileTrue(shootCommand);
 
     // Raise the hood manually
-    operatorPanel.button(3).whileTrue(
-        Commands.repeatingSequence(
-            Commands.run(() -> pitch.manUp()),
-            Commands.waitSeconds(0.01)
-    ));
+    operatorPanel
+        .button(3)
+        .whileTrue(
+            Commands.repeatingSequence(
+                Commands.run(() -> pitch.manUp()), Commands.waitSeconds(0.01)));
 
     // Lower the hood manually
-    operatorPanel.button(8).whileTrue(
-        Commands.repeatingSequence(
-            Commands.run(() -> pitch.manUp()),
-            Commands.waitSeconds(0.01)
-    ));
+    operatorPanel
+        .button(8)
+        .whileTrue(
+            Commands.repeatingSequence(
+                Commands.run(() -> pitch.manDown()), Commands.waitSeconds(0.01)));
 
     // Shoot without moving the hood
-    operatorPanel.button(5).whileTrue(
-        Commands.runEnd(
-            () -> shooter.shoot(),
-            () -> shooter.stop(),
-            shooter
-    ));
-    
+    operatorPanel
+        .button(5)
+        .whileTrue(
+            Commands.runEnd(
+                // run
+                () ->
+                    Commands.sequence(
+                        Commands.run(() -> shooter.shoot(), shooter),
+                        Commands.waitSeconds(1.5),
+                        Commands.parallel(
+                            Commands.startEnd(indexer::feed, indexer::stop, indexer),
+                            Commands.runEnd(
+                                () -> tower.setManualDutyCycle(0.8), tower::stop, tower))),
+                // end
+                () ->
+                    Commands.run(
+                        () -> shooter.stop(),
+                        // req
+                        shooter)));
 
     // Lock the drive modules to an X configuration to help avoid getting bumped around
     // operatorPanel.button(14).onTrue(xLockWheelsCommand);

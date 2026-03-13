@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 2.75,
-        "y": 2.25
+        "x": 2.9004564907275316,
+        "y": 2.3853209700427964
       },
       "prevControl": {
-        "x": 1.8661165235168151,
-        "y": 1.366116523516816
+        "x": 2.0165730142443468,
+        "y": 1.5014374935596124
       },
       "nextControl": null,
       "isLocked": false,
@@ -74,7 +74,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 45.0
+    "rotation": 44.78214637490282
   },
   "reversed": false,
   "folder": "Telop",
