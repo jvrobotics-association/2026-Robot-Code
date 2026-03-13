@@ -369,6 +369,29 @@ public class RobotContainer {
     // Shoot the balls once the robot is aligned
     operatorPanel.button(1).whileTrue(shootCommand);
 
+    // Raise the hood manually
+    operatorPanel.button(3).whileTrue(
+        Commands.repeatingSequence(
+            Commands.run(() -> pitch.manUp()),
+            Commands.waitSeconds(0.01)
+    ));
+
+    // Lower the hood manually
+    operatorPanel.button(8).whileTrue(
+        Commands.repeatingSequence(
+            Commands.run(() -> pitch.manUp()),
+            Commands.waitSeconds(0.01)
+    ));
+
+    // Shoot without moving the hood
+    operatorPanel.button(5).whileTrue(
+        Commands.runEnd(
+            () -> shooter.shoot(),
+            () -> shooter.stop(),
+            shooter
+    ));
+    
+
     // Lock the drive modules to an X configuration to help avoid getting bumped around
     // operatorPanel.button(14).onTrue(xLockWheelsCommand);
   }

@@ -93,6 +93,30 @@ public class ShooterPitch extends SubsystemBase {
     pitchMotor.setControl(positionRequest.withPosition(ShooterPitchConstants.MIN_ROTATION));
   }
 
+  public void manUp() {
+    double currentPos = pitchMotor.getPosition().getValueAsDouble();
+
+    if (currentPos >= ShooterPitchConstants.MAX_ROTATION || currentPos <= ShooterPitchConstants.MIN_ROTATION) {
+      return;
+    }
+
+    double newPos = currentPos + 0.2;
+
+    pitchMotor.setControl(positionRequest.withPosition(newPos));
+  }
+
+  public void manDown() {
+    double currentPos = pitchMotor.getPosition().getValueAsDouble();
+
+    if (currentPos >= ShooterPitchConstants.MAX_ROTATION || currentPos <= ShooterPitchConstants.MIN_ROTATION) {
+      return;
+    }
+
+    double newPos = currentPos - 0.2;
+
+    pitchMotor.setControl(positionRequest.withPosition(newPos));
+  }
+
   // Manual Control for Dev
   public void setManualDutyCycle(double output) {
     this.targetPositionRotations = 0;
