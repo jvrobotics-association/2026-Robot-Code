@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.54922891566265,
-        "y": 3.9147951807228916
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 2.3958487874465044,
-        "y": 3.7180028530670475
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
         "x": 2.544,
         "y": 2.403
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.5835929567055675,
+        "y": 1.6517315710774638
+      },
+      "isLocked": false,
+      "linkedName": "Right Shoot Position"
+    },
+    {
+      "anchor": {
+        "x": 0.4785421686746987,
+        "y": 0.6146265060240967
+      },
       "prevControl": {
-        "x": 2.2151062216090804,
-        "y": 2.106862711792419
+        "x": 1.4401807228915664,
+        "y": 1.0954457831325295
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right Shoot Position"
+      "linkedName": "Human Player Station"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7659655831739908,
+      "rotationDegrees": 41.4182793191955
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 42.0
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "Auto",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -179.5032365730118
+    "rotation": 42.0
   },
   "useDefaultConstraints": true
 }

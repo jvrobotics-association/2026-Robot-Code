@@ -9,15 +9,9 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "runIntake"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
-                  "pathName": "LSt-LSh"
+                  "pathName": "CSt-LSh"
                 }
               },
               {
@@ -27,7 +21,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 6.3
+                        "waitTime": 1.0
                       }
                     },
                     {
@@ -47,7 +41,7 @@
                                 {
                                   "type": "wait",
                                   "data": {
-                                    "waitTime": 4.0
+                                    "waitTime": 1.5
                                   }
                                 },
                                 {
@@ -75,6 +69,12 @@
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "LSh-Back"
                 }
               }
             ]

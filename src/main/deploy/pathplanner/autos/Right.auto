@@ -5,19 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "extendHopperAndIntake"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [

@@ -5,19 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "extendHopperAndIntake"
-                }
-              }
-            ]
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -34,7 +21,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.5
+                        "waitTime": 1.0
                       }
                     },
                     {
@@ -50,31 +37,19 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "raiseIntakeArm"
-          }
-        },
-        {
-          "type": "race",
+          "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "runShooter"
-                }
-              },
               {
                 "type": "wait",
                 "data": {
                   "waitTime": 1.5
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "raiseIntakeArm"
                 }
               }
             ]
@@ -83,7 +58,56 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RSh-Back"
+            "pathName": "RSh-HP"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "HP-RSh"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "runShooter"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "raiseIntakeArm"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "raiseIntakeArm"
+                }
+              }
+            ]
           }
         }
       ]
