@@ -77,13 +77,6 @@ public class ShooterPitch extends SubsystemBase {
     }
   }
 
-  // Active Control for Prod
-  public void setTargetPosition(double rotations) {
-    if (LNNOverride.getAsBoolean()) return;
-
-    this.targetPositionRotations = rotations;
-  }
-
   public void moveToPosition() {
     // pitchMotor.setControl(positionRequest.withPosition(targetPositionRotations));
     pitchMotor.setControl(positionRequest.withPosition(ShooterPitchConstants.SHOOT_ANGLE));
@@ -118,12 +111,6 @@ public class ShooterPitch extends SubsystemBase {
     pitchMotor.setControl(positionRequest.withPosition(newPos));
   }
 
-  // Manual Control for Dev
-  public void setManualDutyCycle(double output) {
-    this.targetPositionRotations = 0;
-    LNNCurrent.set(pitchMotor.getPosition().getValueAsDouble());
-    pitchMotor.setControl(positionRequest.withPosition(output));
-  }
 
   public void stop() {
     pitchMotor.stopMotor();
@@ -131,10 +118,6 @@ public class ShooterPitch extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (LNNOverride.getAsBoolean()) {
-      setManualDutyCycle(LNNTarget.getAsDouble());
-    }
-
     Logger.recordOutput("ShooterPitch/TargetRotations", targetPositionRotations);
     Logger.recordOutput(
         "ShooterPitch/ActualRotations", pitchMotor.getPosition().getValueAsDouble());
@@ -142,8 +125,4 @@ public class ShooterPitch extends SubsystemBase {
         "ShooterPitch/StatorCurrent", pitchMotor.getStatorCurrent().getValueAsDouble());
   }
 
-  public boolean readyToShoot() {
-    double currentPos = pitchMotor.getPosition().getValueAsDouble();
-    return Math.abs(currentPos - targetPositionRotations) <= ShooterPitchConstants.PITCH_MOE;
-  }
 }

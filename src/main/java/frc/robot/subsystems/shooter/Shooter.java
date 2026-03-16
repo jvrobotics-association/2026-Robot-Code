@@ -11,7 +11,6 @@ import static edu.wpi.first.units.Units.Second;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -19,8 +18,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Shooter extends SubsystemBase {
   /* Hardware */
@@ -32,13 +29,6 @@ public class Shooter extends SubsystemBase {
       new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
   private final MotionMagicVelocityTorqueCurrentFOC rightVelocityRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
-
-  private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(true);
-
-  /* State */
-  private final LoggedNetworkBoolean LNNOverride =
-      new LoggedNetworkBoolean("Shooter Override", false);
-  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Shooter Speed", 0.0);
 
   private double targetVelocityRPS = 0;
 
@@ -104,29 +94,10 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  /** Sets target velocity */
-  public void setTargetVelocity(double velocityRPS) {
-    if (LNNOverride.getAsBoolean()) return;
-
-    this.targetVelocityRPS = velocityRPS;
-  }
 
   public void shoot() {
-    // leftMotor.setControl(leftVelocityRequest.withVelocity(targetVelocityRPS));
-    // rightMotor.setControl(rightVelocityRequest.withVelocity(targetVelocityRPS));
-
     leftMotor.setControl(leftVelocityRequest.withVelocity(ShooterConstants.SPEED));
     rightMotor.setControl(rightVelocityRequest.withVelocity(ShooterConstants.SPEED));
-
-    // leftMotor.setControl(voltageRequest.withOutput(8));
-    // rightMotor.setControl(voltageRequest.withOutput(8));
-  }
-
-  /** Sets open-loop duty cycle (for testing/override). */
-  public void setDutyCycle(double output) {
-    this.targetVelocityRPS = 0; // Invalidate velocity setpoint
-    leftMotor.setControl(leftVelocityRequest.withVelocity(output));
-    rightMotor.setControl(rightVelocityRequest.withVelocity(output));
   }
 
   public void stop() {
@@ -137,10 +108,6 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Handle NetworkTable Override logic
-    if (LNNOverride.getAsBoolean()) {
-      setDutyCycle(LNNTarget.getAsDouble());
-    }
 
     // AdvantageKit Logging (Crucial for the "Active" method to see what is happening)
     Logger.recordOutput("Shooter/TargetVelocityRPS", targetVelocityRPS);
