@@ -74,9 +74,6 @@ public class RobotContainer {
   private Translation3d hubTarget;
   private Command hopperExtendCommand;
 
-  // @SuppressWarnings("unused") //TODO:Ask Chase
-  // private final MidSystem midSystem;
-
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -106,10 +103,6 @@ public class RobotContainer {
         intakeExt = new IntakeExtension();
         hopper = new Hopper();
 
-        // midSystem =
-        //     new MidSystem(
-        //         shooter, pitch, indexer, tower, drive, vision, intake, intakeExt, hopper,
-        // climber);
         break;
 
       case SIM:
@@ -134,10 +127,6 @@ public class RobotContainer {
         intakeExt = new IntakeExtension();
         hopper = new Hopper();
 
-        // midSystem =
-        //     new MidSystem(
-        //         shooter, pitch, indexer, tower, drive, vision, intake, intakeExt, hopper,
-        // climber);
         break;
 
       default:
@@ -170,10 +159,8 @@ public class RobotContainer {
         "raiseIntakeArm",
         Commands.sequence(
             Commands.runOnce(intakeExt::retract, intakeExt),
-            // Commands.runOnce(intake::startIntake, intake),
             Commands.waitSeconds(1),
             Commands.runOnce(intakeExt::deploy, intakeExt)));
-    // .finallyDo(() -> intake.stopIntake()));
     NamedCommands.registerCommand(
         "runShooter",
         Commands.parallel(
