@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterPitchConstants;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ShooterPitch extends SubsystemBase {
   /* Hardware */
@@ -28,12 +27,8 @@ public class ShooterPitch extends SubsystemBase {
   private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0).withSlot(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride =
-      new LoggedNetworkBoolean("Pitch Override", false);
   private final LoggedNetworkBoolean LNNConfig =
       new LoggedNetworkBoolean("Pitch Config Applied", false);
-  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Pitch Setpoint", 0.0);
-  private final LoggedNetworkNumber LNNCurrent = new LoggedNetworkNumber("Pitch Current", 0.0);
 
   private double targetPositionRotations = 0;
 
