@@ -142,23 +142,6 @@ public final class Constants {
     public static final double DEPLOYED_ROTATIONS = 0.39;
   }
 
-  public final class ClimberConstants {
-    public static final int MOTOR = 60;
-
-    public static final double STATOR_AMP_LIMIT = 40;
-    public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
-    public static final double PEAK_REVERSE_TORQUE_CURRENT = -40;
-    public static final double SENSOR_TO_MECH_RATIO = 48;
-    public static final double MM_CRUISE_VEL = 0;
-    public static final double MM_ACCELERATION = 0;
-    public static final double PID_KP = 0;
-    public static final double PID_KD = 0;
-    public static final double PID_KS = 0;
-    public static final double PID_KV = 0;
-    public static final double TOLERANCE_ROTATIONS = 0;
-    public static final double CLIMB_ROTATIONS = 0;
-    public static final double PREPARE_ROTATIONS = 0;
-  }
 
   public final class TowerConstants {
     public static final int CAN_ID = 3;
@@ -188,11 +171,6 @@ public final class Constants {
     public static final double DEPLOYED_ROTATIONS = 5.2;
     public static final double RETRACTED_ROTATIONS = 0.02;
     public static final double TOLERANCE_ROTATIONS = 0.005;
-  }
-
-  public final class MidSystemConstants {
-    public static final double CALCS_PER_SECOND = 10.0; // TODO: Verify
-    public static final double AIM_TOLERANCE_DEGREES = 3.0;
   }
 
   public final class RobotConstants {
