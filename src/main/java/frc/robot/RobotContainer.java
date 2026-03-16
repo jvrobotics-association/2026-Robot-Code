@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.commands.AutoDriveUnderTrench;
 import frc.robot.commands.AutoDriveWithAlign;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -77,7 +76,7 @@ public class RobotContainer {
   private Translation3d hubTarget;
   private Command hopperExtendCommand;
 
-  // @SuppressWarnings("unused")
+  // @SuppressWarnings("unused") //TODO:Ask Chase
   // private final MidSystem midSystem;
 
   // Dashboard inputs
@@ -195,35 +194,25 @@ public class RobotContainer {
                   pitch.movetoMinPosition();
                   shooter.stop();
                 }));
-    NamedCommands.registerCommand(
-        "extendHopperAndIntake",
-        Commands.sequence(
-            Commands.runOnce(hopper::deploy, hopper),
-            Commands.waitSeconds(1),
-            Commands.runOnce(intakeExt::deploy, intakeExt)
-            // Commands.waitSeconds(1),
-            // Commands.runOnce(hopper::stop, hopper),
-            // Commands.runOnce(intakeExt::stop, intakeExt)));
-            ));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
-    // autoChooser.addOption(
-    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    // autoChooser.addOption(
-    //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    // autoChooser.addOption(
-    //     "Drive SysId (Quasistatic Forward)",
-    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    // autoChooser.addOption(
-    //     "Drive SysId (Quasistatic Reverse)",
-    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    // autoChooser.addOption(
-    //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    // autoChooser.addOption(
-    //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption(
+        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Forward)",
+        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Reverse)",
+        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     FollowPathCommand.warmupCommand().schedule();
     SignalLogger.enableAutoLogging(false);
@@ -316,8 +305,6 @@ public class RobotContainer {
     // wheels to the X pattern once at destination
     controller.x().whileTrue(Commands.sequence(new AutoDriveWithAlign(drive), xLockWheelsCommand));
 
-    controller.y().whileTrue(new AutoDriveUnderTrench(drive));
-
     // Aim the robot at the hub, this does not follow a path and simply aims the bot while allowing
     // for X & Y travel
     controller
@@ -381,41 +368,6 @@ public class RobotContainer {
 
     // Shoot the balls once the robot is aligned
     operatorPanel.button(1).whileTrue(shootCommand);
-
-    // Raise the hood manually
-    operatorPanel
-        .button(3)
-        .whileTrue(
-            Commands.repeatingSequence(
-                Commands.run(() -> pitch.manUp()), Commands.waitSeconds(0.01)));
-
-    // Lower the hood manually
-    operatorPanel
-        .button(8)
-        .whileTrue(
-            Commands.repeatingSequence(
-                Commands.run(() -> pitch.manDown()), Commands.waitSeconds(0.01)));
-
-    // Shoot without moving the hood
-    operatorPanel
-        .button(5)
-        .whileTrue(
-            Commands.runEnd(
-                // run
-                () ->
-                    Commands.sequence(
-                        Commands.run(() -> shooter.shoot(), shooter),
-                        Commands.waitSeconds(1.5),
-                        Commands.parallel(
-                            Commands.startEnd(indexer::feed, indexer::stop, indexer),
-                            Commands.runEnd(
-                                () -> tower.setManualDutyCycle(0.8), tower::stop, tower))),
-                // end
-                () ->
-                    Commands.run(
-                        () -> shooter.stop(),
-                        // req
-                        shooter)));
 
     // Lock the drive modules to an X configuration to help avoid getting bumped around
     // operatorPanel.button(14).onTrue(xLockWheelsCommand);
