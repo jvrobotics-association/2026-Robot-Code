@@ -27,7 +27,6 @@ import frc.robot.Constants.FieldConstants;
 import frc.robot.commands.AutoDriveWithAlign;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -65,7 +64,6 @@ public class RobotContainer {
   private final Intake intake;
   private final IntakeExtension intakeExt;
   private final Hopper hopper;
-  private final Climber climber;
 
   @SuppressWarnings("unused")
   private final Vision vision;
@@ -107,7 +105,6 @@ public class RobotContainer {
         intake = new Intake();
         intakeExt = new IntakeExtension();
         hopper = new Hopper();
-        climber = new Climber();
 
         // midSystem =
         //     new MidSystem(
@@ -136,7 +133,6 @@ public class RobotContainer {
         intake = new Intake();
         intakeExt = new IntakeExtension();
         hopper = new Hopper();
-        climber = new Climber();
 
         // midSystem =
         //     new MidSystem(
@@ -161,7 +157,6 @@ public class RobotContainer {
         intake = new Intake();
         intakeExt = new IntakeExtension();
         hopper = new Hopper();
-        climber = new Climber();
 
         // Pass nulls or empty shells for Replay mode depending on your AdvantageKit setup
         // midSystem = new MidSystem(null, null, null, null, null, null, null, null, null, null);
@@ -322,8 +317,6 @@ public class RobotContainer {
     // Shoot the balls once the robot is aligned
     controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD).whileTrue(shootCommand);
 
-    // Raise the intake arm so that balls in the front of the hopper are moved to the back
-    // controller.rightBumper().onTrue(raiseIntakeArmCommand);
 
     // Manually pull the hopper back in when the zeroing is incorrect
     controller
