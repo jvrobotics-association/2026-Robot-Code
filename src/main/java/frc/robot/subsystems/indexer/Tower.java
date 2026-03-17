@@ -17,8 +17,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TowerConstants;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Tower extends SubsystemBase {
   /* Hardware */
@@ -30,10 +28,6 @@ public class Tower extends SubsystemBase {
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride =
-      new LoggedNetworkBoolean("Tower Override", false);
-  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Tower Manual Duty", 0.0);
-
   private double targetVelocityRPS = 0;
 
   /** Creates a new Tower. */
@@ -79,18 +73,13 @@ public class Tower extends SubsystemBase {
 
   // Prod - preset speed
   public void feed() {
-    if (LNNOverride.getAsBoolean()) return;
-
     this.targetVelocityRPS = 0; // TowerConstants.TOWER_SPEED;
     towerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
   }
 
   // Prod - Controllable speed
   public void setVelocity(double velocityRPS) {
-    if (LNNOverride.getAsBoolean()) return;
-
-    this.targetVelocityRPS = 0; // velocityRPS;
-    // towerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
+    this.targetVelocityRPS = 0;
   }
 
   // Dev
@@ -106,10 +95,6 @@ public class Tower extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (LNNOverride.getAsBoolean()) {
-      setManualDutyCycle(LNNTarget.getAsDouble());
-    }
-
     Logger.recordOutput("Tower/TargetVelocityRPS", targetVelocityRPS);
     Logger.recordOutput("Tower/ActualVelocityRPS", towerMotor.getVelocity().getValueAsDouble());
     Logger.recordOutput("Tower/StatorCurrent", towerMotor.getStatorCurrent().getValueAsDouble());

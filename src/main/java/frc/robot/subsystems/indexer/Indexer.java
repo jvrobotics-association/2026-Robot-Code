@@ -17,8 +17,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IndexerConstants;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Indexer extends SubsystemBase {
   /* Hardware */
@@ -29,10 +27,6 @@ public class Indexer extends SubsystemBase {
       new MotionMagicVelocityVoltage(0).withSlot(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride =
-      new LoggedNetworkBoolean("Indexer Override", false);
-  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Indexer Manual Duty", 0.0);
-
   private double targetVelocityRPS = 0;
 
   public Indexer() {
@@ -73,16 +67,12 @@ public class Indexer extends SubsystemBase {
   }
 
   public void feed() {
-    if (LNNOverride.getAsBoolean()) return;
-
     this.targetVelocityRPS = IndexerConstants.INDEXER_SPEED;
     indexerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
   }
 
   // Active Control for Prod
   public void setVelocity(double velocityRPS) {
-    if (LNNOverride.getAsBoolean()) return;
-
     this.targetVelocityRPS = velocityRPS;
     indexerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
   }
@@ -100,10 +90,6 @@ public class Indexer extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Handling Dashboard Override
-    if (LNNOverride.getAsBoolean()) {
-      setManualDutyCycle(LNNTarget.getAsDouble());
-    }
 
     // AdvantageKit Logging
     Logger.recordOutput("Indexer/TargetVelocityRPS", targetVelocityRPS);

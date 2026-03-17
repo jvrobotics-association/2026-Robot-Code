@@ -174,8 +174,8 @@ public final class Constants {
   }
 
   public final class RobotConstants {
-    public static final Distance FULL_WIDTH = Inches.of(25); // TODO: Verify // Frame plus bumper
-    public static final Distance FULL_LENGTH = Inches.of(30); // TODO: Verify // Frame plus bumper
+    public static final Distance FULL_WIDTH = Inches.of(25); // TODO: Verify Frame plus bumper
+    public static final Distance FULL_LENGTH = Inches.of(30); // TODO: Verify Frame plus bumper
   }
 
   public final class FieldConstants {

@@ -19,8 +19,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Intake extends SubsystemBase {
   /* Hardware */
@@ -32,11 +30,6 @@ public class Intake extends SubsystemBase {
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride =
-      new LoggedNetworkBoolean("Intake Override", false);
-  private final LoggedNetworkNumber LNNTarget =
-      new LoggedNetworkNumber("Intake Target Output", 0.0);
-
   private double targetVelocityRPS = 0;
 
   public Intake() {
@@ -83,8 +76,6 @@ public class Intake extends SubsystemBase {
 
   // Prod control
   public void startIntake() {
-    if (LNNOverride.getAsBoolean()) return;
-
     this.targetVelocityRPS = IntakeConstants.INTAKE_SPEED;
     intakeMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
   }
@@ -101,11 +92,6 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Handling Dashboard Override
-    if (LNNOverride.getAsBoolean()) {
-      setManualDutyCycle(LNNTarget.getAsDouble());
-    }
-
     // AdvantageKit Logging
     Logger.recordOutput("Intake/TargetVelocityRPS", targetVelocityRPS);
     Logger.recordOutput("Intake/ActualVelocityRPS", intakeMotor.getVelocity().getValueAsDouble());

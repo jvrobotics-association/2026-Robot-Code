@@ -17,8 +17,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Hopper extends SubsystemBase {
   /* Hardware */
@@ -30,10 +28,6 @@ public class Hopper extends SubsystemBase {
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride =
-      new LoggedNetworkBoolean("Hopper Override", false);
-  private final LoggedNetworkNumber LNNTarget = new LoggedNetworkNumber("Hopper Manual Duty", 0.0);
-
   private double targetPositionRotations = 0;
 
   public Hopper() {
@@ -81,21 +75,18 @@ public class Hopper extends SubsystemBase {
 
   // DEPLOY to EXTENDED position
   public void deploy() {
-    if (LNNOverride.getAsBoolean()) return;
     this.targetPositionRotations = HopperConstants.DEPLOYED_ROTATIONS;
     hopperMotor.setControl(positionRequest.withPosition(targetPositionRotations));
   }
 
   // RETRACT to STOWED position
   public void retract() {
-    if (LNNOverride.getAsBoolean()) return;
     this.targetPositionRotations = HopperConstants.RETRACTED_ROTATIONS; // Typically 0
     hopperMotor.setControl(positionRequest.withPosition(targetPositionRotations));
   }
 
   // PROD - Active Control
   public void setTargetPosition(double rotations) {
-    if (LNNOverride.getAsBoolean()) return;
     this.targetPositionRotations = rotations;
     hopperMotor.setControl(positionRequest.withPosition(targetPositionRotations));
   }
@@ -112,10 +103,6 @@ public class Hopper extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (LNNOverride.getAsBoolean()) {
-      setManualDutyCycle(LNNTarget.getAsDouble());
-    }
-
     Logger.recordOutput("Hopper/TargetRotations", targetPositionRotations);
     Logger.recordOutput("Hopper/ActualRotations", hopperMotor.getPosition().getValueAsDouble());
     Logger.recordOutput("Hopper/StatorCurrent", hopperMotor.getStatorCurrent().getValueAsDouble());

@@ -21,8 +21,6 @@ import frc.robot.Constants.IntakeExtensionConstants;
 import frc.robot.Constants.IntakeExtensionConstants.ExtensionEncoder;
 import frc.robot.Constants.IntakeExtensionConstants.ExtensionMotor;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class IntakeExtension extends SubsystemBase {
   /* Hardware */
@@ -34,11 +32,6 @@ public class IntakeExtension extends SubsystemBase {
       new MotionMagicTorqueCurrentFOC(0).withSlot(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNOverride =
-      new LoggedNetworkBoolean("IntakeExt Override", false);
-  private final LoggedNetworkNumber LNNTarget =
-      new LoggedNetworkNumber("IntakeExt Manual Duty", 0.0);
-
   private double targetPositionRotations = 0;
 
   public IntakeExtension() {
@@ -112,19 +105,16 @@ public class IntakeExtension extends SubsystemBase {
   }
 
   public void deploy() {
-    if (LNNOverride.getAsBoolean()) return;
     this.targetPositionRotations = IntakeExtensionConstants.DEPLOYED_ROTATIONS;
     extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
   }
 
   public void retract() {
-    if (LNNOverride.getAsBoolean()) return;
     this.targetPositionRotations = IntakeExtensionConstants.RETRACTED_ROTATIONS; // Typically 0
     extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
   }
 
   public void setTargetPosition(double rotations) {
-    if (LNNOverride.getAsBoolean()) return;
     this.targetPositionRotations = rotations;
     extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
   }
@@ -140,10 +130,6 @@ public class IntakeExtension extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (LNNOverride.getAsBoolean()) {
-      setManualDutyCycle(LNNTarget.getAsDouble());
-    }
-
     Logger.recordOutput("IntakeExtension/TargetRotations", targetPositionRotations);
     Logger.recordOutput(
         "IntakeExtension/ActualRotations", extensionMotor.getPosition().getValueAsDouble());
