@@ -94,7 +94,6 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-
   public void shoot() {
     leftMotor.setControl(leftVelocityRequest.withVelocity(ShooterConstants.SPEED));
     rightMotor.setControl(rightVelocityRequest.withVelocity(ShooterConstants.SPEED));

@@ -142,7 +142,6 @@ public final class Constants {
     public static final double DEPLOYED_ROTATIONS = 0.39;
   }
 
-
   public final class TowerConstants {
     public static final int CAN_ID = 3;
     public static final double SENSOR_TO_MECH_RATIO = 1.25;

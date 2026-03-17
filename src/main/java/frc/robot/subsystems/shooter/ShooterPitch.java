@@ -106,7 +106,6 @@ public class ShooterPitch extends SubsystemBase {
     pitchMotor.setControl(positionRequest.withPosition(newPos));
   }
 
-
   public void stop() {
     pitchMotor.stopMotor();
   }
@@ -119,5 +118,4 @@ public class ShooterPitch extends SubsystemBase {
     Logger.recordOutput(
         "ShooterPitch/StatorCurrent", pitchMotor.getStatorCurrent().getValueAsDouble());
   }
-
 }
