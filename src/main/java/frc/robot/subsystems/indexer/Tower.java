@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Amps;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -23,8 +22,6 @@ public class Tower extends SubsystemBase {
   private final TalonFX towerMotor = new TalonFX(TowerConstants.CAN_ID, "rio");
 
   /* Control Requests */
-  private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
-      new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
   /* State */
@@ -69,17 +66,6 @@ public class Tower extends SubsystemBase {
     if (!status.isOK()) {
       System.out.println("Could not apply Tower motor config, error: " + status.toString());
     }
-  }
-
-  // Prod - preset speed
-  public void feed() {
-    this.targetVelocityRPS = 0; // TowerConstants.TOWER_SPEED;
-    towerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
-  }
-
-  // Prod - Controllable speed
-  public void setVelocity(double velocityRPS) {
-    this.targetVelocityRPS = 0;
   }
 
   // Dev

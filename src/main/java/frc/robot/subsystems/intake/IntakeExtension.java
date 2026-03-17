@@ -114,16 +114,6 @@ public class IntakeExtension extends SubsystemBase {
     extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
   }
 
-  public void setTargetPosition(double rotations) {
-    this.targetPositionRotations = rotations;
-    extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
-  }
-
-  public void setManualDutyCycle(double output) {
-    this.targetPositionRotations = extensionMotor.getPosition().getValueAsDouble();
-    extensionMotor.setControl(positionRequest.withPosition(output));
-  }
-
   public void stop() {
     extensionMotor.stopMotor();
   }

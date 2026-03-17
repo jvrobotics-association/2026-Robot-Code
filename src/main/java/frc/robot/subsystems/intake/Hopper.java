@@ -85,12 +85,6 @@ public class Hopper extends SubsystemBase {
     hopperMotor.setControl(positionRequest.withPosition(targetPositionRotations));
   }
 
-  // PROD - Active Control
-  public void setTargetPosition(double rotations) {
-    this.targetPositionRotations = rotations;
-    hopperMotor.setControl(positionRequest.withPosition(targetPositionRotations));
-  }
-
   // DEV - manual control
   public void setManualDutyCycle(double output) {
     this.targetPositionRotations = hopperMotor.getPosition().getValueAsDouble();
@@ -107,9 +101,5 @@ public class Hopper extends SubsystemBase {
     Logger.recordOutput("Hopper/ActualRotations", hopperMotor.getPosition().getValueAsDouble());
     Logger.recordOutput("Hopper/StatorCurrent", hopperMotor.getStatorCurrent().getValueAsDouble());
   }
-
-  public boolean isAtTarget() {
-    double currentPos = hopperMotor.getPosition().getValueAsDouble();
-    return Math.abs(currentPos - targetPositionRotations) <= HopperConstants.TOLERANCE_ROTATIONS;
-  }
+  
 }

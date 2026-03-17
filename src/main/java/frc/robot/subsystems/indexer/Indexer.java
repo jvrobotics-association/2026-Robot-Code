@@ -71,12 +71,6 @@ public class Indexer extends SubsystemBase {
     indexerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
   }
 
-  // Active Control for Prod
-  public void setVelocity(double velocityRPS) {
-    this.targetVelocityRPS = velocityRPS;
-    indexerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
-  }
-
   // Manual Control for Dev
   public void setManualDutyCycle(double output) {
     this.targetVelocityRPS = 0;
