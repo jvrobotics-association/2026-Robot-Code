@@ -102,7 +102,7 @@ public final class Constants {
 
   public final class IntakeConstants {
     public static final int CAN_ID = 20;
-    public static final double INTAKE_SPEED = 55;
+    public static final double INTAKE_SPEED = 75;
     public static final int STATOR_AMP_LIMIT = 30;
     public static final double SENSOR_TO_MECH_RATIO = 1.667;
     public static final int PEAK_FORWARD_TORQUE_CURRENT = 30;
