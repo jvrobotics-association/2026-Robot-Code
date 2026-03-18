@@ -101,5 +101,4 @@ public class Hopper extends SubsystemBase {
     Logger.recordOutput("Hopper/ActualRotations", hopperMotor.getPosition().getValueAsDouble());
     Logger.recordOutput("Hopper/StatorCurrent", hopperMotor.getStatorCurrent().getValueAsDouble());
   }
-  
 }
