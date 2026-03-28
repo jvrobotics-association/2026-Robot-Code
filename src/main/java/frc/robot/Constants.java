@@ -41,7 +41,7 @@ public final class Constants {
   }
 
   public final class ClimberConstants {
-    public static final int MOTOR = 60;
+    public static final int MOTOR_ID = 60;
 
     public static final double STATOR_AMP_LIMIT = 40;
     public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
@@ -73,7 +73,7 @@ public final class Constants {
 
   public final class ShooterConstants {
     public final class LeftMotor {
-      public static final int CAN_ID = 30;
+      public static final int MOTOR_ID = 30;
       public static final double PID_KS = 0.3;
       public static final double PID_KV = 0.093;
       public static final double PID_KP = 8;
@@ -85,7 +85,7 @@ public final class Constants {
     }
 
     public final class RightMotor {
-      public static final int CAN_ID = 40;
+      public static final int MOTOR_ID = 40;
       public static final double PID_KS = 0.32;
       public static final double PID_KV = 0.11;
       public static final double PID_KP = 9.5;
@@ -102,7 +102,7 @@ public final class Constants {
   }
 
   public final class ShooterPitchConstants {
-    public static final int CAN_ID = 31;
+    public static final int MOTOR_ID = 31;
     public static final double PITCH_MOE = 0.05;
     public static final double STATOR_AMP_LIMIT = 20;
     public static final double MM_ACCELERATION = 48;
@@ -119,7 +119,7 @@ public final class Constants {
   }
 
   public final class IntakeConstants {
-    public static final int CAN_ID = 20;
+    public static final int MOTOR_ID = 20;
     public static final double INTAKE_SPEED = 85;
     public static final int STATOR_AMP_LIMIT = 30;
     public static final double SENSOR_TO_MECH_RATIO = 1.667;
@@ -133,7 +133,7 @@ public final class Constants {
 
   public final class IntakeExtensionConstants {
     public static class ExtensionMotor {
-      public static final int CAN_ID = 21;
+      public static final int MOTOR_ID = 21;
       public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
       public static final double PEAK_REVERSE_TORQUE_CURRENT = -40;
       public static final double STATOR_AMP_LIMIT = 40;
@@ -150,7 +150,7 @@ public final class Constants {
     }
 
     public static class ExtensionEncoder {
-      public static final int CAN_ID = 8;
+      public static final int MOTOR_ID = 8;
       public static final double MAGNET_OFFSET = 0.1;
       public static final double ABSOLUTE_SENSOR_DISCONTINUITY = 1.0;
     }
@@ -161,7 +161,7 @@ public final class Constants {
   }
 
   public final class TowerConstants {
-    public static final int CAN_ID = 3;
+    public static final int MOTOR_ID = 3;
     public static final double SENSOR_TO_MECH_RATIO = 1.25;
     public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
     public static final double PEAK_REVERSE_TORQUE_CURRENT = -40;
@@ -174,7 +174,7 @@ public final class Constants {
   }
 
   public final class HopperConstants {
-    public static final int CAN_ID = 2;
+    public static final int MOTOR_ID = 2;
     public static final double SENSOR_TO_MECH_RATIO = 30.4;
     public static final double STATOR_AMP_LIMIT = 20;
     public static final double PEAK_FORWARD_TORQUE_CURRENT = 25;

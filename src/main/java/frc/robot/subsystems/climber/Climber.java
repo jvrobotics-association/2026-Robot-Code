@@ -22,7 +22,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Climber extends SubsystemBase {
   /* Hardware */
-  private final TalonFX climberMotor = new TalonFX(ClimberConstants.MOTOR, "rio");
+  private final TalonFX climberMotor = new TalonFX(ClimberConstants.MOTOR_ID, "rio");
 
   /* Control Requests */
   private final MotionMagicTorqueCurrentFOC positionRequest =

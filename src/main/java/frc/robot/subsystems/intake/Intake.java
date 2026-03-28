@@ -22,7 +22,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
   /* Hardware */
-  private final TalonFX intakeMotor = new TalonFX(IntakeConstants.CAN_ID, "rio");
+  private final TalonFX intakeMotor = new TalonFX(IntakeConstants.MOTOR_ID, "rio");
 
   /* Control Requests */
   private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =

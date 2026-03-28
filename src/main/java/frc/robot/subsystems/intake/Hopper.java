@@ -20,7 +20,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Hopper extends SubsystemBase {
   /* Hardware */
-  private final TalonFX hopperMotor = new TalonFX(HopperConstants.CAN_ID, "rio");
+  private final TalonFX hopperMotor = new TalonFX(HopperConstants.MOTOR_ID, "rio");
 
   /* Control Requests */
   private final MotionMagicTorqueCurrentFOC positionRequest =

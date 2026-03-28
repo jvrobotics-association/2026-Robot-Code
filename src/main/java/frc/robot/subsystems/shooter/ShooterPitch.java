@@ -19,9 +19,9 @@ import frc.robot.Constants.ShooterPitchConstants;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
-public class ShooterPitch extends SubsystemBase {
+public class ShooterPitch extends SubsystemBase { //TODO: Set Soft Limits for Minion
   /* Hardware */
-  private final TalonFXS pitchMotor = new TalonFXS(ShooterPitchConstants.CAN_ID, "rio");
+  private final TalonFXS pitchMotor = new TalonFXS(ShooterPitchConstants.MOTOR_ID, "rio");
 
   /* Control Requests */
   private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0).withSlot(0);

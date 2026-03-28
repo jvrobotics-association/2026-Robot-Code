@@ -24,8 +24,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class IntakeExtension extends SubsystemBase {
   /* Hardware */
-  private final TalonFX extensionMotor = new TalonFX(ExtensionMotor.CAN_ID, "rio");
-  private final CANcoder extensionEncoder = new CANcoder(ExtensionEncoder.CAN_ID, "rio");
+  private final TalonFX extensionMotor = new TalonFX(ExtensionMotor.MOTOR_ID, "rio");
+  private final CANcoder extensionEncoder = new CANcoder(ExtensionEncoder.MOTOR_ID, "rio");
 
   /* Control Requests */
   private final MotionMagicTorqueCurrentFOC positionRequest =
@@ -54,7 +54,7 @@ public class IntakeExtension extends SubsystemBase {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-        .withFeedbackRemoteSensorID(ExtensionEncoder.CAN_ID)
+        .withFeedbackRemoteSensorID(ExtensionEncoder.MOTOR_ID)
         .withRotorToSensorRatio(ExtensionMotor.ROTOR_TO_SENSOR_RATIO);
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);

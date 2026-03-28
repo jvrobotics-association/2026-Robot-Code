@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Second;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -21,9 +22,9 @@ import org.littletonrobotics.junction.Logger;
 
 public class Shooter extends SubsystemBase {
   /* Hardware */
-  private final TalonFX leftMotor = new TalonFX(ShooterConstants.LeftMotor.CAN_ID, "rio");
-  private final TalonFX rightMotor = new TalonFX(ShooterConstants.RightMotor.CAN_ID, "rio");
-
+  private final TalonFX leftMotor = new TalonFX(ShooterConstants.LeftMotor.MOTOR_ID, "rio");
+  private final TalonFX rightMotor = new TalonFX(ShooterConstants.RightMotor.MOTOR_ID, "rio");
+      
   /* Control Requests - Distinct objects for separate motor streams */
   private final MotionMagicVelocityTorqueCurrentFOC leftVelocityRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
@@ -64,6 +65,7 @@ public class Shooter extends SubsystemBase {
 
   private void configureRightMotor() {
     TalonFXConfiguration config = new TalonFXConfiguration();
+    
 
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
         .withSensorToMechanismRatio(ShooterConstants.RightMotor.SENSOR_TO_MECH);
@@ -107,6 +109,8 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+    rightMotor.setControl(new StrictFollower(ShooterConstants.LeftMotor.MOTOR_ID));
+    leftMotor.setControl(leftVelocityRequest.withVelocity(targetVelocityRPS));
 
     // AdvantageKit Logging (Crucial for the "Active" method to see what is happening)
     Logger.recordOutput("Shooter/TargetVelocityRPS", targetVelocityRPS);

@@ -19,7 +19,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Tower extends SubsystemBase {
   /* Hardware */
-  private final TalonFX towerMotor = new TalonFX(TowerConstants.CAN_ID, "rio");
+  private final TalonFX towerMotor = new TalonFX(TowerConstants.MOTOR_ID, "rio");
 
   /* Control Requests */
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
