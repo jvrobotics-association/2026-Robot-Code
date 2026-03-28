@@ -40,6 +40,24 @@ public final class Constants {
     REPLAY
   }
 
+  public final class ClimberConstants {
+    public static final int MOTOR = 60;
+
+    public static final double STATOR_AMP_LIMIT = 40;
+    public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
+    public static final double PEAK_REVERSE_TORQUE_CURRENT = -40;
+    public static final double SENSOR_TO_MECH_RATIO = 48;
+    public static final double MM_CRUISE_VEL = 0;
+    public static final double MM_ACCELERATION = 0;
+    public static final double PID_KP = 0;
+    public static final double PID_KD = 0;
+    public static final double PID_KS = 0;
+    public static final double PID_KV = 0;
+    public static final double TOLERANCE_ROTATIONS = 0;
+    public static final double CLIMB_ROTATIONS = 0;
+    public static final double PREPARE_ROTATIONS = 0;
+  }
+
   public final class IndexerConstants {
     public static final int CAN_ID = 22;
     public static final double INDEXER_SPEED = 25;
