@@ -97,8 +97,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shoot() {
+    rightMotor.setControl(new StrictFollower(ShooterConstants.LeftMotor.MOTOR_ID));
     leftMotor.setControl(leftVelocityRequest.withVelocity(ShooterConstants.SPEED));
-    rightMotor.setControl(rightVelocityRequest.withVelocity(ShooterConstants.SPEED));
   }
 
   public void stop() {
@@ -109,8 +109,6 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    rightMotor.setControl(new StrictFollower(ShooterConstants.LeftMotor.MOTOR_ID));
-    leftMotor.setControl(leftVelocityRequest.withVelocity(targetVelocityRPS));
 
     // AdvantageKit Logging (Crucial for the "Active" method to see what is happening)
     Logger.recordOutput("Shooter/TargetVelocityRPS", targetVelocityRPS);
