@@ -59,9 +59,6 @@ public class IntakeExtension extends SubsystemBase {
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
 
-    config.CurrentLimits.withStatorCurrentLimitEnable(false)
-        .withStatorCurrentLimit(Amps.of(ExtensionMotor.STATOR_AMP_LIMIT));
-
     config.TorqueCurrent.withPeakForwardTorqueCurrent(
             Amps.of(ExtensionMotor.PEAK_FORWARD_TORQUE_CURRENT))
         .withPeakReverseTorqueCurrent(Amps.of(ExtensionMotor.PEAK_REVERSE_TORQUE_CURRENT));

@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
@@ -48,9 +47,6 @@ public class Shooter extends SubsystemBase {
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.Clockwise_Positive);
 
-    config.CurrentLimits.withStatorCurrentLimitEnable(false)
-        .withStatorCurrentLimit(Amps.of(ShooterConstants.LeftMotor.STATOR_AMP_LIMIT));
-
     config.Slot0.withKP(ShooterConstants.LeftMotor.PID_KP)
         .withKV(ShooterConstants.LeftMotor.PID_KV)
         .withKS(ShooterConstants.LeftMotor.PID_KS);
@@ -73,8 +69,6 @@ public class Shooter extends SubsystemBase {
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.CounterClockwise_Positive);
 
-    config.CurrentLimits.withStatorCurrentLimitEnable(false)
-        .withStatorCurrentLimit(Amps.of(ShooterConstants.RightMotor.STATOR_AMP_LIMIT));
 
     config.Slot0.withKP(ShooterConstants.RightMotor.PID_KP)
         .withKV(ShooterConstants.RightMotor.PID_KV)

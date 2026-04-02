@@ -72,27 +72,25 @@ public final class Constants {
   }
 
   public final class ShooterConstants {
-    public final class LeftMotor {
+    public final class RightMotor {
       public static final int MOTOR_ID = 30;
-      public static final double PID_KS = 0.3;
-      public static final double PID_KV = 0.093;
+      public static final double PID_KS = 2.85;
+      public static final double PID_KV = 0.3;
       public static final double PID_KP = 8;
       public static final double SENSOR_TO_MECH = 0.75;
-      public static final double STATOR_AMP_LIMIT = 35;
       public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
-      public static final double MM_ACCELERATION = 110;
+      public static final double MM_ACCELERATION = 200;
       public static final double MM_JERK = 0;
     }
 
-    public final class RightMotor {
+    public final class LeftMotor {
       public static final int MOTOR_ID = 40;
-      public static final double PID_KS = 0.32;
-      public static final double PID_KV = 0.11;
-      public static final double PID_KP = 9.5;
+      public static final double PID_KS = 2.85;
+      public static final double PID_KV = 0.3;
+      public static final double PID_KP = 8;
       public static final double SENSOR_TO_MECH = 0.75;
-      public static final double STATOR_AMP_LIMIT = 35;
       public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
-      public static final double MM_ACCELERATION = 110;
+      public static final double MM_ACCELERATION = 200;
       public static final double MM_JERK = 0;
     }
 
@@ -104,15 +102,15 @@ public final class Constants {
   public final class ShooterPitchConstants {
     public static final int MOTOR_ID = 31;
     public static final double PITCH_MOE = 0.05;
-    public static final double STATOR_AMP_LIMIT = 20;
-    public static final double MM_ACCELERATION = 48;
-    public static final double MM_CRUISE_VEL = 12;
-    public static final double PID_KS = 0.3;
-    public static final double PID_KV = 0.096;
-    public static final double PID_KP = 10;
-    public static final double PID_KD = 0.0;
+    public static final double STATOR_AMP_LIMIT = 16;
+    public static final double MM_ACCELERATION = 15;
+    public static final double MM_CRUISE_VEL = 5;
+    public static final double PID_KS = 0.27;
+    public static final double PID_KV = 0.1;
+    public static final double PID_KP = 27;
+    public static final double PID_KD = 0.1;
     public static final double MIN_ROTATION = 0.0;
-    public static final double MAX_ROTATION = 5.09;
+    public static final double MAX_ROTATION = 0.0568850;
     public static final double MAX_SHOT_ANGLE = 90.0;
     public static final double MIN_SHOT_ANGLE = 45.0;
     public static final double SHOOT_ANGLE = 0.8;
@@ -136,23 +134,22 @@ public final class Constants {
       public static final int MOTOR_ID = 21;
       public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
       public static final double PEAK_REVERSE_TORQUE_CURRENT = -40;
-      public static final double STATOR_AMP_LIMIT = 40;
-      public static final double ROTOR_TO_SENSOR_RATIO = 25;
+      public static final double ROTOR_TO_SENSOR_RATIO = 45;
 
-      public static final double PID_KP = 400;
-      public static final double PID_KD = 60;
-      public static final double PID_KS = 0.489;
-      public static final double PID_KV = 0.97;
-      public static final double PID_KG = 0.5;
+      public static final double PID_KP = 200;
+      public static final double PID_KD = 55;
+      public static final double PID_KS = 0.5;
+      public static final double PID_KV = 0.1;
+      public static final double PID_KG = -0.8;
       public static final double PID_ARM_OFFSET = -0.147;
-      public static final double MM_CRUISE_VEL = 0.4;
-      public static final double MM_ACCELERATION = 1.6;
+      public static final double MM_CRUISE_VEL = 2;
+      public static final double MM_ACCELERATION = 8;
     }
 
     public static class ExtensionEncoder {
       public static final int MOTOR_ID = 8;
-      public static final double MAGNET_OFFSET = 0.1;
-      public static final double ABSOLUTE_SENSOR_DISCONTINUITY = 1.0;
+      public static final double MAGNET_OFFSET = -0.11;
+      public static final double ABSOLUTE_SENSOR_DISCONTINUITY = 0.5;
     }
 
     public static final double TOLERANCE_ROTATIONS = 0.02;
