@@ -54,7 +54,8 @@ public class Intake extends SubsystemBase {
 
     config.Slot0.withKS(IntakeConstants.PID_KS)
         .withKV(IntakeConstants.PID_KV)
-        .withKP(IntakeConstants.PID_KP);
+        .withKP(IntakeConstants.PID_KP)
+        .withKI(IntakeConstants.PID_KI);
 
     config.MotionMagic.withMotionMagicAcceleration(
             RotationsPerSecondPerSecond.of(IntakeConstants.MM_ACCELERATION))

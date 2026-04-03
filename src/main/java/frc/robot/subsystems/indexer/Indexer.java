@@ -3,14 +3,9 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot.subsystems.indexer;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Second;
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
@@ -24,8 +19,7 @@ public class Indexer extends SubsystemBase {
   private final TalonFXS indexerMotor = new TalonFXS(IndexerConstants.CAN_ID, "rio");
 
   /* Control Requests */
-  private final DutyCycleOut velocityRequest =
-      new DutyCycleOut(0);
+  private final DutyCycleOut velocityRequest = new DutyCycleOut(0);
 
   /* State */
   private double targetVelocityRPS = 0;
@@ -51,7 +45,8 @@ public class Indexer extends SubsystemBase {
 
     // config.MotionMagic.withMotionMagicAcceleration(
     //         RotationsPerSecondPerSecond.of(IndexerConstants.MM_ACCELERATION))
-    //     .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IndexerConstants.MM_JERK));
+    //
+    // .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IndexerConstants.MM_JERK));
 
     applyConfig(config);
   }

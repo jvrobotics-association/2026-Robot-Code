@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.Amps;
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -61,24 +59,23 @@ public class IntakeExtension extends SubsystemBase {
     config.MotorOutput.withNeutralMode(NeutralModeValue.Brake)
         .withInverted(InvertedValue.CounterClockwise_Positive);
 
-   // config.TorqueCurrent.withPeakForwardTorqueCurrent(
-   //         Amps.of(ExtensionMotor.PEAK_FORWARD_TORQUE_CURRENT))
-   //     .withPeakReverseTorqueCurrent(Amps.of(ExtensionMotor.PEAK_REVERSE_TORQUE_CURRENT));
+    // config.TorqueCurrent.withPeakForwardTorqueCurrent(
+    //         Amps.of(ExtensionMotor.PEAK_FORWARD_TORQUE_CURRENT))
+    //     .withPeakReverseTorqueCurrent(Amps.of(ExtensionMotor.PEAK_REVERSE_TORQUE_CURRENT));
 
-   config.CurrentLimits.withStatorCurrentLimitEnable(false)
+    config.CurrentLimits.withStatorCurrentLimitEnable(false)
         .withSupplyCurrentLimitEnable(true)
         .withSupplyCurrentLimit(45)
         .withSupplyCurrentLowerLimit(28)
         .withSupplyCurrentLowerTime(2);
-    
-    config.Voltage.withPeakForwardVoltage(12)
-        .withPeakReverseVoltage(-12);
+
+    config.Voltage.withPeakForwardVoltage(12).withPeakReverseVoltage(-12);
 
     config.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
         .withReverseSoftLimitEnable(true)
         .withForwardSoftLimitThreshold(0.35)
         .withReverseSoftLimitThreshold(0.000);
-    
+
     config.MotionMagic.withMotionMagicCruiseVelocity(ExtensionMotor.MM_CRUISE_VEL)
         .withMotionMagicAcceleration(ExtensionMotor.MM_ACCELERATION);
 
@@ -89,8 +86,6 @@ public class IntakeExtension extends SubsystemBase {
         .withKG(ExtensionMotor.PID_KG)
         .withGravityType(GravityTypeValue.Arm_Cosine)
         .withGravityArmPositionOffset(ExtensionMotor.PID_ARM_OFFSET);
-
-  
 
     applyMotorConfig(config);
   }

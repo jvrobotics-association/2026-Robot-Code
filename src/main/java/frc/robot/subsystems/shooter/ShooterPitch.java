@@ -3,7 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
@@ -17,10 +16,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterPitchConstants;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-public class ShooterPitch extends SubsystemBase { //TODO: Set Soft Limits for Minion
+public class ShooterPitch extends SubsystemBase { // TODO: Set Soft Limits for Minion
   /* Hardware */
   private final TalonFXS pitchMotor = new TalonFXS(ShooterPitchConstants.MOTOR_ID, "rio");
 
@@ -28,8 +26,7 @@ public class ShooterPitch extends SubsystemBase { //TODO: Set Soft Limits for Mi
   private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0).withSlot(0);
 
   /* State */
-  private final LoggedNetworkNumber LNN_POS =
-      new LoggedNetworkNumber("Pitch Pos", 0);
+  private final LoggedNetworkNumber LNN_POS = new LoggedNetworkNumber("Pitch Pos", 0);
 
   private double targetPositionRotations = 0;
 
@@ -47,13 +44,12 @@ public class ShooterPitch extends SubsystemBase { //TODO: Set Soft Limits for Mi
         .withInverted(InvertedValue.Clockwise_Positive);
 
     config.CurrentLimits.withStatorCurrentLimitEnable(false)
-        //.withStatorCurrentLimit(Amps.of(ShooterPitchConstants.STATOR_AMP_LIMIT))
+        // .withStatorCurrentLimit(Amps.of(ShooterPitchConstants.STATOR_AMP_LIMIT))
         .withSupplyCurrentLimit(15)
         .withSupplyCurrentLowerLimit(8)
         .withSupplyCurrentLowerTime(1);
 
-    config.Voltage.withPeakForwardVoltage(12)
-        .withPeakReverseVoltage(-12);
+    config.Voltage.withPeakForwardVoltage(12).withPeakReverseVoltage(-12);
 
     config.ExternalFeedback.withSensorToMechanismRatio(74);
 
@@ -61,7 +57,7 @@ public class ShooterPitch extends SubsystemBase { //TODO: Set Soft Limits for Mi
         .withReverseSoftLimitEnable(true)
         .withForwardSoftLimitThreshold(0.0568850)
         .withReverseSoftLimitThreshold(0.0);
-    
+
     config.Slot0.withKP(ShooterPitchConstants.PID_KP)
         .withKD(ShooterPitchConstants.PID_KD)
         .withKS(ShooterPitchConstants.PID_KS)
@@ -80,7 +76,7 @@ public class ShooterPitch extends SubsystemBase { //TODO: Set Soft Limits for Mi
     for (int i = 0; i < 5; ++i) {
       status = motor.getConfigurator().apply(config);
       if (status.isOK()) {
-        //LNNConfig.set(true);
+        // LNNConfig.set(true);
         break;
       }
     }
@@ -94,13 +90,13 @@ public class ShooterPitch extends SubsystemBase { //TODO: Set Soft Limits for Mi
   //   pitchMotor.setControl(positionRequest.withPosition(ShooterPitchConstants.MIN_ROTATION));
   // }
 
-  public void aim(){
+  public void aim() {
     pitchMotor.setControl(positionRequest.withPosition(LNN_POS.getAsDouble()));
   }
 
   public void stop() {
     pitchMotor.setControl(positionRequest.withPosition(0));
-    //pitchMotor.stopMotor();
+    // pitchMotor.stopMotor();
   }
 
   @Override

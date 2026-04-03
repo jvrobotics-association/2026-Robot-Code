@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.indexer;
 
-import static edu.wpi.first.units.Units.Amps;
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -36,7 +34,7 @@ public class Tower extends SubsystemBase {
     //    .withSensorToMechanismRatio(TowerConstants.SENSOR_TO_MECH_RATIO);
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
-        .withInverted(InvertedValue.Clockwise_Positive);
+        .withInverted(InvertedValue.CounterClockwise_Positive);
 
     // config.CurrentLimits.withStatorCurrentLimitEnable(false)
     //     .withStatorCurrentLimit(Amps.of(TowerConstants.STATOR_AMP_LIMIT));
@@ -71,16 +69,17 @@ public class Tower extends SubsystemBase {
   //   towerMotor.setControl(dutyCycleRequest.withOutput(output));
   // }
 
-  public void start(){
+  public void start() {
     towerMotor.setControl(dutyCycleRequest.withOutput(TowerConstants.TOWER_FRACTIONAL));
   }
+
   public void stop() {
     towerMotor.stopMotor();
   }
 
   @Override
   public void periodic() {
-    //Logger.recordOutput("Tower/TargetVelocityRPS", targetVelocityRPS);
+    // Logger.recordOutput("Tower/TargetVelocityRPS", targetVelocityRPS);
     Logger.recordOutput("Tower/ActualVelocityRPS", towerMotor.getVelocity().getValueAsDouble());
     Logger.recordOutput("Tower/StatorCurrent", towerMotor.getStatorCurrent().getValueAsDouble());
   }

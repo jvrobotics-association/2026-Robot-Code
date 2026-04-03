@@ -153,29 +153,41 @@ public class RobotContainer {
     }
 
     // Create the named commands for PathPlanner Autos
-    // NamedCommands.registerCommand(
-    //     "runIntake", Commands.startEnd(intake::startIntake, intake::stopIntake, intake));
-    // NamedCommands.registerCommand(
-    //     "raiseIntakeArm",
-    //     Commands.sequence(
-    //         Commands.runOnce(intakeExt::retract, intakeExt),
-    //         Commands.waitSeconds(1),
-    //         Commands.runOnce(intakeExt::deploy, intakeExt)));
-    // NamedCommands.registerCommand(
-    //     "runShooter",
-    //     Commands.parallel(
-    //             Commands.run(pitch::moveToPosition, pitch), // TODO: FIX MOVE TO POS
-    //             Commands.run(shooter::shoot, shooter),
-    //             Commands.sequence(
-    //                 Commands.waitSeconds(1.5),
-    //                 Commands.parallel(
-    //                     Commands.startEnd(indexer::feed, indexer::stop, indexer),
-    //                     Commands.runEnd(() -> tower.setManualDutyCycle(0.8), tower::stop, tower)))) // TODO: FIX TOWER CONTROL
-    //         .finallyDo(
-    //             () -> {
-    //               pitch.movetoMinPosition();
-    //               shooter.stop();
-    //             }));
+    NamedCommands.registerCommand(
+        "runIntake", Commands.startEnd(intake::startIntake, intake::stopIntake, intake));
+    NamedCommands.registerCommand(
+        "raiseIntakeArm",
+        Commands.sequence(
+            Commands.runOnce(intakeExt::retract, intakeExt),
+            Commands.waitSeconds(1),
+            Commands.runOnce(intakeExt::deploy, intakeExt)));
+    NamedCommands.registerCommand(
+        "runShooter",
+        Commands.parallel(
+            //             Commands.run(pitch::moveToPosition, pitch), // TODO: FIX MOVE TO POS
+            //             Commands.run(shooter::shoot, shooter),
+            //             Commands.sequence(
+            //                 Commands.waitSeconds(1.5),
+            //                 Commands.parallel(
+            //                     Commands.startEnd(indexer::feed, indexer::stop, indexer),
+            //                     Commands.runEnd(() -> tower.setManualDutyCycle(0.8), tower::stop,
+            // tower)))) // TODO: FIX TOWER CONTROL
+            ));
+    // .finallyDo(
+    //     () -> {
+    //       pitch.movetoMinPosition();
+    //       shooter.stop();
+    //     }));
+    NamedCommands.registerCommand(
+        "extendHopperAndIntake",
+        Commands.sequence(
+            Commands.runOnce(hopper::deploy, hopper),
+            Commands.waitSeconds(1),
+            Commands.runOnce(intakeExt::deploy, intakeExt)
+            // Commands.waitSeconds(1),
+            // Commands.runOnce(hopper::stop, hopper),
+            // Commands.runOnce(intakeExt::stop, intakeExt)));
+            ));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -218,7 +230,10 @@ public class RobotContainer {
     /////////////////////////////////
 
     // Runs the intake to intake fuel
-    Command runIntakeCommand = Commands.startEnd(intake::startIntake, intake::stopIntake, intake);
+    // Command runIntakeCommand = Commands.startEnd(intake::startIntake, intake::stopIntake,
+    // intake);
+    Command runIntakeCommand =
+        Commands.startEnd(() -> intake.setManualDutyCycle(0.9), intake::stopIntake, intake);
 
     // Raises the intake arm and lower it back down to help feed fuel to the shooter
     Command raiseIntakeArmCommand =
@@ -238,13 +253,14 @@ public class RobotContainer {
     //                 Commands.waitSeconds(1.5),
     //                 Commands.parallel(
     //                     Commands.startEnd(indexer::feed, indexer::stop, indexer),
-    //                     Commands.runEnd(() -> tower.setManualDutyCycle(0.8), tower::stop, tower)))) // TODO: FIX TOWER CONTROL
+    //                     Commands.runEnd(() -> tower.setManualDutyCycle(0.8), tower::stop,
+    // tower)))) // TODO: FIX TOWER CONTROL
     //         .finallyDo(
     //             () -> {
     //               pitch.movetoMinPosition();
     //               shooter.stop();
     //             });
-    Command basicShootCommand = 
+    Command basicShootCommand =
         Commands.parallel(
             Commands.runEnd(pitch::aim, pitch::stop, pitch),
             Commands.runEnd(shooter::shoot, shooter::stop, shooter),
@@ -252,16 +268,13 @@ public class RobotContainer {
                 Commands.waitSeconds(2),
                 Commands.parallel(
                     Commands.runEnd(tower::start, tower::stop, tower),
-                    Commands.runEnd(indexer::feed, indexer::stop, indexer)
-                )
-            )
-        );        
+                    Commands.runEnd(indexer::feed, indexer::stop, indexer))));
 
     // Retracts the intake arm and hopper
     Command hopperRetractCommand =
         Commands.sequence(
             Commands.runOnce(intakeExt::retract, intakeExt),
-            Commands.waitSeconds(1),
+            Commands.waitSeconds(0.5),
             Commands.runOnce(intakeExt::stop, intakeExt),
             Commands.runOnce(hopper::retract, hopper),
             Commands.waitSeconds(5),
@@ -271,7 +284,7 @@ public class RobotContainer {
     hopperExtendCommand =
         Commands.sequence(
             Commands.runOnce(hopper::deploy, hopper),
-            Commands.waitSeconds(1),
+            Commands.waitSeconds(1.3),
             Commands.runOnce(intakeExt::deploy, intakeExt),
             Commands.waitSeconds(1),
             Commands.runOnce(hopper::stop, hopper),
@@ -352,7 +365,8 @@ public class RobotContainer {
     //         Commands.parallel(
     //             Commands.startEnd(
     //                 () -> intake.setManualDutyCycle(-0.5), intake::stopIntake, intake),
-    //             Commands.startEnd(() -> indexer.setManualDutyCycle(-20), indexer::stop, indexer))); // TODO: FIX INDEXER CONTROLS
+    //             Commands.startEnd(() -> indexer.setManualDutyCycle(-20), indexer::stop,
+    // indexer))); // TODO: FIX INDEXER CONTROLS
 
     // Raise the intake arm so that balls in the front of the hopper are moved to the back
     operatorPanel.button(2).onTrue(raiseIntakeArmCommand);
