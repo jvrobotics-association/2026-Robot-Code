@@ -78,9 +78,9 @@ public final class Constants {
       public static final double PID_KV = 0.3;
       public static final double PID_KP = 8;
       public static final double SENSOR_TO_MECH = 0.75;
-      public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
+      //public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
       public static final double MM_ACCELERATION = 200;
-      public static final double MM_JERK = 0;
+      //public static final double MM_JERK = 0;
     }
 
     public final class LeftMotor {
@@ -89,9 +89,9 @@ public final class Constants {
       public static final double PID_KV = 0.3;
       public static final double PID_KP = 8;
       public static final double SENSOR_TO_MECH = 0.75;
-      public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
+      //public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
       public static final double MM_ACCELERATION = 200;
-      public static final double MM_JERK = 0;
+      //public static final double MM_JERK = 0;
     }
 
     public static final double SPEED_MOE = 0.05;
@@ -140,21 +140,21 @@ public final class Constants {
       public static final double PID_KD = 55;
       public static final double PID_KS = 0.5;
       public static final double PID_KV = 0.1;
-      public static final double PID_KG = -0.8;
+      public static final double PID_KG = -0.6;
       public static final double PID_ARM_OFFSET = -0.147;
       public static final double MM_CRUISE_VEL = 2;
       public static final double MM_ACCELERATION = 8;
     }
 
     public static class ExtensionEncoder {
-      public static final int MOTOR_ID = 8;
+      public static final int SENSOR_ID = 8;
       public static final double MAGNET_OFFSET = -0.11;
       public static final double ABSOLUTE_SENSOR_DISCONTINUITY = 0.5;
     }
 
-    public static final double TOLERANCE_ROTATIONS = 0.02;
-    public static final double RETRACTED_ROTATIONS = 0.037;
-    public static final double DEPLOYED_ROTATIONS = 0.39;
+    public static final double TOLERANCE_ROTATIONS = 0.003;
+    public static final double RETRACTED_ROTATIONS = 0.003;
+    public static final double DEPLOYED_ROTATIONS = 0.3525;
   }
 
   public final class TowerConstants {

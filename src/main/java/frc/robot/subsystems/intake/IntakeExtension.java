@@ -14,6 +14,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,7 +26,7 @@ import org.littletonrobotics.junction.Logger;
 public class IntakeExtension extends SubsystemBase {
   /* Hardware */
   private final TalonFX extensionMotor = new TalonFX(ExtensionMotor.MOTOR_ID, "rio");
-  private final CANcoder extensionEncoder = new CANcoder(ExtensionEncoder.MOTOR_ID, "rio");
+  private final CANcoder extensionEncoder = new CANcoder(ExtensionEncoder.SENSOR_ID, "rio");
 
   /* Control Requests */
   private final MotionMagicTorqueCurrentFOC positionRequest =
@@ -54,15 +55,30 @@ public class IntakeExtension extends SubsystemBase {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-        .withFeedbackRemoteSensorID(ExtensionEncoder.MOTOR_ID)
+        .withFeedbackRemoteSensorID(ExtensionEncoder.SENSOR_ID)
         .withRotorToSensorRatio(ExtensionMotor.ROTOR_TO_SENSOR_RATIO);
 
-    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake);
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Brake)
+        .withInverted(InvertedValue.CounterClockwise_Positive);
 
-    config.TorqueCurrent.withPeakForwardTorqueCurrent(
-            Amps.of(ExtensionMotor.PEAK_FORWARD_TORQUE_CURRENT))
-        .withPeakReverseTorqueCurrent(Amps.of(ExtensionMotor.PEAK_REVERSE_TORQUE_CURRENT));
+   // config.TorqueCurrent.withPeakForwardTorqueCurrent(
+   //         Amps.of(ExtensionMotor.PEAK_FORWARD_TORQUE_CURRENT))
+   //     .withPeakReverseTorqueCurrent(Amps.of(ExtensionMotor.PEAK_REVERSE_TORQUE_CURRENT));
 
+   config.CurrentLimits.withStatorCurrentLimitEnable(false)
+        .withSupplyCurrentLimitEnable(true)
+        .withSupplyCurrentLimit(45)
+        .withSupplyCurrentLowerLimit(28)
+        .withSupplyCurrentLowerTime(2);
+    
+    config.Voltage.withPeakForwardVoltage(12)
+        .withPeakReverseVoltage(-12);
+
+    config.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
+        .withReverseSoftLimitEnable(true)
+        .withForwardSoftLimitThreshold(0.35)
+        .withReverseSoftLimitThreshold(0.000);
+    
     config.MotionMagic.withMotionMagicCruiseVelocity(ExtensionMotor.MM_CRUISE_VEL)
         .withMotionMagicAcceleration(ExtensionMotor.MM_ACCELERATION);
 
@@ -73,6 +89,8 @@ public class IntakeExtension extends SubsystemBase {
         .withKG(ExtensionMotor.PID_KG)
         .withGravityType(GravityTypeValue.Arm_Cosine)
         .withGravityArmPositionOffset(ExtensionMotor.PID_ARM_OFFSET);
+
+  
 
     applyMotorConfig(config);
   }

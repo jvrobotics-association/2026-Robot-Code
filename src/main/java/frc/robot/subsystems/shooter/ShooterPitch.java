@@ -46,8 +46,21 @@ public class ShooterPitch extends SubsystemBase { //TODO: Set Soft Limits for Mi
         .withInverted(InvertedValue.Clockwise_Positive);
 
     config.CurrentLimits.withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(ShooterPitchConstants.STATOR_AMP_LIMIT));
+        .withStatorCurrentLimit(Amps.of(ShooterPitchConstants.STATOR_AMP_LIMIT))
+        .withSupplyCurrentLimit(15)
+        .withSupplyCurrentLowerLimit(8)
+        .withSupplyCurrentLowerTime(1);
 
+    config.Voltage.withPeakForwardVoltage(12)
+        .withPeakReverseVoltage(-12);
+
+    config.ExternalFeedback.withSensorToMechanismRatio(74);
+
+    config.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
+        .withReverseSoftLimitEnable(true)
+        .withForwardSoftLimitThreshold(0.0568850)
+        .withReverseSoftLimitThreshold(0.0);
+    
     config.Slot0.withKP(ShooterPitchConstants.PID_KP)
         .withKD(ShooterPitchConstants.PID_KD)
         .withKS(ShooterPitchConstants.PID_KS)
