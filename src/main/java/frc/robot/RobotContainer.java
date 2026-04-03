@@ -153,29 +153,29 @@ public class RobotContainer {
     }
 
     // Create the named commands for PathPlanner Autos
-    NamedCommands.registerCommand(
-        "runIntake", Commands.startEnd(intake::startIntake, intake::stopIntake, intake));
-    NamedCommands.registerCommand(
-        "raiseIntakeArm",
-        Commands.sequence(
-            Commands.runOnce(intakeExt::retract, intakeExt),
-            Commands.waitSeconds(1),
-            Commands.runOnce(intakeExt::deploy, intakeExt)));
-    NamedCommands.registerCommand(
-        "runShooter",
-        Commands.parallel(
-                Commands.run(pitch::moveToPosition, pitch),
-                Commands.run(shooter::shoot, shooter),
-                Commands.sequence(
-                    Commands.waitSeconds(1.5),
-                    Commands.parallel(
-                        Commands.startEnd(indexer::feed, indexer::stop, indexer),
-                        Commands.runEnd(() -> tower.setManualDutyCycle(0.8), tower::stop, tower))))
-            .finallyDo(
-                () -> {
-                  pitch.movetoMinPosition();
-                  shooter.stop();
-                }));
+    // NamedCommands.registerCommand(
+    //     "runIntake", Commands.startEnd(intake::startIntake, intake::stopIntake, intake));
+    // NamedCommands.registerCommand(
+    //     "raiseIntakeArm",
+    //     Commands.sequence(
+    //         Commands.runOnce(intakeExt::retract, intakeExt),
+    //         Commands.waitSeconds(1),
+    //         Commands.runOnce(intakeExt::deploy, intakeExt)));
+    // NamedCommands.registerCommand(
+    //     "runShooter",
+    //     Commands.parallel(
+    //             Commands.run(pitch::moveToPosition, pitch), // TODO: FIX MOVE TO POS
+    //             Commands.run(shooter::shoot, shooter),
+    //             Commands.sequence(
+    //                 Commands.waitSeconds(1.5),
+    //                 Commands.parallel(
+    //                     Commands.startEnd(indexer::feed, indexer::stop, indexer),
+    //                     Commands.runEnd(() -> tower.setManualDutyCycle(0.8), tower::stop, tower)))) // TODO: FIX TOWER CONTROL
+    //         .finallyDo(
+    //             () -> {
+    //               pitch.movetoMinPosition();
+    //               shooter.stop();
+    //             }));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -230,20 +230,36 @@ public class RobotContainer {
             .finallyDo(() -> intake.stopIntake());
 
     // Spins up the shooter, then runs the indexer and tower to feed fuel to the shooter
-    Command shootCommand =
-        Commands.parallel(
-                Commands.run(pitch::moveToPosition, pitch),
-                Commands.run(shooter::shoot, shooter),
-                Commands.sequence(
-                    Commands.waitSeconds(1.5),
-                    Commands.parallel(
-                        Commands.startEnd(indexer::feed, indexer::stop, indexer),
-                        Commands.runEnd(() -> tower.setManualDutyCycle(0.8), tower::stop, tower))))
-            .finallyDo(
-                () -> {
-                  pitch.movetoMinPosition();
-                  shooter.stop();
-                });
+    // Command shootCommand =
+    //     Commands.parallel(
+    //             Commands.run(pitch::moveToPosition, pitch), // TODO: FIX PITCH CONTROL
+    //             Commands.run(shooter::shoot, shooter),
+    //             Commands.sequence(
+    //                 Commands.waitSeconds(1.5),
+    //                 Commands.parallel(
+    //                     Commands.startEnd(indexer::feed, indexer::stop, indexer),
+    //                     Commands.runEnd(() -> tower.setManualDutyCycle(0.8), tower::stop, tower)))) // TODO: FIX TOWER CONTROL
+    //         .finallyDo(
+    //             () -> {
+    //               pitch.movetoMinPosition();
+    //               shooter.stop();
+    //             });
+    Command basicShootCommand = 
+        Commands.sequence(
+            Commands.run(pitch::aim, pitch),
+            Commands.run(shooter::shoot),
+            Commands.waitSeconds(2),
+            Commands.run(tower::start, tower),
+            Commands.run(indexer::feed, indexer)
+        );
+    Command endShootCommand =
+        Commands.sequence(
+            Commands.run(indexer::stop, indexer),
+            Commands.run(tower::stop, indexer),
+            Commands.run(shooter::stop, shooter),
+            Commands.run(pitch::stop, pitch)
+        );
+        
 
     // Retracts the intake arm and hopper
     Command hopperRetractCommand =
@@ -302,7 +318,8 @@ public class RobotContainer {
                         hubTarget.getY() - drive.getPose().getY())));
 
     // Shoot the balls once the robot is aligned
-    controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD).whileTrue(shootCommand);
+    controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD).onTrue(basicShootCommand);
+    controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD).onFalse(endShootCommand);
 
     // Manually pull the hopper back in when the zeroing is incorrect
     controller
@@ -334,19 +351,19 @@ public class RobotContainer {
     operatorPanel.button(4).whileTrue(runIntakeCommand);
 
     // Manually outake fuel by running the indexer and intake in reverse
-    operatorPanel
-        .button(12)
-        .whileTrue(
-            Commands.parallel(
-                Commands.startEnd(
-                    () -> intake.setManualDutyCycle(-0.5), intake::stopIntake, intake),
-                Commands.startEnd(() -> indexer.setManualDutyCycle(-20), indexer::stop, indexer)));
+    // operatorPanel
+    //     .button(12)
+    //     .whileTrue(
+    //         Commands.parallel(
+    //             Commands.startEnd(
+    //                 () -> intake.setManualDutyCycle(-0.5), intake::stopIntake, intake),
+    //             Commands.startEnd(() -> indexer.setManualDutyCycle(-20), indexer::stop, indexer))); // TODO: FIX INDEXER CONTROLS
 
     // Raise the intake arm so that balls in the front of the hopper are moved to the back
     operatorPanel.button(2).onTrue(raiseIntakeArmCommand);
 
-    // Shoot the balls once the robot is aligned
-    operatorPanel.button(1).whileTrue(shootCommand);
+    // // Shoot the balls once the robot is aligned
+    // operatorPanel.button(1).whileTrue(shootCommand); // TODO: FIX SHOOT CONTROLS
 
     // Lock the drive modules to an X configuration to help avoid getting bumped around
     // operatorPanel.button(14).onTrue(xLockWheelsCommand);
