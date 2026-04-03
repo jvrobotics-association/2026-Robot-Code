@@ -18,6 +18,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Shooter extends SubsystemBase {
   /* Hardware */
@@ -31,6 +32,8 @@ public class Shooter extends SubsystemBase {
       new StrictFollower(ShooterConstants.LeftMotor.MOTOR_ID);
 
   private double targetVelocityRPS = 0;
+
+  private LoggedNetworkNumber LNN_RPS = new LoggedNetworkNumber("Shooter RPS", 0);
 
   /** Creates a new Shooter */
   public Shooter() {
@@ -108,14 +111,11 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shoot() {
-    rightMotor.setControl(new StrictFollower(ShooterConstants.LeftMotor.MOTOR_ID));
-    leftMotor.setControl(leftVelocityRequest.withVelocity(ShooterConstants.SPEED));
+    leftMotor.setControl(leftVelocityRequest.withVelocity(LNN_RPS.getAsDouble()));
   }
 
   public void stop() {
-    this.targetVelocityRPS = 0;
     leftMotor.stopMotor();
-    rightMotor.stopMotor();
   }
 
   @Override
@@ -127,16 +127,16 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput("Shooter/RightActualRPS", rightMotor.getVelocity().getValueAsDouble());
   }
 
-  public boolean readyToShoot() {
-    if (targetVelocityRPS <= 0) return false;
+  // public boolean readyToShoot() {
+  //   if (targetVelocityRPS <= 0) return false;
 
-    double currentLeft = leftMotor.getVelocity().getValueAsDouble();
-    double currentRight = rightMotor.getVelocity().getValueAsDouble();
+  //   double currentLeft = leftMotor.getVelocity().getValueAsDouble();
+  //   double currentRight = rightMotor.getVelocity().getValueAsDouble();
 
-    // Use a flat minimum floor for tolerance to avoid noise issues at low speeds
-    double tolerance = Math.max(targetVelocityRPS * ShooterConstants.SPEED_MOE, 0.5);
+  //   // Use a flat minimum floor for tolerance to avoid noise issues at low speeds
+  //   double tolerance = Math.max(targetVelocityRPS * ShooterConstants.SPEED_MOE, 0.5);
 
-    return Math.abs(currentLeft - targetVelocityRPS) <= tolerance
-        && Math.abs(currentRight - targetVelocityRPS) <= tolerance;
-  }
+  //   return Math.abs(currentLeft - targetVelocityRPS) <= tolerance
+  //       && Math.abs(currentRight - targetVelocityRPS) <= tolerance;
+  // }
 }

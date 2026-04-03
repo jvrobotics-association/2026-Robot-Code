@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterPitchConstants;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ShooterPitch extends SubsystemBase { //TODO: Set Soft Limits for Minion
   /* Hardware */
@@ -27,8 +28,8 @@ public class ShooterPitch extends SubsystemBase { //TODO: Set Soft Limits for Mi
   private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0).withSlot(0);
 
   /* State */
-  private final LoggedNetworkBoolean LNNConfig =
-      new LoggedNetworkBoolean("Pitch Config Applied", false);
+  private final LoggedNetworkNumber LNN_POS =
+      new LoggedNetworkNumber("Pitch Pos", 0);
 
   private double targetPositionRotations = 0;
 
@@ -45,8 +46,8 @@ public class ShooterPitch extends SubsystemBase { //TODO: Set Soft Limits for Mi
     config.MotorOutput.withNeutralMode(NeutralModeValue.Brake)
         .withInverted(InvertedValue.Clockwise_Positive);
 
-    config.CurrentLimits.withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(ShooterPitchConstants.STATOR_AMP_LIMIT))
+    config.CurrentLimits.withStatorCurrentLimitEnable(false)
+        //.withStatorCurrentLimit(Amps.of(ShooterPitchConstants.STATOR_AMP_LIMIT))
         .withSupplyCurrentLimit(15)
         .withSupplyCurrentLowerLimit(8)
         .withSupplyCurrentLowerTime(1);
@@ -79,18 +80,22 @@ public class ShooterPitch extends SubsystemBase { //TODO: Set Soft Limits for Mi
     for (int i = 0; i < 5; ++i) {
       status = motor.getConfigurator().apply(config);
       if (status.isOK()) {
-        LNNConfig.set(true);
+        //LNNConfig.set(true);
         break;
       }
     }
   }
 
-  public void moveToPosition() {
-    pitchMotor.setControl(positionRequest.withPosition(ShooterPitchConstants.SHOOT_ANGLE));
-  }
+  // public void moveToPosition() {
+  //   pitchMotor.setControl(positionRequest.withPosition(ShooterPitchConstants.SHOOT_ANGLE));
+  // }
 
-  public void movetoMinPosition() {
-    pitchMotor.setControl(positionRequest.withPosition(ShooterPitchConstants.MIN_ROTATION));
+  // public void movetoMinPosition() {
+  //   pitchMotor.setControl(positionRequest.withPosition(ShooterPitchConstants.MIN_ROTATION));
+  // }
+
+  public void aim(){
+    pitchMotor.setControl(positionRequest.withPosition(LNN_POS.getAsDouble()));
   }
 
   public void stop() {

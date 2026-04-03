@@ -24,9 +24,6 @@ public class Tower extends SubsystemBase {
   /* Control Requests */
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
 
-  /* State */
-  private double targetVelocityRPS = 0;
-
   /** Creates a new Tower. */
   public Tower() {
     configureHardware();
@@ -35,24 +32,24 @@ public class Tower extends SubsystemBase {
   private void configureHardware() {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-        .withSensorToMechanismRatio(TowerConstants.SENSOR_TO_MECH_RATIO);
+    config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor);
+    //    .withSensorToMechanismRatio(TowerConstants.SENSOR_TO_MECH_RATIO);
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.Clockwise_Positive);
 
-    config.CurrentLimits.withStatorCurrentLimitEnable(false)
-        .withStatorCurrentLimit(Amps.of(TowerConstants.STATOR_AMP_LIMIT));
+    // config.CurrentLimits.withStatorCurrentLimitEnable(false)
+    //     .withStatorCurrentLimit(Amps.of(TowerConstants.STATOR_AMP_LIMIT));
 
-    config.TorqueCurrent.withPeakForwardTorqueCurrent(
-            Amps.of(TowerConstants.PEAK_FORWARD_TORQUE_CURRENT))
-        .withPeakReverseTorqueCurrent(Amps.of(TowerConstants.PEAK_REVERSE_TORQUE_CURRENT));
+    // config.TorqueCurrent.withPeakForwardTorqueCurrent(
+    //         Amps.of(TowerConstants.PEAK_FORWARD_TORQUE_CURRENT))
+    //     .withPeakReverseTorqueCurrent(Amps.of(TowerConstants.PEAK_REVERSE_TORQUE_CURRENT));
 
-    config.MotionMagic.withMotionMagicAcceleration(TowerConstants.MM_ACCELERATION);
+    // config.MotionMagic.withMotionMagicAcceleration(TowerConstants.MM_ACCELERATION);
 
-    config.Slot0.withKP(TowerConstants.PID_KP)
-        .withKS(TowerConstants.PID_KS)
-        .withKV(TowerConstants.PID_KV);
+    // config.Slot0.withKP(TowerConstants.PID_KP)
+    //     .withKS(TowerConstants.PID_KS)
+    //     .withKV(TowerConstants.PID_KV);
 
     applyConfig(config);
   }
@@ -68,20 +65,22 @@ public class Tower extends SubsystemBase {
     }
   }
 
-  // Dev
-  public void setManualDutyCycle(double output) {
-    this.targetVelocityRPS = 0;
-    towerMotor.setControl(dutyCycleRequest.withOutput(output));
-  }
+  // // Dev
+  // public void setManualDutyCycle(double output) {
+  //   this.targetVelocityRPS = 0;
+  //   towerMotor.setControl(dutyCycleRequest.withOutput(output));
+  // }
 
+  public void start(){
+    towerMotor.setControl(dutyCycleRequest.withOutput(TowerConstants.TOWER_FRACTIONAL));
+  }
   public void stop() {
-    this.targetVelocityRPS = 0;
     towerMotor.stopMotor();
   }
 
   @Override
   public void periodic() {
-    Logger.recordOutput("Tower/TargetVelocityRPS", targetVelocityRPS);
+    //Logger.recordOutput("Tower/TargetVelocityRPS", targetVelocityRPS);
     Logger.recordOutput("Tower/ActualVelocityRPS", towerMotor.getVelocity().getValueAsDouble());
     Logger.recordOutput("Tower/StatorCurrent", towerMotor.getStatorCurrent().getValueAsDouble());
   }

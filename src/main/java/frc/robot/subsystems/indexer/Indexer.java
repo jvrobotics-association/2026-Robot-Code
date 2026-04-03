@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Second;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -23,8 +24,8 @@ public class Indexer extends SubsystemBase {
   private final TalonFXS indexerMotor = new TalonFXS(IndexerConstants.CAN_ID, "rio");
 
   /* Control Requests */
-  private final MotionMagicVelocityVoltage velocityRequest =
-      new MotionMagicVelocityVoltage(0).withSlot(0);
+  private final DutyCycleOut velocityRequest =
+      new DutyCycleOut(0);
 
   /* State */
   private double targetVelocityRPS = 0;
@@ -40,17 +41,17 @@ public class Indexer extends SubsystemBase {
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.CounterClockwise_Positive);
 
-    config.ExternalFeedback.withSensorToMechanismRatio(IndexerConstants.SENSOR_TO_MECH_RATIO);
-    config.CurrentLimits.withStatorCurrentLimit(Amps.of(IndexerConstants.STATOR_AMP_LIMIT))
-        .withStatorCurrentLimitEnable(true);
+    // config.ExternalFeedback.withSensorToMechanismRatio(IndexerConstants.SENSOR_TO_MECH_RATIO);
+    // config.CurrentLimits.withStatorCurrentLimit(Amps.of(IndexerConstants.STATOR_AMP_LIMIT))
+    //     .withStatorCurrentLimitEnable(true);
 
-    config.Slot0.withKP(IndexerConstants.PID_KP)
-        .withKS(IndexerConstants.PID_KS)
-        .withKV(IndexerConstants.PID_KV);
+    // config.Slot0.withKP(IndexerConstants.PID_KP)
+    //     .withKS(IndexerConstants.PID_KS)
+    //     .withKV(IndexerConstants.PID_KV);
 
-    config.MotionMagic.withMotionMagicAcceleration(
-            RotationsPerSecondPerSecond.of(IndexerConstants.MM_ACCELERATION))
-        .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IndexerConstants.MM_JERK));
+    // config.MotionMagic.withMotionMagicAcceleration(
+    //         RotationsPerSecondPerSecond.of(IndexerConstants.MM_ACCELERATION))
+    //     .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IndexerConstants.MM_JERK));
 
     applyConfig(config);
   }
@@ -67,18 +68,15 @@ public class Indexer extends SubsystemBase {
   }
 
   public void feed() {
-    this.targetVelocityRPS = IndexerConstants.INDEXER_SPEED;
-    indexerMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
+    indexerMotor.setControl(velocityRequest.withOutput(IndexerConstants.INDEXER_FRACTIONAL));
   }
 
-  // Manual Control for Dev
-  public void setManualDutyCycle(double output) {
-    this.targetVelocityRPS = 0;
-    indexerMotor.setControl(velocityRequest.withVelocity(output));
-  }
+  // // Manual Control for Dev
+  // public void setManualDutyCycle(double output) {
+  //   indexerMotor.setControl(velocityRequest.withVelocity(output));
+  // }
 
   public void stop() {
-    this.targetVelocityRPS = 0;
     indexerMotor.stopMotor();
   }
 

@@ -60,15 +60,15 @@ public final class Constants {
 
   public final class IndexerConstants {
     public static final int CAN_ID = 22;
-    public static final double INDEXER_SPEED = 25;
-    public static final int SENSOR_TO_MECH_RATIO = 4;
-    public static final int STATOR_AMP_LIMIT = 20;
-    public static final int FORWARD_TORQUE_AMPS_LIMIT = 25;
-    public static final double MM_ACCELERATION = 31;
-    public static final double MM_JERK = 0.0;
-    public static final double PID_KS = 0.27;
-    public static final double PID_KV = 0.38;
-    public static final double PID_KP = 0.4;
+    public static final double INDEXER_FRACTIONAL = 0.3;
+    //public static final int SENSOR_TO_MECH_RATIO = 4;
+    //public static final int STATOR_AMP_LIMIT = 20;
+    //public static final int FORWARD_TORQUE_AMPS_LIMIT = 25;
+    //public static final double MM_ACCELERATION = 31;
+    //public static final double MM_JERK = 0.0;
+    //public static final double PID_KS = 0.27;
+    //public static final double PID_KV = 0.38;
+    //public static final double PID_KP = 0.4;
   }
 
   public final class ShooterConstants {
@@ -94,9 +94,9 @@ public final class Constants {
       //public static final double MM_JERK = 0;
     }
 
-    public static final double SPEED_MOE = 0.05;
-    public static final double SPEED = 65;
-    public static final double FLYWHEEL_CIRCUMFERENCE = 4.5;
+    //public static final double SPEED_MOE = 0.05;
+    //public static final double SPEED = 65;
+    //public static final double FLYWHEEL_CIRCUMFERENCE = 4.5;
   }
 
   public final class ShooterPitchConstants {
@@ -109,11 +109,11 @@ public final class Constants {
     public static final double PID_KV = 0.1;
     public static final double PID_KP = 27;
     public static final double PID_KD = 0.1;
-    public static final double MIN_ROTATION = 0.0;
-    public static final double MAX_ROTATION = 0.0568850;
-    public static final double MAX_SHOT_ANGLE = 90.0;
-    public static final double MIN_SHOT_ANGLE = 45.0;
-    public static final double SHOOT_ANGLE = 0.8;
+    //public static final double MIN_ROTATION = 0.0;
+    //public static final double MAX_ROTATION = 0.0568850;
+    //public static final double MAX_SHOT_ANGLE = 90.0;
+    //public static final double MIN_SHOT_ANGLE = 45.0;
+    //public static final double SHOOT_ANGLE = 0.8;
   }
 
   public final class IntakeConstants {
@@ -159,15 +159,15 @@ public final class Constants {
 
   public final class TowerConstants {
     public static final int MOTOR_ID = 3;
-    public static final double SENSOR_TO_MECH_RATIO = 1.25;
-    public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
-    public static final double PEAK_REVERSE_TORQUE_CURRENT = -40;
-    public static final double STATOR_AMP_LIMIT = 40;
-    public static final double PID_KP = 0;
-    public static final double PID_KS = 0;
-    public static final double PID_KV = 0;
-    public static final double MM_ACCELERATION = 0;
-    public static final double TOWER_SPEED = 0.85;
+    // public static final double SENSOR_TO_MECH_RATIO = 1.25;
+    // public static final double PEAK_FORWARD_TORQUE_CURRENT = 40;
+    // public static final double PEAK_REVERSE_TORQUE_CURRENT = -40;
+    // public static final double STATOR_AMP_LIMIT = 40;
+    // public static final double PID_KP = 0;
+    // public static final double PID_KS = 0;
+    // public static final double PID_KV = 0;
+    // public static final double MM_ACCELERATION = 0;
+    public static final double TOWER_FRACTIONAL = 0.7;
   }
 
   public final class HopperConstants {
