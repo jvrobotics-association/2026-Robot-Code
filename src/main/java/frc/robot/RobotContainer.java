@@ -245,21 +245,17 @@ public class RobotContainer {
     //               shooter.stop();
     //             });
     Command basicShootCommand = 
-        Commands.sequence(
-            Commands.run(pitch::aim, pitch),
-            Commands.run(shooter::shoot),
-            Commands.waitSeconds(2),
-            Commands.run(tower::start, tower),
-            Commands.run(indexer::feed, indexer)
-        );
-    Command endShootCommand =
-        Commands.sequence(
-            Commands.run(indexer::stop, indexer),
-            Commands.run(tower::stop, indexer),
-            Commands.run(shooter::stop, shooter),
-            Commands.run(pitch::stop, pitch)
-        );
-        
+        Commands.parallel(
+            Commands.runEnd(pitch::aim, pitch::stop, pitch),
+            Commands.runEnd(shooter::shoot, shooter::stop, shooter),
+            Commands.sequence(
+                Commands.waitSeconds(2),
+                Commands.parallel(
+                    Commands.runEnd(tower::start, tower::stop, tower),
+                    Commands.runEnd(indexer::feed, indexer::stop, indexer)
+                )
+            )
+        );        
 
     // Retracts the intake arm and hopper
     Command hopperRetractCommand =
@@ -318,8 +314,7 @@ public class RobotContainer {
                         hubTarget.getY() - drive.getPose().getY())));
 
     // Shoot the balls once the robot is aligned
-    controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD).onTrue(basicShootCommand);
-    controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD).onFalse(endShootCommand);
+    controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD).whileTrue(basicShootCommand);
 
     // Manually pull the hopper back in when the zeroing is incorrect
     controller

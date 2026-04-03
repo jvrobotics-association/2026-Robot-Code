@@ -99,7 +99,8 @@ public class ShooterPitch extends SubsystemBase { //TODO: Set Soft Limits for Mi
   }
 
   public void stop() {
-    pitchMotor.stopMotor();
+    pitchMotor.setControl(positionRequest.withPosition(0));
+    //pitchMotor.stopMotor();
   }
 
   @Override
