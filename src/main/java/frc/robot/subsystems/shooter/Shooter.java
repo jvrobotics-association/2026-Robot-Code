@@ -50,12 +50,12 @@ public class Shooter extends SubsystemBase {
         .withInverted(InvertedValue.Clockwise_Positive);
 
     config.CurrentLimits.withStatorCurrentLimitEnable(false)
-        .withSupplyCurrentLimitEnable(true)
-        .withSupplyCurrentLimit(45)
-        .withSupplyCurrentLowerLimit(28)
-        .withSupplyCurrentLowerTime(2);
+        .withSupplyCurrentLimit(ShooterConstants.LeftMotor.SUPPLY_CURRENT_LIMIT)
+        .withSupplyCurrentLowerLimit(ShooterConstants.LeftMotor.SUPPLY_CURRENT_LOWER_LIMIT)
+        .withSupplyCurrentLowerTime(ShooterConstants.LeftMotor.SUPPLY_CURRENT_LOWER_TIME);
 
-    config.Voltage.withPeakForwardVoltage(12).withPeakReverseVoltage(-12);
+    config.Voltage.withPeakForwardVoltage(ShooterConstants.LeftMotor.PEAK_FORWARD_VOLTAGE)
+        .withPeakReverseVoltage(ShooterConstants.LeftMotor.PEAK_REVERSE_VOLTAGE);
 
     config.Slot0.withKP(ShooterConstants.LeftMotor.PID_KP)
         .withKV(ShooterConstants.LeftMotor.PID_KV)
@@ -63,8 +63,6 @@ public class Shooter extends SubsystemBase {
 
     config.MotionMagic.withMotionMagicAcceleration(
         RotationsPerSecondPerSecond.of(ShooterConstants.LeftMotor.MM_ACCELERATION));
-    // .withMotionMagicJerk(
-    //   RotationsPerSecondPerSecond.per(Second).of(ShooterConstants.LeftMotor.MM_JERK));
 
     applyConfig(leftMotor, config);
   }
@@ -79,12 +77,12 @@ public class Shooter extends SubsystemBase {
         .withInverted(InvertedValue.CounterClockwise_Positive);
 
     config.CurrentLimits.withStatorCurrentLimitEnable(false)
-        .withSupplyCurrentLimitEnable(true)
-        .withSupplyCurrentLimit(45)
-        .withSupplyCurrentLowerLimit(28)
-        .withSupplyCurrentLowerTime(2);
+        .withSupplyCurrentLimit(ShooterConstants.RightMotor.SUPPLY_CURRENT_LIMIT)
+        .withSupplyCurrentLowerLimit(ShooterConstants.RightMotor.SUPPLY_CURRENT_LOWER_LIMIT)
+        .withSupplyCurrentLowerTime(ShooterConstants.RightMotor.SUPPLY_CURRENT_LOWER_TIME);
 
-    config.Voltage.withPeakForwardVoltage(12).withPeakReverseVoltage(-12);
+    config.Voltage.withPeakForwardVoltage(ShooterConstants.RightMotor.PEAK_FORWARD_VOLTAGE)
+        .withPeakReverseVoltage(ShooterConstants.RightMotor.PEAK_REVERSE_VOLTAGE);
 
     config.Slot0.withKP(ShooterConstants.RightMotor.PID_KP)
         .withKV(ShooterConstants.RightMotor.PID_KV)
@@ -92,8 +90,6 @@ public class Shooter extends SubsystemBase {
 
     config.MotionMagic.withMotionMagicAcceleration(
         RotationsPerSecondPerSecond.of(ShooterConstants.RightMotor.MM_ACCELERATION));
-    // .withMotionMagicJerk(
-    //    RotationsPerSecondPerSecond.per(Second).of(ShooterConstants.RightMotor.MM_JERK));
 
     applyConfig(rightMotor, config);
   }

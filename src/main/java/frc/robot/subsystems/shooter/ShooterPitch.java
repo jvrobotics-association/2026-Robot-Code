@@ -18,7 +18,7 @@ import frc.robot.Constants.ShooterPitchConstants;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-public class ShooterPitch extends SubsystemBase { // TODO: Set Soft Limits for Minion
+public class ShooterPitch extends SubsystemBase {
   /* Hardware */
   private final TalonFXS pitchMotor = new TalonFXS(ShooterPitchConstants.MOTOR_ID, "rio");
 
@@ -44,19 +44,19 @@ public class ShooterPitch extends SubsystemBase { // TODO: Set Soft Limits for M
         .withInverted(InvertedValue.Clockwise_Positive);
 
     config.CurrentLimits.withStatorCurrentLimitEnable(false)
-        // .withStatorCurrentLimit(Amps.of(ShooterPitchConstants.STATOR_AMP_LIMIT))
-        .withSupplyCurrentLimit(15)
-        .withSupplyCurrentLowerLimit(8)
-        .withSupplyCurrentLowerTime(1);
+        .withSupplyCurrentLimit(ShooterPitchConstants.SUPPLY_CURRENT_LIMIT)
+        .withSupplyCurrentLowerLimit(ShooterPitchConstants.SUPPLY_CURRENT_LOWER_LIMIT)
+        .withSupplyCurrentLowerTime(ShooterPitchConstants.SUPPLY_CURRENT_LOWER_TIME);
 
-    config.Voltage.withPeakForwardVoltage(12).withPeakReverseVoltage(-12);
+    config.Voltage.withPeakForwardVoltage(ShooterPitchConstants.PEAK_FORWARD_VOLTAGE)
+        .withPeakReverseVoltage(ShooterPitchConstants.PEAK_REVERSE_VOLTAGE);
 
     config.ExternalFeedback.withSensorToMechanismRatio(74);
 
     config.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
         .withReverseSoftLimitEnable(true)
-        .withForwardSoftLimitThreshold(0.0568850)
-        .withReverseSoftLimitThreshold(0.0);
+        .withForwardSoftLimitThreshold(ShooterPitchConstants.MAX_ROTATION)
+        .withReverseSoftLimitThreshold(ShooterPitchConstants.MIN_ROTATION);
 
     config.Slot0.withKP(ShooterPitchConstants.PID_KP)
         .withKD(ShooterPitchConstants.PID_KD)

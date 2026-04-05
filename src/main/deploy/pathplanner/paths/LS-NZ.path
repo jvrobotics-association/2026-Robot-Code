@@ -54,8 +54,8 @@
   "pointTowardsZones": [
     {
       "fieldPosition": {
-        "x": 4.625594,
-        "y": 4.034536
+        "x": 4.626,
+        "y": 4.035
       },
       "rotationOffset": 0.0,
       "minWaypointRelativePos": 1.6484502864157111,

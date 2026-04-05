@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -44,20 +44,18 @@ public class Hopper extends SubsystemBase {
     config.MotorOutput.withNeutralMode(NeutralModeValue.Brake)
         .withInverted(InvertedValue.Clockwise_Positive);
 
-    config.CurrentLimits.withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(HopperConstants.STATOR_AMP_LIMIT));
-
-    config.TorqueCurrent.withPeakForwardTorqueCurrent(
-            Amps.of(HopperConstants.PEAK_FORWARD_TORQUE_CURRENT))
-        .withPeakReverseTorqueCurrent(Amps.of(HopperConstants.PEAK_REVERSE_TORQUE_CURRENT));
-
-    config.MotionMagic.withMotionMagicCruiseVelocity(HopperConstants.MM_CRUISE_VEL)
-        .withMotionMagicAcceleration(HopperConstants.MM_ACCELERATION);
+    config.CurrentLimits.withStatorCurrentLimitEnable(false)
+        .withSupplyCurrentLimit(HopperConstants.SUPPLY_CURRENT_LIMIT)
+        .withSupplyCurrentLowerLimit(HopperConstants.SUPPLY_CURRENT_LOWER_LIMIT)
+        .withSupplyCurrentLowerTime(Seconds.of(HopperConstants.SUPPLY_CURRENT_LOWER_TIME));
 
     config.Slot0.withKP(HopperConstants.PID_KP)
         .withKD(HopperConstants.PID_KD)
         .withKS(HopperConstants.PID_KS)
         .withKV(HopperConstants.PID_KV);
+
+    config.MotionMagic.withMotionMagicCruiseVelocity(HopperConstants.MM_CRUISE_VEL)
+        .withMotionMagicAcceleration(HopperConstants.MM_ACCELERATION);
 
     applyConfig(config);
   }

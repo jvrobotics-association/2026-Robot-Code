@@ -4,9 +4,8 @@
 
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -46,20 +45,20 @@ public class Intake extends SubsystemBase {
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.Clockwise_Positive);
 
-    config.CurrentLimits.withStatorCurrentLimitEnable(true)
-        .withStatorCurrentLimit(Amps.of(IntakeConstants.STATOR_AMP_LIMIT));
+    config.CurrentLimits.withStatorCurrentLimitEnable(false)
+        .withSupplyCurrentLimit(IntakeConstants.SUPPLY_CURRENT_LIMIT)
+        .withSupplyCurrentLowerLimit(IntakeConstants.SUPPLY_CURRENT_LOWER_LIMIT)
+        .withSupplyCurrentLowerTime(Seconds.of(IntakeConstants.SUPPLY_CURRENT_LOWER_TIME));
 
-    config.TorqueCurrent.withPeakForwardTorqueCurrent(
-        Amps.of(IntakeConstants.PEAK_FORWARD_TORQUE_CURRENT));
+    config.Voltage.withPeakForwardVoltage(IntakeConstants.PEAK_FORWARD_VOLTAGE)
+        .withPeakReverseVoltage(IntakeConstants.PEAK_REVERSE_VOLTAGE);
 
     config.Slot0.withKS(IntakeConstants.PID_KS)
         .withKV(IntakeConstants.PID_KV)
-        .withKP(IntakeConstants.PID_KP)
-        .withKI(IntakeConstants.PID_KI);
+        .withKP(IntakeConstants.PID_KP);
 
     config.MotionMagic.withMotionMagicAcceleration(
-            RotationsPerSecondPerSecond.of(IntakeConstants.MM_ACCELERATION))
-        .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IntakeConstants.MM_JERK));
+        RotationsPerSecondPerSecond.of(IntakeConstants.MM_ACCELERATION));
 
     applyConfig(config);
   }

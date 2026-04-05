@@ -43,8 +43,9 @@ public class IntakeExtension extends SubsystemBase {
     CANcoderConfiguration config = new CANcoderConfiguration();
 
     config.MagnetSensor.withSensorDirection(SensorDirectionValue.Clockwise_Positive)
-        .withMagnetOffset(ExtensionEncoder.MAGNET_OFFSET)
-        .withAbsoluteSensorDiscontinuityPoint(ExtensionEncoder.ABSOLUTE_SENSOR_DISCONTINUITY);
+        .withMagnetOffset(IntakeExtensionConstants.ExtensionEncoder.MAGNET_OFFSET)
+        .withAbsoluteSensorDiscontinuityPoint(
+            IntakeExtensionConstants.ExtensionEncoder.ABSOLUTE_SENSOR_DISCONTINUITY);
 
     applyEncoderConfig(config);
   }
@@ -53,31 +54,27 @@ public class IntakeExtension extends SubsystemBase {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-        .withFeedbackRemoteSensorID(ExtensionEncoder.SENSOR_ID)
-        .withRotorToSensorRatio(ExtensionMotor.ROTOR_TO_SENSOR_RATIO);
+        .withFeedbackRemoteSensorID(IntakeExtensionConstants.ExtensionEncoder.SENSOR_ID)
+        .withRotorToSensorRatio(IntakeExtensionConstants.ExtensionMotor.ROTOR_TO_SENSOR_RATIO);
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Brake)
         .withInverted(InvertedValue.CounterClockwise_Positive);
 
-    // config.TorqueCurrent.withPeakForwardTorqueCurrent(
-    //         Amps.of(ExtensionMotor.PEAK_FORWARD_TORQUE_CURRENT))
-    //     .withPeakReverseTorqueCurrent(Amps.of(ExtensionMotor.PEAK_REVERSE_TORQUE_CURRENT));
-
     config.CurrentLimits.withStatorCurrentLimitEnable(false)
-        .withSupplyCurrentLimitEnable(true)
-        .withSupplyCurrentLimit(45)
-        .withSupplyCurrentLowerLimit(28)
-        .withSupplyCurrentLowerTime(2);
+        .withSupplyCurrentLimit(IntakeExtensionConstants.ExtensionMotor.SUPPLY_CURRENT_LIMIT)
+        .withSupplyCurrentLowerLimit(
+            IntakeExtensionConstants.ExtensionMotor.SUPPLY_CURRENT_LOWER_LIMIT)
+        .withSupplyCurrentLowerTime(
+            IntakeExtensionConstants.ExtensionMotor.SUPPLY_CURRENT_LOWER_TIME);
 
-    config.Voltage.withPeakForwardVoltage(12).withPeakReverseVoltage(-12);
+    config.Voltage.withPeakForwardVoltage(
+            IntakeExtensionConstants.ExtensionMotor.PEAK_FORWARD_VOLTAGE)
+        .withPeakReverseVoltage(IntakeExtensionConstants.ExtensionMotor.PEAK_REVERSE_VOLTAGE);
 
     config.SoftwareLimitSwitch.withForwardSoftLimitEnable(true)
         .withReverseSoftLimitEnable(true)
-        .withForwardSoftLimitThreshold(0.35)
-        .withReverseSoftLimitThreshold(0.000);
-
-    config.MotionMagic.withMotionMagicCruiseVelocity(ExtensionMotor.MM_CRUISE_VEL)
-        .withMotionMagicAcceleration(ExtensionMotor.MM_ACCELERATION);
+        .withForwardSoftLimitThreshold(IntakeExtensionConstants.ExtensionMotor.MAX_ROTATION)
+        .withReverseSoftLimitThreshold(IntakeExtensionConstants.ExtensionMotor.MIN_ROTATION);
 
     config.Slot0.withKP(ExtensionMotor.PID_KP)
         .withKD(ExtensionMotor.PID_KD)
@@ -86,6 +83,9 @@ public class IntakeExtension extends SubsystemBase {
         .withKG(ExtensionMotor.PID_KG)
         .withGravityType(GravityTypeValue.Arm_Cosine)
         .withGravityArmPositionOffset(ExtensionMotor.PID_ARM_OFFSET);
+
+    config.MotionMagic.withMotionMagicCruiseVelocity(ExtensionMotor.MM_CRUISE_VEL)
+        .withMotionMagicAcceleration(ExtensionMotor.MM_ACCELERATION);
 
     applyMotorConfig(config);
   }

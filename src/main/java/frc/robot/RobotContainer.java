@@ -230,10 +230,7 @@ public class RobotContainer {
     /////////////////////////////////
 
     // Runs the intake to intake fuel
-    // Command runIntakeCommand = Commands.startEnd(intake::startIntake, intake::stopIntake,
-    // intake);
-    Command runIntakeCommand =
-        Commands.startEnd(() -> intake.setManualDutyCycle(0.9), intake::stopIntake, intake);
+    Command runIntakeCommand = Commands.startEnd(intake::startIntake, intake::stopIntake, intake);
 
     // Raises the intake arm and lower it back down to help feed fuel to the shooter
     Command raiseIntakeArmCommand =
@@ -274,7 +271,7 @@ public class RobotContainer {
     Command hopperRetractCommand =
         Commands.sequence(
             Commands.runOnce(intakeExt::retract, intakeExt),
-            Commands.waitSeconds(0.5),
+            Commands.waitSeconds(0.75),
             Commands.runOnce(intakeExt::stop, intakeExt),
             Commands.runOnce(hopper::retract, hopper),
             Commands.waitSeconds(5),
@@ -284,7 +281,7 @@ public class RobotContainer {
     hopperExtendCommand =
         Commands.sequence(
             Commands.runOnce(hopper::deploy, hopper),
-            Commands.waitSeconds(1.3),
+            Commands.waitSeconds(1.5),
             Commands.runOnce(intakeExt::deploy, intakeExt),
             Commands.waitSeconds(1),
             Commands.runOnce(hopper::stop, hopper),
@@ -359,14 +356,13 @@ public class RobotContainer {
     operatorPanel.button(4).whileTrue(runIntakeCommand);
 
     // Manually outake fuel by running the indexer and intake in reverse
-    // operatorPanel
-    //     .button(12)
-    //     .whileTrue(
-    //         Commands.parallel(
-    //             Commands.startEnd(
-    //                 () -> intake.setManualDutyCycle(-0.5), intake::stopIntake, intake),
-    //             Commands.startEnd(() -> indexer.setManualDutyCycle(-20), indexer::stop,
-    // indexer))); // TODO: FIX INDEXER CONTROLS
+    operatorPanel
+        .button(12)
+        .whileTrue(
+            Commands.parallel(
+                Commands.startEnd(
+                    () -> intake.setManualDutyCycle(-0.5), intake::stopIntake, intake),
+                Commands.startEnd(indexer::reverseFeed, indexer::stop, indexer)));
 
     // Raise the intake arm so that balls in the front of the hopper are moved to the back
     operatorPanel.button(2).onTrue(raiseIntakeArmCommand);

@@ -31,23 +31,17 @@ public class Tower extends SubsystemBase {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor);
-    //    .withSensorToMechanismRatio(TowerConstants.SENSOR_TO_MECH_RATIO);
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.CounterClockwise_Positive);
 
-    // config.CurrentLimits.withStatorCurrentLimitEnable(false)
-    //     .withStatorCurrentLimit(Amps.of(TowerConstants.STATOR_AMP_LIMIT));
+    config.CurrentLimits.withStatorCurrentLimitEnable(false)
+        .withSupplyCurrentLimit(TowerConstants.SUPPLY_CURRENT_LIMIT)
+        .withSupplyCurrentLowerLimit(TowerConstants.SUPPLY_CURRENT_LOWER_LIMIT)
+        .withSupplyCurrentLowerTime(TowerConstants.SUPPLY_CURRENT_LOWER_TIME);
 
-    // config.TorqueCurrent.withPeakForwardTorqueCurrent(
-    //         Amps.of(TowerConstants.PEAK_FORWARD_TORQUE_CURRENT))
-    //     .withPeakReverseTorqueCurrent(Amps.of(TowerConstants.PEAK_REVERSE_TORQUE_CURRENT));
-
-    // config.MotionMagic.withMotionMagicAcceleration(TowerConstants.MM_ACCELERATION);
-
-    // config.Slot0.withKP(TowerConstants.PID_KP)
-    //     .withKS(TowerConstants.PID_KS)
-    //     .withKV(TowerConstants.PID_KV);
+    config.Voltage.withPeakForwardVoltage(TowerConstants.PEAK_FORWARD_VOLTAGE)
+        .withPeakReverseVoltage(TowerConstants.PEAK_REVERSE_VOLTAGE);
 
     applyConfig(config);
   }
@@ -70,7 +64,7 @@ public class Tower extends SubsystemBase {
   // }
 
   public void start() {
-    towerMotor.setControl(dutyCycleRequest.withOutput(TowerConstants.TOWER_FRACTIONAL));
+    towerMotor.setControl(dutyCycleRequest.withOutput(TowerConstants.TOWER_SPEED));
   }
 
   public void stop() {

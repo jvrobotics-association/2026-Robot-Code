@@ -63,7 +63,11 @@ public class Indexer extends SubsystemBase {
   }
 
   public void feed() {
-    indexerMotor.setControl(velocityRequest.withOutput(IndexerConstants.INDEXER_FRACTIONAL));
+    indexerMotor.setControl(velocityRequest.withOutput(IndexerConstants.INDEXER_SPEED));
+  }
+
+  public void reverseFeed() {
+    indexerMotor.setControl(velocityRequest.withOutput(-IndexerConstants.INDEXER_SPEED));
   }
 
   // // Manual Control for Dev
