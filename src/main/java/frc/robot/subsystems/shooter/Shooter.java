@@ -120,10 +120,13 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput("Shooter/LeftActualRPS", leftMotor.getVelocity().getValueAsDouble());
     Logger.recordOutput(
         "Shooter/LeftStatorCurrent", leftMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput(
+        "Shooter/LeftSupplyCurrent", leftMotor.getSupplyCurrent().getValueAsDouble());
     Logger.recordOutput("Shooter/RightActualRPS", rightMotor.getVelocity().getValueAsDouble());
     Logger.recordOutput(
         "Shooter/RightStatorCurrent", rightMotor.getStatorCurrent().getValueAsDouble());
-
+    Logger.recordOutput(
+        "Shooter/RightSupplyCurrent", rightMotor.getSupplyCurrent().getValueAsDouble());
     Logger.recordOutput(
         "Shooter/HubDistance",
         Inches.convertFrom(
