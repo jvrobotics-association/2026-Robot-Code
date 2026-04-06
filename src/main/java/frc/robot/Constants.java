@@ -64,32 +64,27 @@ public final class Constants {
   }
 
   public final class ShooterConstants {
-    public final class RightMotor {
-      public static final int MOTOR_ID = 30;
-      public static final double SENSOR_TO_MECH = 0.75;
-      public static final int SUPPLY_CURRENT_LIMIT = 45;
-      public static final int SUPPLY_CURRENT_LOWER_LIMIT = 29;
-      public static final int SUPPLY_CURRENT_LOWER_TIME = 2;
-      public static final int PEAK_FORWARD_VOLTAGE = 12;
-      public static final int PEAK_REVERSE_VOLTAGE = -12;
-      public static final double PID_KS = 1.2;
-      public static final double PID_KV = 0.5;
-      public static final double PID_KP = 6;
-      public static final double MM_ACCELERATION = 200;
-    }
-
     public final class LeftMotor {
       public static final int MOTOR_ID = 40;
       public static final double SENSOR_TO_MECH = 0.75;
-      public static final int SUPPLY_CURRENT_LIMIT = 45;
-      public static final int SUPPLY_CURRENT_LOWER_LIMIT = 29;
+      public static final int SUPPLY_CURRENT_LIMIT = 60;
+      public static final int SUPPLY_CURRENT_LOWER_LIMIT = 38;
+      public static final int SUPPLY_CURRENT_LOWER_TIME = 1;
+      public static final int PEAK_FORWARD_VOLTAGE = 12;
+      public static final int PEAK_REVERSE_VOLTAGE = -12;
+      public static final double PID_KS = 4.3;
+      public static final double PID_KV = 0.05;
+      public static final double PID_KP = 8;
+    }
+
+    public final class RightMotor {
+      public static final int MOTOR_ID = 30;
+      public static final double SENSOR_TO_MECH = 0.75;
+      public static final int SUPPLY_CURRENT_LIMIT = 60;
+      public static final int SUPPLY_CURRENT_LOWER_LIMIT = 38;
       public static final int SUPPLY_CURRENT_LOWER_TIME = 2;
       public static final int PEAK_FORWARD_VOLTAGE = 12;
       public static final int PEAK_REVERSE_VOLTAGE = -12;
-      public static final double PID_KS = 1.2;
-      public static final double PID_KV = 0.5;
-      public static final double PID_KP = 6;
-      public static final double MM_ACCELERATION = 200;
     }
   }
 
@@ -111,7 +106,7 @@ public final class Constants {
   }
 
   public final class IntakeConstants {
-    public static final double INTAKE_SPEED = 85;
+    public static final double INTAKE_SPEED = 40;
 
     public static class LeftMotor {
       public static final int MOTOR_ID = 23;

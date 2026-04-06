@@ -4,12 +4,10 @@
 
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.StrictFollower;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -25,8 +23,8 @@ public class Shooter extends SubsystemBase {
   private final TalonFX rightMotor = new TalonFX(ShooterConstants.RightMotor.MOTOR_ID, "rio");
 
   /* Control Requests - Distinct objects for separate motor streams */
-  private final MotionMagicVelocityTorqueCurrentFOC leftVelocityRequest =
-      new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
+  private final VelocityTorqueCurrentFOC leftVelocityRequest =
+      new VelocityTorqueCurrentFOC(0).withSlot(0);
 
   private double targetVelocityRPS = 0;
 
@@ -59,9 +57,6 @@ public class Shooter extends SubsystemBase {
         .withKV(ShooterConstants.LeftMotor.PID_KV)
         .withKS(ShooterConstants.LeftMotor.PID_KS);
 
-    config.MotionMagic.withMotionMagicAcceleration(
-        RotationsPerSecondPerSecond.of(ShooterConstants.LeftMotor.MM_ACCELERATION));
-
     applyConfig(leftMotor, config);
   }
 
@@ -82,13 +77,6 @@ public class Shooter extends SubsystemBase {
     config.Voltage.withPeakForwardVoltage(ShooterConstants.RightMotor.PEAK_FORWARD_VOLTAGE)
         .withPeakReverseVoltage(ShooterConstants.RightMotor.PEAK_REVERSE_VOLTAGE);
 
-    config.Slot0.withKP(ShooterConstants.RightMotor.PID_KP)
-        .withKV(ShooterConstants.RightMotor.PID_KV)
-        .withKS(ShooterConstants.RightMotor.PID_KS);
-
-    config.MotionMagic.withMotionMagicAcceleration(
-        RotationsPerSecondPerSecond.of(ShooterConstants.RightMotor.MM_ACCELERATION));
-
     applyConfig(rightMotor, config);
 
     rightMotor.setControl(new StrictFollower(ShooterConstants.LeftMotor.MOTOR_ID));
@@ -105,6 +93,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shoot() {
+    targetVelocityRPS = LNN_RPS.getAsDouble();
     leftMotor.setControl(leftVelocityRequest.withVelocity(LNN_RPS.getAsDouble()));
   }
 

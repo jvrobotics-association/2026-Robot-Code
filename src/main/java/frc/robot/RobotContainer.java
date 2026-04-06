@@ -230,7 +230,10 @@ public class RobotContainer {
     /////////////////////////////////
 
     // Runs the intake to intake fuel
-    Command runIntakeCommand = Commands.startEnd(intake::startIntake, intake::stopIntake, intake);
+    // Command runIntakeCommand = Commands.startEnd(intake::startIntake, intake::stopIntake,
+    // intake);
+    Command runIntakeCommand =
+        Commands.startEnd(() -> intake.setManualDutyCycle(0.65), intake::stopIntake, intake);
 
     // Raises the intake arm and lower it back down to help feed fuel to the shooter
     Command raiseIntakeArmCommand =

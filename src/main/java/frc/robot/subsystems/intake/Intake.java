@@ -21,7 +21,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
   /* Hardware */
-  private final TalonFX leftMotor = new TalonFX(IntakeConstants.RightMotor.MOTOR_ID, "rio");
+  private final TalonFX leftMotor = new TalonFX(IntakeConstants.LeftMotor.MOTOR_ID, "rio");
   private final TalonFX rightMotor = new TalonFX(IntakeConstants.RightMotor.MOTOR_ID, "rio");
 
   /* Control Requests */
@@ -44,7 +44,7 @@ public class Intake extends SubsystemBase {
         .withSensorToMechanismRatio(IntakeConstants.LeftMotor.SENSOR_TO_MECH_RATIO);
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
-        .withInverted(InvertedValue.Clockwise_Positive);
+        .withInverted(InvertedValue.CounterClockwise_Positive);
 
     config.CurrentLimits.withStatorCurrentLimitEnable(false)
         .withSupplyCurrentLimit(IntakeConstants.LeftMotor.SUPPLY_CURRENT_LIMIT)
@@ -73,6 +73,8 @@ public class Intake extends SubsystemBase {
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.Clockwise_Positive);
+
+    config.OpenLoopRamps.withDutyCycleOpenLoopRampPeriod(Seconds.of(0.8));
 
     config.CurrentLimits.withStatorCurrentLimitEnable(false)
         .withSupplyCurrentLimit(IntakeConstants.RightMotor.SUPPLY_CURRENT_LIMIT)
@@ -124,11 +126,7 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     // AdvantageKit Logging
     Logger.recordOutput("Intake/TargetVelocityRPS", targetVelocityRPS);
-    Logger.recordOutput("Intake/LeftVelocityRPS", leftMotor.getVelocity().getValueAsDouble());
-    Logger.recordOutput(
-        "Intake/LeftStatorCurrent", leftMotor.getStatorCurrent().getValueAsDouble());
-    Logger.recordOutput("Intake/RightVelocityRPS", leftMotor.getVelocity().getValueAsDouble());
-    Logger.recordOutput(
-        "Intake/RightStatorCurrent", leftMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput("Intake/LeftActualRPS", leftMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Intake/RightActualRPS", leftMotor.getVelocity().getValueAsDouble());
   }
 }
