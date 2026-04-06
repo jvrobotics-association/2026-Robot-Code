@@ -239,7 +239,8 @@ public class RobotContainer {
     Command raiseIntakeArmCommand =
         Commands.sequence(
                 Commands.runOnce(intakeExt::retract, intakeExt),
-                Commands.runOnce(intake::startIntake, intake),
+                // Commands.runOnce(intake::startIntake, intake),
+                Commands.runOnce(() -> intake.setManualDutyCycle(0.75)),
                 Commands.waitSeconds(1),
                 Commands.runOnce(intakeExt::deploy, intakeExt))
             .finallyDo(() -> intake.stopIntake());

@@ -64,28 +64,17 @@ public final class Constants {
   }
 
   public final class ShooterConstants {
-    public final class LeftMotor {
-      public static final int MOTOR_ID = 40;
-      public static final double SENSOR_TO_MECH = 0.75;
-      public static final int SUPPLY_CURRENT_LIMIT = 60;
-      public static final int SUPPLY_CURRENT_LOWER_LIMIT = 38;
-      public static final int SUPPLY_CURRENT_LOWER_TIME = 1;
-      public static final int PEAK_FORWARD_VOLTAGE = 12;
-      public static final int PEAK_REVERSE_VOLTAGE = -12;
-      public static final double PID_KS = 4.3;
-      public static final double PID_KV = 0.05;
-      public static final double PID_KP = 8;
-    }
-
-    public final class RightMotor {
-      public static final int MOTOR_ID = 30;
-      public static final double SENSOR_TO_MECH = 0.75;
-      public static final int SUPPLY_CURRENT_LIMIT = 60;
-      public static final int SUPPLY_CURRENT_LOWER_LIMIT = 38;
-      public static final int SUPPLY_CURRENT_LOWER_TIME = 2;
-      public static final int PEAK_FORWARD_VOLTAGE = 12;
-      public static final int PEAK_REVERSE_VOLTAGE = -12;
-    }
+    public static final int LEFT_MOTOR_ID = 40;
+    public static final int RIGHT_MOTOR_ID = 30;
+    public static final double SENSOR_TO_MECH = 0.75;
+    public static final int SUPPLY_CURRENT_LIMIT = 70;
+    public static final int SUPPLY_CURRENT_LOWER_LIMIT = 38;
+    public static final int SUPPLY_CURRENT_LOWER_TIME = 10;
+    public static final int PEAK_FORWARD_VOLTAGE = 12;
+    public static final int PEAK_REVERSE_VOLTAGE = -12;
+    public static final double PID_KS = 4.3;
+    public static final double PID_KV = 0.05;
+    public static final double PID_KP = 8;
   }
 
   public final class ShooterPitchConstants {

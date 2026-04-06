@@ -25,8 +25,8 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Shooter extends SubsystemBase {
   /* Hardware */
-  private final TalonFX leftMotor = new TalonFX(ShooterConstants.LeftMotor.MOTOR_ID, "rio");
-  private final TalonFX rightMotor = new TalonFX(ShooterConstants.RightMotor.MOTOR_ID, "rio");
+  private final TalonFX leftMotor = new TalonFX(ShooterConstants.LEFT_MOTOR_ID, "rio");
+  private final TalonFX rightMotor = new TalonFX(ShooterConstants.RIGHT_MOTOR_ID, "rio");
 
   /* Control Requests - Distinct objects for separate motor streams */
   private final VelocityTorqueCurrentFOC leftVelocityRequest =
@@ -51,22 +51,22 @@ public class Shooter extends SubsystemBase {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-        .withSensorToMechanismRatio(ShooterConstants.LeftMotor.SENSOR_TO_MECH);
+        .withSensorToMechanismRatio(ShooterConstants.SENSOR_TO_MECH);
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.Clockwise_Positive);
 
     config.CurrentLimits.withStatorCurrentLimitEnable(false)
-        .withSupplyCurrentLimit(ShooterConstants.LeftMotor.SUPPLY_CURRENT_LIMIT)
-        .withSupplyCurrentLowerLimit(ShooterConstants.LeftMotor.SUPPLY_CURRENT_LOWER_LIMIT)
-        .withSupplyCurrentLowerTime(ShooterConstants.LeftMotor.SUPPLY_CURRENT_LOWER_TIME);
+        .withSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT)
+        .withSupplyCurrentLowerLimit(ShooterConstants.SUPPLY_CURRENT_LOWER_LIMIT)
+        .withSupplyCurrentLowerTime(ShooterConstants.SUPPLY_CURRENT_LOWER_TIME);
 
-    config.Voltage.withPeakForwardVoltage(ShooterConstants.LeftMotor.PEAK_FORWARD_VOLTAGE)
-        .withPeakReverseVoltage(ShooterConstants.LeftMotor.PEAK_REVERSE_VOLTAGE);
+    config.Voltage.withPeakForwardVoltage(ShooterConstants.PEAK_FORWARD_VOLTAGE)
+        .withPeakReverseVoltage(ShooterConstants.PEAK_REVERSE_VOLTAGE);
 
-    config.Slot0.withKP(ShooterConstants.LeftMotor.PID_KP)
-        .withKV(ShooterConstants.LeftMotor.PID_KV)
-        .withKS(ShooterConstants.LeftMotor.PID_KS);
+    config.Slot0.withKP(ShooterConstants.PID_KP)
+        .withKV(ShooterConstants.PID_KV)
+        .withKS(ShooterConstants.PID_KS);
 
     applyConfig(leftMotor, config);
   }
@@ -75,22 +75,22 @@ public class Shooter extends SubsystemBase {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-        .withSensorToMechanismRatio(ShooterConstants.RightMotor.SENSOR_TO_MECH);
+        .withSensorToMechanismRatio(ShooterConstants.SENSOR_TO_MECH);
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.CounterClockwise_Positive);
 
     config.CurrentLimits.withStatorCurrentLimitEnable(false)
-        .withSupplyCurrentLimit(ShooterConstants.RightMotor.SUPPLY_CURRENT_LIMIT)
-        .withSupplyCurrentLowerLimit(ShooterConstants.RightMotor.SUPPLY_CURRENT_LOWER_LIMIT)
-        .withSupplyCurrentLowerTime(ShooterConstants.RightMotor.SUPPLY_CURRENT_LOWER_TIME);
+        .withSupplyCurrentLimit(ShooterConstants.SUPPLY_CURRENT_LIMIT)
+        .withSupplyCurrentLowerLimit(ShooterConstants.SUPPLY_CURRENT_LOWER_LIMIT)
+        .withSupplyCurrentLowerTime(ShooterConstants.SUPPLY_CURRENT_LOWER_TIME);
 
-    config.Voltage.withPeakForwardVoltage(ShooterConstants.RightMotor.PEAK_FORWARD_VOLTAGE)
-        .withPeakReverseVoltage(ShooterConstants.RightMotor.PEAK_REVERSE_VOLTAGE);
+    config.Voltage.withPeakForwardVoltage(ShooterConstants.PEAK_FORWARD_VOLTAGE)
+        .withPeakReverseVoltage(ShooterConstants.PEAK_REVERSE_VOLTAGE);
 
     applyConfig(rightMotor, config);
 
-    rightMotor.setControl(new StrictFollower(ShooterConstants.LeftMotor.MOTOR_ID));
+    rightMotor.setControl(new StrictFollower(ShooterConstants.LEFT_MOTOR_ID));
 
     rightMotor.optimizeBusUtilization();
   }
