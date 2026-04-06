@@ -79,7 +79,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    updateHubTarget();
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -95,7 +95,7 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVision(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0));
-        shooter = new Shooter(drive::getPose, hubTarget);
+        shooter = new Shooter();
         pitch = new ShooterPitch();
         indexer = new Indexer();
         tower = new Tower();
@@ -119,7 +119,7 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose));
-        shooter = new Shooter(drive::getPose, hubTarget);
+        shooter = new Shooter();
         pitch = new ShooterPitch();
         indexer = new Indexer();
         tower = new Tower();
@@ -139,7 +139,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
-        shooter = new Shooter(null, null);
+        shooter = new Shooter();
         pitch = new ShooterPitch();
         indexer = new Indexer();
         tower = new Tower();
@@ -386,6 +386,7 @@ public class RobotContainer {
         DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
             ? FieldConstants.HUB_BLUE
             : FieldConstants.HUB_RED;
+    ;
   }
 
   /** Schedules the hopperExtendCommand to extend the hopper and intake arm */

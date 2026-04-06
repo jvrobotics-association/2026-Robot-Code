@@ -12,15 +12,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
-
-import static edu.wpi.first.units.Units.Inches;
-
-import java.util.function.Supplier;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -37,13 +30,8 @@ public class Shooter extends SubsystemBase {
 
   private LoggedNetworkNumber LNN_RPS = new LoggedNetworkNumber("Shooter RPS", 0);
 
-  private Supplier<Pose2d> poseSupplier;
-  private Translation3d hubTarget;
-
   /** Creates a new Shooter */
-  public Shooter(Supplier<Pose2d> poseSupplier, Translation3d hubTarget) {
-    this.poseSupplier = poseSupplier;
-    this.hubTarget = hubTarget;
+  public Shooter() {
     configureLeftMotor();
     configureRightMotor();
   }
@@ -105,23 +93,8 @@ public class Shooter extends SubsystemBase {
   }
 
   public void shoot() {
-    hubDistance();
     targetVelocityRPS = LNN_RPS.getAsDouble();
     leftMotor.setControl(leftVelocityRequest.withVelocity(LNN_RPS.getAsDouble()));
-  }
-
-  // Returns the d^2 between the robot and the hub.
-  @AutoLogOutput
-  public double hubDistance() {
-    double dist;
-    double robotX = poseSupplier.get().getMeasureX().in(Inches);
-    double robotY = poseSupplier.get().getMeasureY().in(Inches);
-    double targetX = hubTarget.getMeasureX().in(Inches);
-    double targetY = hubTarget.getMeasureY().in(Inches);
-
-    dist = ((targetX - robotX) * (targetX - robotX)) + ((targetY - robotY) * (targetY - robotY));
-
-    return dist;
   }
 
   public void stop() {
