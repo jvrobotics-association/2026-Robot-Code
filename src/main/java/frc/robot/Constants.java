@@ -111,18 +111,35 @@ public final class Constants {
   }
 
   public final class IntakeConstants {
-    public static final int MOTOR_ID = 20;
-    public static final double SENSOR_TO_MECH_RATIO = 1.667;
-    public static final int SUPPLY_CURRENT_LIMIT = 50;
-    public static final int SUPPLY_CURRENT_LOWER_LIMIT = 30;
-    public static final double SUPPLY_CURRENT_LOWER_TIME = 2;
-    public static final int PEAK_FORWARD_VOLTAGE = 12;
-    public static final int PEAK_REVERSE_VOLTAGE = -12;
-    public static final double PID_KS = 0.37;
-    public static final double PID_KV = 0.17;
-    public static final double PID_KP = 14.0;
-    public static final double MM_ACCELERATION = 150;
     public static final double INTAKE_SPEED = 85;
+
+    public static class LeftMotor {
+      public static final int MOTOR_ID = 23;
+      public static final double SENSOR_TO_MECH_RATIO = 1.667;
+      public static final int SUPPLY_CURRENT_LIMIT = 50;
+      public static final int SUPPLY_CURRENT_LOWER_LIMIT = 30;
+      public static final double SUPPLY_CURRENT_LOWER_TIME = 2;
+      public static final int PEAK_FORWARD_VOLTAGE = 12;
+      public static final int PEAK_REVERSE_VOLTAGE = -12;
+      public static final double PID_KS = 0.37;
+      public static final double PID_KV = 0.17;
+      public static final double PID_KP = 14.0;
+      public static final double MM_ACCELERATION = 150;
+    }
+
+    public static class RightMotor {
+      public static final int MOTOR_ID = 20;
+      public static final double SENSOR_TO_MECH_RATIO = 1.667;
+      public static final int SUPPLY_CURRENT_LIMIT = 50;
+      public static final int SUPPLY_CURRENT_LOWER_LIMIT = 30;
+      public static final double SUPPLY_CURRENT_LOWER_TIME = 2;
+      public static final int PEAK_FORWARD_VOLTAGE = 12;
+      public static final int PEAK_REVERSE_VOLTAGE = -12;
+      public static final double PID_KS = 0.37;
+      public static final double PID_KV = 0.17;
+      public static final double PID_KP = 14.0;
+      public static final double MM_ACCELERATION = 150;
+    }
   }
 
   public final class IntakeExtensionConstants {

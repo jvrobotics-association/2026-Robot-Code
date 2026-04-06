@@ -21,7 +21,8 @@ import org.littletonrobotics.junction.Logger;
 
 public class Intake extends SubsystemBase {
   /* Hardware */
-  private final TalonFX intakeMotor = new TalonFX(IntakeConstants.MOTOR_ID, "rio");
+  private final TalonFX leftMotor = new TalonFX(IntakeConstants.RightMotor.MOTOR_ID, "rio");
+  private final TalonFX rightMotor = new TalonFX(IntakeConstants.RightMotor.MOTOR_ID, "rio");
 
   /* Control Requests */
   private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
@@ -32,69 +33,102 @@ public class Intake extends SubsystemBase {
   private double targetVelocityRPS = 0;
 
   public Intake() {
-    configureHardware();
-    intakeMotor.setPosition(0);
+    configureLeftMotor();
+    configureRightMotor();
   }
 
-  private void configureHardware() {
+  private void configureLeftMotor() {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-        .withSensorToMechanismRatio(IntakeConstants.SENSOR_TO_MECH_RATIO);
+        .withSensorToMechanismRatio(IntakeConstants.LeftMotor.SENSOR_TO_MECH_RATIO);
 
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.Clockwise_Positive);
 
     config.CurrentLimits.withStatorCurrentLimitEnable(false)
-        .withSupplyCurrentLimit(IntakeConstants.SUPPLY_CURRENT_LIMIT)
-        .withSupplyCurrentLowerLimit(IntakeConstants.SUPPLY_CURRENT_LOWER_LIMIT)
-        .withSupplyCurrentLowerTime(Seconds.of(IntakeConstants.SUPPLY_CURRENT_LOWER_TIME));
+        .withSupplyCurrentLimit(IntakeConstants.LeftMotor.SUPPLY_CURRENT_LIMIT)
+        .withSupplyCurrentLowerLimit(IntakeConstants.LeftMotor.SUPPLY_CURRENT_LOWER_LIMIT)
+        .withSupplyCurrentLowerTime(
+            Seconds.of(IntakeConstants.LeftMotor.SUPPLY_CURRENT_LOWER_TIME));
 
-    config.Voltage.withPeakForwardVoltage(IntakeConstants.PEAK_FORWARD_VOLTAGE)
-        .withPeakReverseVoltage(IntakeConstants.PEAK_REVERSE_VOLTAGE);
+    config.Voltage.withPeakForwardVoltage(IntakeConstants.LeftMotor.PEAK_FORWARD_VOLTAGE)
+        .withPeakReverseVoltage(IntakeConstants.LeftMotor.PEAK_REVERSE_VOLTAGE);
 
-    config.Slot0.withKS(IntakeConstants.PID_KS)
-        .withKV(IntakeConstants.PID_KV)
-        .withKP(IntakeConstants.PID_KP);
+    config.Slot0.withKS(IntakeConstants.LeftMotor.PID_KS)
+        .withKV(IntakeConstants.LeftMotor.PID_KV)
+        .withKP(IntakeConstants.LeftMotor.PID_KP);
 
     config.MotionMagic.withMotionMagicAcceleration(
-        RotationsPerSecondPerSecond.of(IntakeConstants.MM_ACCELERATION));
+        RotationsPerSecondPerSecond.of(IntakeConstants.LeftMotor.MM_ACCELERATION));
 
-    applyConfig(config);
+    applyConfig(leftMotor, config);
   }
 
-  private void applyConfig(TalonFXConfiguration config) {
+  private void configureRightMotor() {
+    TalonFXConfiguration config = new TalonFXConfiguration();
+
+    config.Feedback.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+        .withSensorToMechanismRatio(IntakeConstants.RightMotor.SENSOR_TO_MECH_RATIO);
+
+    config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
+        .withInverted(InvertedValue.Clockwise_Positive);
+
+    config.CurrentLimits.withStatorCurrentLimitEnable(false)
+        .withSupplyCurrentLimit(IntakeConstants.RightMotor.SUPPLY_CURRENT_LIMIT)
+        .withSupplyCurrentLowerLimit(IntakeConstants.RightMotor.SUPPLY_CURRENT_LOWER_LIMIT)
+        .withSupplyCurrentLowerTime(
+            Seconds.of(IntakeConstants.RightMotor.SUPPLY_CURRENT_LOWER_TIME));
+
+    config.Voltage.withPeakForwardVoltage(IntakeConstants.RightMotor.PEAK_FORWARD_VOLTAGE)
+        .withPeakReverseVoltage(IntakeConstants.RightMotor.PEAK_REVERSE_VOLTAGE);
+
+    config.Slot0.withKS(IntakeConstants.RightMotor.PID_KS)
+        .withKV(IntakeConstants.RightMotor.PID_KV)
+        .withKP(IntakeConstants.RightMotor.PID_KP);
+
+    config.MotionMagic.withMotionMagicAcceleration(
+        RotationsPerSecondPerSecond.of(IntakeConstants.RightMotor.MM_ACCELERATION));
+
+    applyConfig(rightMotor, config);
+  }
+
+  private void applyConfig(TalonFX motor, TalonFXConfiguration config) {
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      status = intakeMotor.getConfigurator().apply(config);
+      status = motor.getConfigurator().apply(config);
       if (status.isOK()) break;
-    }
-    if (!status.isOK()) {
-      System.out.println("Could not apply intake motor config, error code: " + status.toString());
     }
   }
 
   // Prod control
   public void startIntake() {
     this.targetVelocityRPS = IntakeConstants.INTAKE_SPEED;
-    intakeMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
+    leftMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
+    rightMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
   }
 
   // Dev control
   public void setManualDutyCycle(double output) {
-    intakeMotor.setControl(dutyCycleRequest.withOutput(output));
+    leftMotor.setControl(dutyCycleRequest.withOutput(output));
+    rightMotor.setControl(dutyCycleRequest.withOutput(output));
   }
 
   public void stopIntake() {
     this.targetVelocityRPS = 0;
-    intakeMotor.stopMotor();
+    leftMotor.stopMotor();
+    rightMotor.stopMotor();
   }
 
   @Override
   public void periodic() {
     // AdvantageKit Logging
     Logger.recordOutput("Intake/TargetVelocityRPS", targetVelocityRPS);
-    Logger.recordOutput("Intake/ActualVelocityRPS", intakeMotor.getVelocity().getValueAsDouble());
-    Logger.recordOutput("Intake/StatorCurrent", intakeMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput("Intake/LeftVelocityRPS", leftMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput(
+        "Intake/LeftStatorCurrent", leftMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput("Intake/RightVelocityRPS", leftMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput(
+        "Intake/RightStatorCurrent", leftMotor.getStatorCurrent().getValueAsDouble());
   }
 }

@@ -27,8 +27,6 @@ public class Shooter extends SubsystemBase {
   /* Control Requests - Distinct objects for separate motor streams */
   private final MotionMagicVelocityTorqueCurrentFOC leftVelocityRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
-  private final StrictFollower rightVelocityRequest =
-      new StrictFollower(ShooterConstants.LeftMotor.MOTOR_ID);
 
   private double targetVelocityRPS = 0;
 
@@ -92,6 +90,10 @@ public class Shooter extends SubsystemBase {
         RotationsPerSecondPerSecond.of(ShooterConstants.RightMotor.MM_ACCELERATION));
 
     applyConfig(rightMotor, config);
+
+    rightMotor.setControl(new StrictFollower(ShooterConstants.LeftMotor.MOTOR_ID));
+
+    rightMotor.optimizeBusUtilization();
   }
 
   private void applyConfig(TalonFX motor, TalonFXConfiguration config) {
@@ -108,6 +110,7 @@ public class Shooter extends SubsystemBase {
 
   public void stop() {
     leftMotor.stopMotor();
+    rightMotor.stopMotor();
   }
 
   @Override
