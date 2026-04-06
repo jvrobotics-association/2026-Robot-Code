@@ -95,7 +95,7 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVision(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0));
-        shooter = new Shooter();
+        shooter = new Shooter(drive::getPose, hubTarget);
         pitch = new ShooterPitch();
         indexer = new Indexer();
         tower = new Tower();
@@ -119,7 +119,7 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose));
-        shooter = new Shooter();
+        shooter = new Shooter(drive::getPose, hubTarget);
         pitch = new ShooterPitch();
         indexer = new Indexer();
         tower = new Tower();
@@ -139,7 +139,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
-        shooter = new Shooter();
+        shooter = new Shooter(null, null);
         pitch = new ShooterPitch();
         indexer = new Indexer();
         tower = new Tower();
@@ -233,7 +233,7 @@ public class RobotContainer {
     // Command runIntakeCommand = Commands.startEnd(intake::startIntake, intake::stopIntake,
     // intake);
     Command runIntakeCommand =
-        Commands.startEnd(() -> intake.setManualDutyCycle(0.65), intake::stopIntake, intake);
+        Commands.startEnd(() -> intake.setManualDutyCycle(0.75), intake::stopIntake, intake);
 
     // Raises the intake arm and lower it back down to help feed fuel to the shooter
     Command raiseIntakeArmCommand =
@@ -323,8 +323,9 @@ public class RobotContainer {
                 () -> -controller.getLeftX(),
                 () ->
                     new Rotation2d(
-                        hubTarget.getX() - drive.getPose().getX(),
-                        hubTarget.getY() - drive.getPose().getY())));
+                            hubTarget.getX() - drive.getPose().getX(),
+                            hubTarget.getY() - drive.getPose().getY())
+                        .plus(Rotation2d.fromDegrees(180.0))));
 
     // Shoot the balls once the robot is aligned
     controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD).whileTrue(basicShootCommand);

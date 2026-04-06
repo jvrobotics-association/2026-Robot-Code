@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.StrictFollower;
@@ -12,8 +15,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -30,8 +36,13 @@ public class Shooter extends SubsystemBase {
 
   private LoggedNetworkNumber LNN_RPS = new LoggedNetworkNumber("Shooter RPS", 0);
 
+  private Supplier<Pose2d> poseSupplier;
+  private Translation3d hubTarget;
+
   /** Creates a new Shooter */
-  public Shooter() {
+  public Shooter(Supplier<Pose2d> poseSupplier, Translation3d hubTarget) {
+    this.poseSupplier = poseSupplier;
+    this.hubTarget = hubTarget;
     configureLeftMotor();
     configureRightMotor();
   }
@@ -104,11 +115,19 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-
     // AdvantageKit Logging (Crucial for the "Active" method to see what is happening)
     Logger.recordOutput("Shooter/TargetVelocityRPS", targetVelocityRPS);
     Logger.recordOutput("Shooter/LeftActualRPS", leftMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput(
+        "Shooter/LeftStatorCurrent", leftMotor.getStatorCurrent().getValueAsDouble());
     Logger.recordOutput("Shooter/RightActualRPS", rightMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput(
+        "Shooter/RightStatorCurrent", rightMotor.getStatorCurrent().getValueAsDouble());
+
+    Logger.recordOutput(
+        "Shooter/HubDistance",
+        Inches.convertFrom(
+            poseSupplier.get().getTranslation().getDistance(hubTarget.toTranslation2d()), Meters));
   }
 
   // public boolean readyToShoot() {
