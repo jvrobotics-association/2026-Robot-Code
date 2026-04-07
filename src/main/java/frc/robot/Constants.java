@@ -81,7 +81,8 @@ public final class Constants {
 
     // Close shots are between 75.6 inches and X inches
     // Pitch setpont: 0.0
-    public static final InterpolatingDoubleTreeMap closeShot = InterpolatingDoubleTreeMap.ofEntries(
+    public static final double CLOSE_PITCH = 0.0;
+    public static final InterpolatingDoubleTreeMap CLOSE_SHOT = InterpolatingDoubleTreeMap.ofEntries(
       //Map.entry(DISTANCE, RPM)
       Map.entry(75.6, 45.0),
       Map.entry(85.2, 47.0),
@@ -90,7 +91,8 @@ public final class Constants {
 
     // Medium shots are between 95.1 inches and 119 inches
     // Pitch setpoint: 0.026
-    public static final InterpolatingDoubleTreeMap farShot = InterpolatingDoubleTreeMap.ofEntries(
+    public static final double FAR_PITCH = 0.026;
+    public static final InterpolatingDoubleTreeMap FAR_SHOT = InterpolatingDoubleTreeMap.ofEntries(
       //Map.entry(DISTANCE, RPM)
       Map.entry(95.1, 47.0),
       Map.entry(100.5, 47.0),
