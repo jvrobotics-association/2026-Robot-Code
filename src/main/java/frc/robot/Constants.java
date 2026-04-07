@@ -11,8 +11,6 @@ import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
-import java.util.Map;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -22,6 +20,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
+import java.util.Map;
 
 /**
  * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
@@ -82,22 +81,18 @@ public final class Constants {
     // Close shots are between 75.6 inches and X inches
     // Pitch setpont: 0.0
     public static final double CLOSE_PITCH = 0.0;
-    public static final InterpolatingDoubleTreeMap CLOSE_SHOT = InterpolatingDoubleTreeMap.ofEntries(
-      //Map.entry(DISTANCE, RPM)
-      Map.entry(75.6, 45.0),
-      Map.entry(85.2, 47.0),
-      Map.entry(95.1, 50.0) 
-    );
+    public static final InterpolatingDoubleTreeMap CLOSE_SHOT =
+        InterpolatingDoubleTreeMap.ofEntries(
+            // Map.entry(DISTANCE, RPM)
+            Map.entry(75.6, 45.0), Map.entry(85.2, 47.0), Map.entry(95.1, 50.0));
 
     // Medium shots are between 95.1 inches and 119 inches
     // Pitch setpoint: 0.026
     public static final double FAR_PITCH = 0.026;
-    public static final InterpolatingDoubleTreeMap FAR_SHOT = InterpolatingDoubleTreeMap.ofEntries(
-      //Map.entry(DISTANCE, RPM)
-      Map.entry(95.1, 47.0),
-      Map.entry(100.5, 47.0),
-      Map.entry(118.9, 52.0) 
-    );
+    public static final InterpolatingDoubleTreeMap FAR_SHOT =
+        InterpolatingDoubleTreeMap.ofEntries(
+            // Map.entry(DISTANCE, RPM)
+            Map.entry(95.1, 47.0), Map.entry(100.5, 47.0), Map.entry(118.9, 52.0));
   }
 
   public final class ShooterPitchConstants {
