@@ -95,8 +95,8 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVision(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0));
-        shooter = new Shooter(drive::getPose, hubTarget);
         pitch = new ShooterPitch();
+        shooter = new Shooter(drive::getPose, hubTarget, pitch);
         indexer = new Indexer();
         tower = new Tower();
         intake = new Intake();
@@ -119,8 +119,8 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOPhotonVisionSim(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose));
-        shooter = new Shooter(drive::getPose, hubTarget);
         pitch = new ShooterPitch();
+        shooter = new Shooter(drive::getPose, hubTarget, pitch);
         indexer = new Indexer();
         tower = new Tower();
         intake = new Intake();
@@ -139,7 +139,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {});
-        shooter = new Shooter(null, null);
+        shooter = new Shooter(null, null, null);
         pitch = new ShooterPitch();
         indexer = new Indexer();
         tower = new Tower();
@@ -241,7 +241,7 @@ public class RobotContainer {
                 Commands.runOnce(intakeExt::retract, intakeExt),
                 // Commands.runOnce(intake::startIntake, intake),
                 Commands.runOnce(() -> intake.setManualDutyCycle(0.75)),
-                Commands.waitSeconds(1),
+                Commands.waitSeconds(0.5),
                 Commands.runOnce(intakeExt::deploy, intakeExt))
             .finallyDo(() -> intake.stopIntake());
 
@@ -269,12 +269,14 @@ public class RobotContainer {
                 Commands.waitSeconds(2),
                 Commands.parallel(
                     Commands.runEnd(tower::start, tower::stop, tower),
-                    Commands.runEnd(indexer::feed, indexer::stop, indexer))));
+                    Commands.runEnd(indexer::feed, indexer::stop, indexer)),
+                Commands.waitSeconds(4),
+                Commands.repeatingSequence(raiseIntakeArmCommand, Commands.waitSeconds(0.25))));
 
     // Retracts the intake arm and hopper
     Command hopperRetractCommand =
         Commands.sequence(
-            Commands.runOnce(intakeExt::retract, intakeExt),
+            Commands.runOnce(intakeExt::retractFull, intakeExt),
             Commands.waitSeconds(0.75),
             Commands.runOnce(intakeExt::stop, intakeExt),
             Commands.runOnce(hopper::retract, hopper),
@@ -330,10 +332,8 @@ public class RobotContainer {
 
     // Shoot the balls once the robot is aligned
     controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD).whileTrue(basicShootCommand);
-    
-    controller.povDown().whileTrue(
-        Commands.run(shooter::calcShot, shooter)
-    );
+
+    controller.rightBumper().whileTrue(Commands.run(shooter::calcShot, shooter));
 
     // Manually pull the hopper back in when the zeroing is incorrect
     controller

@@ -124,6 +124,11 @@ public class IntakeExtension extends SubsystemBase {
     extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
   }
 
+  public void retractFull() {
+    this.targetPositionRotations = IntakeExtensionConstants.FULL_RETRACTED_ROTATIONS; // Typically 0
+    extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+  }
+
   public void stop() {
     extensionMotor.stopMotor();
   }

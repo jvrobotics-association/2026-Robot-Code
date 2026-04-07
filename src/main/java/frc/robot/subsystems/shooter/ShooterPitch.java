@@ -26,7 +26,7 @@ public class ShooterPitch extends SubsystemBase {
   private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0).withSlot(0);
 
   /* State */
-  private final LoggedNetworkNumber LNN_POS = new LoggedNetworkNumber("Pitch Pos", 0);
+  public final LoggedNetworkNumber LNN_POS = new LoggedNetworkNumber("Pitch Pos", 0);
 
   private double targetPositionRotations = 0;
 
