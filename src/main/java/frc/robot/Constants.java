@@ -11,11 +11,14 @@ import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
+import java.util.Map;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -73,8 +76,26 @@ public final class Constants {
     public static final int PEAK_FORWARD_VOLTAGE = 12;
     public static final int PEAK_REVERSE_VOLTAGE = -12;
     public static final double PID_KS = 4.3;
-    public static final double PID_KV = 0.05;
-    public static final double PID_KP = 8;
+    public static final double PID_KV = 0.07;
+    public static final double PID_KP = 8.1;
+
+    // Close shots are between 75.6 inches and X inches
+    // Pitch setpont: 0.0
+    public static final InterpolatingDoubleTreeMap closeShot = InterpolatingDoubleTreeMap.ofEntries(
+      //Map.entry(DISTANCE, RPM)
+      Map.entry(75.6, 45.0),
+      Map.entry(85.2, 47.0),
+      Map.entry(95.1, 50.0) 
+    );
+
+    // Medium shots are between 95.1 inches and 119 inches
+    // Pitch setpoint: 0.026
+    public static final InterpolatingDoubleTreeMap farShot = InterpolatingDoubleTreeMap.ofEntries(
+      //Map.entry(DISTANCE, RPM)
+      Map.entry(95.1, 47.0),
+      Map.entry(100.5, 47.0),
+      Map.entry(118.9, 52.0) 
+    );
   }
 
   public final class ShooterPitchConstants {
