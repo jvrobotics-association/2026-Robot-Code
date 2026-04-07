@@ -330,6 +330,10 @@ public class RobotContainer {
 
     // Shoot the balls once the robot is aligned
     controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD).whileTrue(basicShootCommand);
+    
+    controller.povDown().whileTrue(
+        Commands.run(shooter::calcShot, shooter)
+    );
 
     // Manually pull the hopper back in when the zeroing is incorrect
     controller
