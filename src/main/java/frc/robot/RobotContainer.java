@@ -233,7 +233,7 @@ public class RobotContainer {
     // Command runIntakeCommand = Commands.startEnd(intake::startIntake, intake::stopIntake,
     // intake);
     Command runIntakeCommand =
-        Commands.startEnd(() -> intake.setManualDutyCycle(0.75), intake::stopIntake, intake);
+        Commands.startEnd(() -> intake.setManualDutyCycle(0.9), intake::stopIntake, intake);
 
     // Raises the intake arm and lower it back down to help feed fuel to the shooter
     Command raiseIntakeArmCommand =
@@ -241,7 +241,7 @@ public class RobotContainer {
                 Commands.runOnce(intakeExt::retract, intakeExt),
                 // Commands.runOnce(intake::startIntake, intake),
                 Commands.runOnce(() -> intake.setManualDutyCycle(0.75)),
-                Commands.waitSeconds(0.5),
+                Commands.waitSeconds(1),
                 Commands.runOnce(intakeExt::deploy, intakeExt))
             .finallyDo(() -> intake.stopIntake());
 
@@ -269,9 +269,7 @@ public class RobotContainer {
                 Commands.waitSeconds(2),
                 Commands.parallel(
                     Commands.runEnd(tower::start, tower::stop, tower),
-                    Commands.runEnd(indexer::feed, indexer::stop, indexer)),
-                Commands.waitSeconds(4),
-                Commands.repeatingSequence(raiseIntakeArmCommand, Commands.waitSeconds(0.25))));
+                    Commands.runEnd(indexer::feed, indexer::stop, indexer))));
 
     // Retracts the intake arm and hopper
     Command hopperRetractCommand =
@@ -321,19 +319,20 @@ public class RobotContainer {
         .leftBumper()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () ->
-                    new Rotation2d(
-                            hubTarget.getX() - drive.getPose().getX(),
-                            hubTarget.getY() - drive.getPose().getY())
-                        .plus(Rotation2d.fromDegrees(180.0))));
+                    drive,
+                    () -> -controller.getLeftY(),
+                    () -> -controller.getLeftX(),
+                    () ->
+                        new Rotation2d(
+                                hubTarget.getX() - drive.getPose().getX(),
+                                hubTarget.getY() - drive.getPose().getY())
+                            .plus(Rotation2d.fromDegrees(180.0)))
+                .finallyDo(() -> shooter.calcShot()));
 
-    // Shoot the balls once the robot is aligned
+    // Run the shoot command
     controller.rightTrigger(ControllerConstants.TRIGGER_THRESHOLD).whileTrue(basicShootCommand);
 
-    controller.rightBumper().whileTrue(Commands.run(shooter::calcShot, shooter));
+    controller.rightBumper().whileTrue(Commands.run(shooter::calcShot));
 
     // Manually pull the hopper back in when the zeroing is incorrect
     controller

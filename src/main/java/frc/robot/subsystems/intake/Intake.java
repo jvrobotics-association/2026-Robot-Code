@@ -46,6 +46,8 @@ public class Intake extends SubsystemBase {
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.CounterClockwise_Positive);
 
+    config.OpenLoopRamps.withDutyCycleOpenLoopRampPeriod(Seconds.of(0.25));
+
     config.CurrentLimits.withStatorCurrentLimitEnable(false)
         .withSupplyCurrentLimit(IntakeConstants.LeftMotor.SUPPLY_CURRENT_LIMIT)
         .withSupplyCurrentLowerLimit(IntakeConstants.LeftMotor.SUPPLY_CURRENT_LOWER_LIMIT)
@@ -74,7 +76,7 @@ public class Intake extends SubsystemBase {
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.Clockwise_Positive);
 
-    config.OpenLoopRamps.withDutyCycleOpenLoopRampPeriod(Seconds.of(0.8));
+    config.OpenLoopRamps.withDutyCycleOpenLoopRampPeriod(Seconds.of(0.25));
 
     config.CurrentLimits.withStatorCurrentLimitEnable(false)
         .withSupplyCurrentLimit(IntakeConstants.RightMotor.SUPPLY_CURRENT_LIMIT)

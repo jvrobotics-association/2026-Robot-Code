@@ -180,7 +180,7 @@ public final class Constants {
     }
 
     public static final double TOLERANCE_ROTATIONS = 0.003;
-    public static final double RETRACTED_ROTATIONS = 0.15;
+    public static final double RETRACTED_ROTATIONS = 0.6;
     public static final double FULL_RETRACTED_ROTATIONS = 0.003;
     public static final double DEPLOYED_ROTATIONS = 0.3525;
   }
