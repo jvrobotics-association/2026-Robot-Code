@@ -78,6 +78,8 @@ public final class Constants {
     public static final double PID_KV = 0.07;
     public static final double PID_KP = 8.1;
 
+    public static final double RPS_TOLERANCE = -0.2;
+
     // Close shots are between 75.6 inches and X inches
     // Pitch setpont: 0.0
     public static final double CLOSE_PITCH = 0.0;

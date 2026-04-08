@@ -266,7 +266,7 @@ public class RobotContainer {
             Commands.runEnd(pitch::aim, pitch::stop, pitch),
             Commands.runEnd(shooter::shoot, shooter::stop, shooter),
             Commands.sequence(
-                Commands.waitSeconds(2),
+                Commands.waitSeconds(2).until(shooter.isReady),
                 Commands.parallel(
                     Commands.runEnd(tower::start, tower::stop, tower),
                     Commands.runEnd(indexer::feed, indexer::stop, indexer))));

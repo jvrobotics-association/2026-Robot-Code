@@ -19,6 +19,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
@@ -190,16 +192,7 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput("Shooter/CalculatedPitch", calculatedPitch);
   }
 
-  // public boolean readyToShoot() {
-  //   if (targetVelocityRPS <= 0) return false;
-
-  //   double currentLeft = leftMotor.getVelocity().getValueAsDouble();
-  //   double currentRight = rightMotor.getVelocity().getValueAsDouble();
-
-  //   // Use a flat minimum floor for tolerance to avoid noise issues at low speeds
-  //   double tolerance = Math.max(targetVelocityRPS * ShooterConstants.SPEED_MOE, 0.5);
-
-  //   return Math.abs(currentLeft - targetVelocityRPS) <= tolerance
-  //       && Math.abs(currentRight - targetVelocityRPS) <= tolerance;
-  // }
+  
+  public BooleanSupplier isReady = () -> 
+    leftMotor.getVelocity().getValueAsDouble() >= leftMotor.getVelocity().getValueAsDouble() + ShooterConstants.RPS_TOLERANCE;
 }
