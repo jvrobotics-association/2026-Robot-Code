@@ -89,31 +89,31 @@ public class LEDSystem extends SubsystemBase {
       case FlowDirectionRed:
         ledController.setControl(
             new ColorFlowAnimation(indexStart, indexStop)
-              .withSlot(slot)
-              .withDirection(AnimationDirectionValue.Forward)
-              .withColor(new RGBWColor(Color.kRed))
-              .withFrameRate(30));
+                .withSlot(slot)
+                .withDirection(AnimationDirectionValue.Forward)
+                .withColor(new RGBWColor(Color.kRed))
+                .withFrameRate(30));
       case FlowDirectionRedInverted:
         ledController.setControl(
             new ColorFlowAnimation(indexStart, indexStop)
-              .withSlot(slot)
-              .withDirection(AnimationDirectionValue.Backward)
-              .withColor(new RGBWColor(Color.kRed))
-              .withFrameRate(30));
+                .withSlot(slot)
+                .withDirection(AnimationDirectionValue.Backward)
+                .withColor(new RGBWColor(Color.kRed))
+                .withFrameRate(30));
       case FlowDirectionBlue:
         ledController.setControl(
             new ColorFlowAnimation(indexStart, indexStop)
-              .withSlot(slot)
-              .withDirection(AnimationDirectionValue.Forward)
-              .withColor(new RGBWColor(Color.kBlue))
-              .withFrameRate(30));
+                .withSlot(slot)
+                .withDirection(AnimationDirectionValue.Forward)
+                .withColor(new RGBWColor(Color.kBlue))
+                .withFrameRate(30));
       case FlowDirectionBlueInverted:
         ledController.setControl(
             new ColorFlowAnimation(indexStart, indexStop)
-              .withSlot(slot)
-              .withDirection(AnimationDirectionValue.Backward)
-              .withColor(new RGBWColor(Color.kBlue))
-              .withFrameRate(30));
+                .withSlot(slot)
+                .withDirection(AnimationDirectionValue.Backward)
+                .withColor(new RGBWColor(Color.kBlue))
+                .withFrameRate(30));
     }
   }
 

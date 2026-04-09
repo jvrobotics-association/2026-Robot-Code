@@ -20,6 +20,8 @@ import frc.robot.subsystems.led.LEDSystem;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPitch;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class AdvancedShootCommand extends Command {
@@ -30,8 +32,8 @@ public class AdvancedShootCommand extends Command {
   private Indexer indexer;
   private LEDSystem ledSystem;
   private Supplier<Pose2d> robotPoseSupplier;
-  private Translation2d hubTarget;
-  private Alliance alliance;
+  private Supplier<Translation2d> hubTarget;
+  private Supplier<Alliance> alliance;
 
   private double hubDistance = 0.0;
   private double calculatedPitch = 0.0;
@@ -47,8 +49,8 @@ public class AdvancedShootCommand extends Command {
       Indexer indexer,
       LEDSystem ledSystem,
       Supplier<Pose2d> robotPoseSupplier,
-      Translation2d hubTarget,
-      Alliance alliance) {
+      Supplier<Translation2d> hubTarget,
+      Supplier<Alliance> alliance) {
     this.shooter = shooter;
     this.feedOverride = feedOverride;
     this.shooterPitch = shooterPitch;
@@ -77,7 +79,7 @@ public class AdvancedShootCommand extends Command {
     shooterPitch.aim(calculatedPitch);
     shooter.runShooter(calculatedShooterRPS);
 
-    if (shooterReady && isFacingTarget(robotPoseSupplier.get(), hubTarget)
+    if (shooterReady && isFacingTarget(robotPoseSupplier.get(), hubTarget.get())
         || (calculatedShooterRPS >= 0 && feedOverride.get())) {
       indexer.feed();
       tower.start();
@@ -99,13 +101,14 @@ public class AdvancedShootCommand extends Command {
 
   private void calculateShot() {
     hubDistance =
-        Inches.convertFrom(robotPoseSupplier.get().getTranslation().getDistance(hubTarget), Meters);
+        Inches.convertFrom(
+            robotPoseSupplier.get().getTranslation().getDistance(hubTarget.get()), Meters);
 
     if (hubDistance < 75.6) {
       calculatedPitch = 0;
       calculatedShooterRPS = 0;
 
-      if (alliance == Alliance.Blue) {
+      if (alliance.get() == Alliance.Blue) {
         ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlue);
       } else ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRed);
 
@@ -121,12 +124,17 @@ public class AdvancedShootCommand extends Command {
       calculatedPitch = 0;
       calculatedShooterRPS = 0;
 
-      if (alliance == Alliance.Blue) {
+      if (alliance.get() == Alliance.Blue) {
         ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlueInverted);
       } else ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRedInverted);
     }
+
+    Logger.recordOutput("AdvancedShootCommand/hubDistance", hubDistance);
+    Logger.recordOutput("AdvancedShootCommand/calculatedPitch", calculatedPitch);
+    Logger.recordOutput("AdvancedShootCommand/calculatedShooterRPS", calculatedShooterRPS);
   }
 
+  @AutoLogOutput(key = "AdvancedShootCommand/isFacingTarget")
   public boolean isFacingTarget(Pose2d pose, Translation2d target) {
     Rotation2d error =
         target

@@ -254,51 +254,48 @@ public class RobotContainer {
                             .plus(Rotation2d.fromDegrees(180.0))),
                 new AdvancedShootCommand(
                     shooter,
-                    () ->
-                        operatorPanel
-                            .button(0)
-                            .getAsBoolean(), // TODO: Determine the correct button ID for this
+                    () -> operatorPanel.button(14).getAsBoolean(),
                     pitch,
                     tower,
                     indexer,
                     ledSystem,
                     drive::getPose,
-                    hubTarget,
-                    alliance)));
+                    () -> hubTarget,
+                    () -> alliance)));
 
     // Drive with the robot heading locked straight, it will snap to whichever side of the robot is
     // already closest to that heading
-    controller
-        .leftBumper()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () ->
-                    Math.abs(drive.getRotation().minus(Rotation2d.fromDegrees(0.0)).getDegrees())
-                            <= Math.abs(
-                                drive
-                                    .getRotation()
-                                    .minus(Rotation2d.fromDegrees(180.0))
-                                    .getDegrees())
-                        ? Rotation2d.fromDegrees(0.0)
-                        : Rotation2d.fromDegrees(180.0)));
-
-    /* Drive with the robot heading locked straight, this will make sure the shooter is pointed in
-    the direction we need to shoot. This may cause the robot to spin more than expected if it is not already somewhat facing that direction
-    */
     // controller
-    //     .leftBumper()
+    //     .rightBumper()
     //     .whileTrue(
     //         DriveCommands.joystickDriveAtAngle(
     //             drive,
     //             () -> -controller.getLeftY(),
     //             () -> -controller.getLeftX(),
     //             () ->
-    //                 alliance == Alliance.Blue
-    //                     ? Rotation2d.fromDegrees(180.0)
-    //                     : Rotation2d.fromDegrees(0.0)));
+    //                 Math.abs(drive.getRotation().minus(Rotation2d.fromDegrees(0.0)).getDegrees())
+    //                         <= Math.abs(
+    //                             drive
+    //                                 .getRotation()
+    //                                 .minus(Rotation2d.fromDegrees(180.0))
+    //                                 .getDegrees())
+    //                     ? Rotation2d.fromDegrees(0.0)
+    //                     : Rotation2d.fromDegrees(180.0)));
+
+    /* Drive with the robot heading locked straight, this will make sure the shooter is pointed in
+    the direction we need to shoot. This may cause the robot to spin more than expected if it is not already somewhat facing that direction
+    */
+    controller
+        .rightBumper()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                () ->
+                    alliance == Alliance.Blue
+                        ? Rotation2d.fromDegrees(180.0)
+                        : Rotation2d.fromDegrees(0.0)));
 
     // Manually pull the hopper back in when the zeroing is incorrect
     controller
