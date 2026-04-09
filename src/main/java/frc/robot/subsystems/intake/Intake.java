@@ -4,13 +4,11 @@
 
 package frc.robot.subsystems.intake;
 
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -25,12 +23,7 @@ public class Intake extends SubsystemBase {
   private final TalonFX rightMotor = new TalonFX(IntakeConstants.RightMotor.MOTOR_ID, "rio");
 
   /* Control Requests */
-  private final MotionMagicVelocityTorqueCurrentFOC velocityRequest =
-      new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
-
-  /* State */
-  private double targetVelocityRPS = 0;
 
   public Intake() {
     configureLeftMotor();
@@ -57,13 +50,6 @@ public class Intake extends SubsystemBase {
     config.Voltage.withPeakForwardVoltage(IntakeConstants.LeftMotor.PEAK_FORWARD_VOLTAGE)
         .withPeakReverseVoltage(IntakeConstants.LeftMotor.PEAK_REVERSE_VOLTAGE);
 
-    config.Slot0.withKS(IntakeConstants.LeftMotor.PID_KS)
-        .withKV(IntakeConstants.LeftMotor.PID_KV)
-        .withKP(IntakeConstants.LeftMotor.PID_KP);
-
-    config.MotionMagic.withMotionMagicAcceleration(
-        RotationsPerSecondPerSecond.of(IntakeConstants.LeftMotor.MM_ACCELERATION));
-
     applyConfig(leftMotor, config);
   }
 
@@ -87,13 +73,6 @@ public class Intake extends SubsystemBase {
     config.Voltage.withPeakForwardVoltage(IntakeConstants.RightMotor.PEAK_FORWARD_VOLTAGE)
         .withPeakReverseVoltage(IntakeConstants.RightMotor.PEAK_REVERSE_VOLTAGE);
 
-    config.Slot0.withKS(IntakeConstants.RightMotor.PID_KS)
-        .withKV(IntakeConstants.RightMotor.PID_KV)
-        .withKP(IntakeConstants.RightMotor.PID_KP);
-
-    config.MotionMagic.withMotionMagicAcceleration(
-        RotationsPerSecondPerSecond.of(IntakeConstants.RightMotor.MM_ACCELERATION));
-
     applyConfig(rightMotor, config);
   }
 
@@ -105,21 +84,12 @@ public class Intake extends SubsystemBase {
     }
   }
 
-  // Prod control
-  public void startIntake() {
-    this.targetVelocityRPS = IntakeConstants.INTAKE_SPEED;
-    leftMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
-    rightMotor.setControl(velocityRequest.withVelocity(targetVelocityRPS));
-  }
-
-  // Dev control
-  public void setManualDutyCycle(double output) {
+  public void runIntake(double output) {
     leftMotor.setControl(dutyCycleRequest.withOutput(output));
     rightMotor.setControl(dutyCycleRequest.withOutput(output));
   }
 
   public void stopIntake() {
-    this.targetVelocityRPS = 0;
     leftMotor.stopMotor();
     rightMotor.stopMotor();
   }
@@ -127,7 +97,6 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // AdvantageKit Logging
-    Logger.recordOutput("Intake/TargetVelocityRPS", targetVelocityRPS);
     Logger.recordOutput("Intake/LeftActualRPS", leftMotor.getVelocity().getValueAsDouble());
     Logger.recordOutput("Intake/RightActualRPS", leftMotor.getVelocity().getValueAsDouble());
   }

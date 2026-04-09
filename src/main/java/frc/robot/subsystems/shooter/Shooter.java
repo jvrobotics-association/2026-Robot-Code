@@ -4,9 +4,6 @@
 
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.StrictFollower;
@@ -15,17 +12,9 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
-
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-import org.littletonrobotics.junction.networktables.LoggedNetworkString;
 
 public class Shooter extends SubsystemBase {
   /* Hardware */
@@ -36,31 +25,10 @@ public class Shooter extends SubsystemBase {
   private final VelocityTorqueCurrentFOC leftVelocityRequest =
       new VelocityTorqueCurrentFOC(0).withSlot(0);
 
-  private double targetVelocityRPS = 0;
-
-  private LoggedNetworkNumber LNN_RPS = new LoggedNetworkNumber("Shooter RPS", 0);
-  private LoggedNetworkBoolean LNB_IN_RANGE = new LoggedNetworkBoolean("In Shooting Range", false);
-  private LoggedNetworkString LNS_IN_RANGE_STATUS =
-      new LoggedNetworkString("Shooting Status", "NOT CALCULATED");
-
-  private Supplier<Pose2d> poseSupplier;
-  private Translation3d hubTarget;
-  private LoggedNetworkNumber LNN_HUB_DIST = new LoggedNetworkNumber("Distance To Hub", 0);
-  private LoggedNetworkNumber LNN_CALCULATED_PITCH = new LoggedNetworkNumber("Calculated Pitch", 0);
-  private LoggedNetworkNumber LNN_CALCULATED_SHOOTER_RPS =
-      new LoggedNetworkNumber("Calculated Shooter RPS", 0);
-  private double hubDist = 0;
-  private double calculatedPitch = 0;
-  private double calculatedShooterRPS = 0;
-  private boolean inShootingRange = false;
-
-  private ShooterPitch pitch;
+  public record ShooterCaluclatedValues(double velocity, double pitch) {}
 
   /** Creates a new Shooter */
-  public Shooter(Supplier<Pose2d> poseSupplier, Translation3d hubTarget, ShooterPitch pitch) {
-    this.pitch = pitch;
-    this.poseSupplier = poseSupplier;
-    this.hubTarget = hubTarget;
+  public Shooter() {
     configureLeftMotor();
     configureRightMotor();
   }
@@ -121,51 +89,12 @@ public class Shooter extends SubsystemBase {
     }
   }
 
-  public void shoot() {
-    targetVelocityRPS = LNN_RPS.getAsDouble();
-    leftMotor.setControl(leftVelocityRequest.withVelocity(LNN_RPS.getAsDouble()));
+  public void runShooter(double velocity) {
+    leftMotor.setControl(leftVelocityRequest.withVelocity(velocity));
   }
 
-  public void calcShot() {
-    double hubDistance =
-        Inches.convertFrom(
-            poseSupplier.get().getTranslation().getDistance(hubTarget.toTranslation2d()), Meters);
-
-    if (hubDistance < 75.6) {
-      calculatedPitch = 0;
-      calculatedShooterRPS = 0;
-      inShootingRange = false;
-
-      LNS_IN_RANGE_STATUS.set("TOO CLOSE");
-
-    } else if (hubDistance >= 75.6 && hubDistance < 95.1) {
-      calculatedPitch = ShooterConstants.CLOSE_PITCH;
-      calculatedShooterRPS = ShooterConstants.CLOSE_SHOT.get(hubDistance);
-      inShootingRange = true;
-
-      LNS_IN_RANGE_STATUS.set("Near Shot");
-
-    } else if (hubDistance >= 95.1 && hubDistance <= 118.9) {
-      calculatedPitch = ShooterConstants.FAR_PITCH;
-      calculatedShooterRPS = ShooterConstants.FAR_SHOT.get(hubDistance);
-      inShootingRange = true;
-
-      LNS_IN_RANGE_STATUS.set("Far Shot");
-
-    } else if (hubDistance > 118.9) {
-      calculatedPitch = 0;
-      calculatedShooterRPS = 0;
-      inShootingRange = false;
-
-      LNS_IN_RANGE_STATUS.set("TOO FAR");
-    }
-
-    LNN_HUB_DIST.set(hubDistance);
-    LNN_CALCULATED_PITCH.set(calculatedPitch);
-    LNN_CALCULATED_SHOOTER_RPS.set(calculatedShooterRPS);
-    LNN_RPS.set(calculatedShooterRPS);
-    pitch.LNN_POS.set(calculatedPitch);
-    LNB_IN_RANGE.set(inShootingRange);
+  public void staticShoot() {
+    leftMotor.setControl(leftVelocityRequest.withVelocity(ShooterConstants.CLOSE_SHOT.get(85.2)));
   }
 
   public void stop() {
@@ -175,24 +104,24 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // AdvantageKit Logging (Crucial for the "Active" method to see what is happening)
-    Logger.recordOutput("Shooter/TargetVelocityRPS", targetVelocityRPS);
+    Logger.recordOutput(
+        "Shooter/TargetVelocityRPS", leftMotor.getClosedLoopReference().getValueAsDouble());
     Logger.recordOutput("Shooter/LeftActualRPS", leftMotor.getVelocity().getValueAsDouble());
-    Logger.recordOutput(
-        "Shooter/LeftStatorCurrent", leftMotor.getStatorCurrent().getValueAsDouble());
-    Logger.recordOutput(
-        "Shooter/LeftSupplyCurrent", leftMotor.getSupplyCurrent().getValueAsDouble());
-    Logger.recordOutput("Shooter/RightActualRPS", rightMotor.getVelocity().getValueAsDouble());
-    Logger.recordOutput(
-        "Shooter/RightStatorCurrent", rightMotor.getStatorCurrent().getValueAsDouble());
-    Logger.recordOutput(
-        "Shooter/RightSupplyCurrent", rightMotor.getSupplyCurrent().getValueAsDouble());
-    Logger.recordOutput("Shooter/HubDistance", hubDist);
-    Logger.recordOutput("Shooter/CalculatedRPS", calculatedShooterRPS);
-    Logger.recordOutput("Shooter/CalculatedPitch", calculatedPitch);
+    // Logger.recordOutput(
+    //     "Shooter/LeftStatorCurrent", leftMotor.getStatorCurrent().getValueAsDouble());
+    // Logger.recordOutput(
+    //     "Shooter/LeftSupplyCurrent", leftMotor.getSupplyCurrent().getValueAsDouble());
+    // Logger.recordOutput("Shooter/RightActualRPS", rightMotor.getVelocity().getValueAsDouble());
+    // Logger.recordOutput(
+    //     "Shooter/RightStatorCurrent", rightMotor.getStatorCurrent().getValueAsDouble());
+    // Logger.recordOutput(
+    //     "Shooter/RightSupplyCurrent", rightMotor.getSupplyCurrent().getValueAsDouble());
   }
 
-  
-  public BooleanSupplier isReady = () -> 
-    leftMotor.getVelocity().getValueAsDouble() >= leftMotor.getVelocity().getValueAsDouble() + ShooterConstants.RPS_TOLERANCE;
+  public boolean atTargetVelocity() {
+    // return leftMotor.getVelocity().getValueAsDouble() >=
+    // leftMotor.getVelocity().getValueAsDouble() + ShooterConstants.RPS_TOLERANCE;
+    return Math.abs(leftMotor.getClosedLoopError().getValueAsDouble())
+        <= ShooterConstants.RPS_TOLERANCE;
+  }
 }

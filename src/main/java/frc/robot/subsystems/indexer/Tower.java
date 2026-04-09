@@ -57,12 +57,6 @@ public class Tower extends SubsystemBase {
     }
   }
 
-  // // Dev
-  // public void setManualDutyCycle(double output) {
-  //   this.targetVelocityRPS = 0;
-  //   towerMotor.setControl(dutyCycleRequest.withOutput(output));
-  // }
-
   public void start() {
     towerMotor.setControl(dutyCycleRequest.withOutput(TowerConstants.TOWER_SPEED));
   }
@@ -73,7 +67,6 @@ public class Tower extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Logger.recordOutput("Tower/TargetVelocityRPS", targetVelocityRPS);
     Logger.recordOutput("Tower/ActualVelocityRPS", towerMotor.getVelocity().getValueAsDouble());
     Logger.recordOutput("Tower/StatorCurrent", towerMotor.getStatorCurrent().getValueAsDouble());
   }

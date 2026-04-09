@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -26,9 +26,6 @@ public class Hopper extends SubsystemBase {
   private final MotionMagicTorqueCurrentFOC positionRequest =
       new MotionMagicTorqueCurrentFOC(0).withSlot(0);
   private final DutyCycleOut dutyCycleRequest = new DutyCycleOut(0);
-
-  /* State */
-  private double targetPositionRotations = 0;
 
   public Hopper() {
     configureHardware();
@@ -73,19 +70,16 @@ public class Hopper extends SubsystemBase {
 
   // DEPLOY to EXTENDED position
   public void deploy() {
-    this.targetPositionRotations = HopperConstants.DEPLOYED_ROTATIONS;
-    hopperMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+    hopperMotor.setControl(positionRequest.withPosition(HopperConstants.DEPLOYED_ROTATIONS));
   }
 
   // RETRACT to STOWED position
   public void retract() {
-    this.targetPositionRotations = HopperConstants.RETRACTED_ROTATIONS; // Typically 0
-    hopperMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+    hopperMotor.setControl(positionRequest.withPosition(HopperConstants.RETRACTED_ROTATIONS));
   }
 
-  // DEV - manual control
+  // Manual control
   public void setManualDutyCycle(double output) {
-    this.targetPositionRotations = hopperMotor.getPosition().getValueAsDouble();
     hopperMotor.setControl(dutyCycleRequest.withOutput(output));
   }
 
@@ -95,8 +89,10 @@ public class Hopper extends SubsystemBase {
 
   @Override
   public void periodic() {
-    Logger.recordOutput("Hopper/TargetRotations", targetPositionRotations);
+    Logger.recordOutput(
+        "Hopper/TargetRotations", hopperMotor.getClosedLoopReference().getValueAsDouble());
     Logger.recordOutput("Hopper/ActualRotations", hopperMotor.getPosition().getValueAsDouble());
-    Logger.recordOutput("Hopper/StatorCurrent", hopperMotor.getStatorCurrent().getValueAsDouble());
+    // Logger.recordOutput("Hopper/StatorCurrent",
+    // hopperMotor.getStatorCurrent().getValueAsDouble());
   }
 }

@@ -21,9 +21,6 @@ public class Indexer extends SubsystemBase {
   /* Control Requests */
   private final DutyCycleOut velocityRequest = new DutyCycleOut(0);
 
-  /* State */
-  private double targetVelocityRPS = 0;
-
   public Indexer() {
     configureHardware();
   }
@@ -34,19 +31,6 @@ public class Indexer extends SubsystemBase {
     config.Commutation.withMotorArrangement(MotorArrangementValue.Minion_JST);
     config.MotorOutput.withNeutralMode(NeutralModeValue.Coast)
         .withInverted(InvertedValue.CounterClockwise_Positive);
-
-    // config.ExternalFeedback.withSensorToMechanismRatio(IndexerConstants.SENSOR_TO_MECH_RATIO);
-    // config.CurrentLimits.withStatorCurrentLimit(Amps.of(IndexerConstants.STATOR_AMP_LIMIT))
-    //     .withStatorCurrentLimitEnable(true);
-
-    // config.Slot0.withKP(IndexerConstants.PID_KP)
-    //     .withKS(IndexerConstants.PID_KS)
-    //     .withKV(IndexerConstants.PID_KV);
-
-    // config.MotionMagic.withMotionMagicAcceleration(
-    //         RotationsPerSecondPerSecond.of(IndexerConstants.MM_ACCELERATION))
-    //
-    // .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(IndexerConstants.MM_JERK));
 
     applyConfig(config);
   }
@@ -81,9 +65,6 @@ public class Indexer extends SubsystemBase {
 
   @Override
   public void periodic() {
-
-    // AdvantageKit Logging
-    Logger.recordOutput("Indexer/TargetVelocityRPS", targetVelocityRPS);
     Logger.recordOutput("Indexer/ActualVelocityRPS", indexerMotor.getVelocity().getValueAsDouble());
     Logger.recordOutput(
         "Indexer/StatorCurrent", indexerMotor.getStatorCurrent().getValueAsDouble());

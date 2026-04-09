@@ -30,9 +30,6 @@ public class IntakeExtension extends SubsystemBase {
   private final MotionMagicTorqueCurrentFOC positionRequest =
       new MotionMagicTorqueCurrentFOC(0).withSlot(0);
 
-  /* State */
-  private double targetPositionRotations = 0;
-
   public IntakeExtension() {
     configureEncoder();
     configureMotor();
@@ -115,18 +112,18 @@ public class IntakeExtension extends SubsystemBase {
   }
 
   public void deploy() {
-    this.targetPositionRotations = IntakeExtensionConstants.DEPLOYED_ROTATIONS;
-    extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+    extensionMotor.setControl(
+        positionRequest.withPosition(IntakeExtensionConstants.DEPLOYED_ROTATIONS));
   }
 
-  public void retract() {
-    this.targetPositionRotations = IntakeExtensionConstants.RETRACTED_ROTATIONS; // Typically 0
-    extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+  public void bumpRetract() {
+    extensionMotor.setControl(
+        positionRequest.withPosition(IntakeExtensionConstants.BUMP_ROTATIONS));
   }
 
-  public void retractFull() {
-    this.targetPositionRotations = IntakeExtensionConstants.FULL_RETRACTED_ROTATIONS; // Typically 0
-    extensionMotor.setControl(positionRequest.withPosition(targetPositionRotations));
+  public void fullRetract() {
+    extensionMotor.setControl(
+        positionRequest.withPosition(IntakeExtensionConstants.FULL_RETRACTED_ROTATIONS));
   }
 
   public void stop() {
@@ -135,16 +132,17 @@ public class IntakeExtension extends SubsystemBase {
 
   @Override
   public void periodic() {
-    Logger.recordOutput("IntakeExtension/TargetRotations", targetPositionRotations);
+    Logger.recordOutput(
+        "IntakeExtension/TargetRotations",
+        extensionMotor.getClosedLoopReference().getValueAsDouble());
     Logger.recordOutput(
         "IntakeExtension/ActualRotations", extensionMotor.getPosition().getValueAsDouble());
     Logger.recordOutput(
         "IntakeExtension/StatorCurrent", extensionMotor.getStatorCurrent().getValueAsDouble());
   }
 
-  public boolean isAtTarget() {
-    double currentPos = extensionMotor.getPosition().getValueAsDouble();
-    return Math.abs(currentPos - targetPositionRotations)
+  public boolean isAtPosition() {
+    return Math.abs(extensionMotor.getClosedLoopError().getValueAsDouble())
         <= IntakeExtensionConstants.TOLERANCE_ROTATIONS;
   }
 }

@@ -16,7 +16,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterPitchConstants;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class ShooterPitch extends SubsystemBase {
   /* Hardware */
@@ -24,11 +23,6 @@ public class ShooterPitch extends SubsystemBase {
 
   /* Control Requests */
   private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0).withSlot(0);
-
-  /* State */
-  public final LoggedNetworkNumber LNN_POS = new LoggedNetworkNumber("Pitch Pos", 0);
-
-  private double targetPositionRotations = 0;
 
   public ShooterPitch() {
     configureHardware();
@@ -68,40 +62,34 @@ public class ShooterPitch extends SubsystemBase {
         .withMotionMagicAcceleration(
             RotationsPerSecondPerSecond.of(ShooterPitchConstants.MM_ACCELERATION));
 
-    applyConfig(pitchMotor, config);
+    applyConfig(config);
   }
 
-  private void applyConfig(TalonFXS motor, TalonFXSConfiguration config) {
+  private void applyConfig(TalonFXSConfiguration config) {
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      status = motor.getConfigurator().apply(config);
-      if (status.isOK()) {
-        // LNNConfig.set(true);
-        break;
-      }
+      status = pitchMotor.getConfigurator().apply(config);
+      if (status.isOK()) break;
     }
   }
 
-  // public void moveToPosition() {
-  //   pitchMotor.setControl(positionRequest.withPosition(ShooterPitchConstants.SHOOT_ANGLE));
-  // }
-
-  // public void movetoMinPosition() {
-  //   pitchMotor.setControl(positionRequest.withPosition(ShooterPitchConstants.MIN_ROTATION));
-  // }
-
-  public void aim() {
-    pitchMotor.setControl(positionRequest.withPosition(LNN_POS.getAsDouble()));
+  public void aim(double position) {
+    pitchMotor.setControl(positionRequest.withPosition(position));
   }
 
   public void stop() {
     pitchMotor.setControl(positionRequest.withPosition(0));
-    // pitchMotor.stopMotor();
+  }
+
+  public boolean isAtPosition() {
+    return Math.abs(pitchMotor.getClosedLoopError().getValueAsDouble())
+        <= ShooterPitchConstants.TOLERANCE;
   }
 
   @Override
   public void periodic() {
-    Logger.recordOutput("ShooterPitch/TargetRotations", targetPositionRotations);
+    Logger.recordOutput(
+        "ShooterPitch/TargetRotations", pitchMotor.getClosedLoopReference().getValueAsDouble());
     Logger.recordOutput(
         "ShooterPitch/ActualRotations", pitchMotor.getPosition().getValueAsDouble());
     Logger.recordOutput(

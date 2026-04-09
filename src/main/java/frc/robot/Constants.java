@@ -13,9 +13,7 @@ import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
@@ -78,7 +76,7 @@ public final class Constants {
     public static final double PID_KV = 0.07;
     public static final double PID_KP = 8.1;
 
-    public static final double RPS_TOLERANCE = -0.2;
+    public static final double RPS_TOLERANCE = 0.2;
 
     // Close shots are between 75.6 inches and X inches
     // Pitch setpont: 0.0
@@ -120,6 +118,7 @@ public final class Constants {
     public static final double PID_KV = 0.1;
     public static final double MM_ACCELERATION = 15;
     public static final double MM_CRUISE_VEL = 5;
+    public static final double TOLERANCE = 0.002;
   }
 
   public final class IntakeConstants {
@@ -182,7 +181,7 @@ public final class Constants {
     }
 
     public static final double TOLERANCE_ROTATIONS = 0.003;
-    public static final double RETRACTED_ROTATIONS = 0.6;
+    public static final double BUMP_ROTATIONS = 0.2;
     public static final double FULL_RETRACTED_ROTATIONS = 0.003;
     public static final double DEPLOYED_ROTATIONS = 0.3525;
   }
@@ -216,28 +215,15 @@ public final class Constants {
     public static final double TOLERANCE_ROTATIONS = 0.005;
   }
 
-  public final class RobotConstants {
-    public static final Distance FULL_WIDTH = Inches.of(25); // TODO: Verify Frame plus bumper
-    public static final Distance FULL_LENGTH = Inches.of(29.5); // TODO: Verify Frame plus bumper
-  }
-
   public final class FieldConstants {
     public static final Distance FIELD_LENGTH = Inches.of(651.22);
     public static final Distance FIELD_WIDTH = Inches.of(317.69);
     public static final Distance ALLIANCE_ZONE = Inches.of(156.06);
 
-    public static final Translation3d HUB_BLUE =
-        new Translation3d(Inches.of(182.11), FIELD_WIDTH.div(2), Inches.of(56.44));
-    public static final Translation3d HUB_RED =
-        new Translation3d(
-            FIELD_LENGTH.minus(Inches.of(182.11)), FIELD_WIDTH.div(2), Inches.of(56.44));
-
-    public static final Distance FUNNEL_HEIGHT = Inches.of(72 - 56.4);
-    public static final Distance FUNNEL_RADIUS = Inches.of(24);
-    public static final Transform3d ROBOT_TO_TURRET_TRANSFORM =
-        new Transform3d(
-            new Translation3d(Inches.zero(), Inches.of(-6), Inches.of(20.625)), Rotation3d.kZero);
-    public static final Distance DISTANCE_ABOVE_FUNNEL = Inches.of(6);
+    public static final Translation2d HUB_BLUE =
+        new Translation2d(Inches.of(182.11), FIELD_WIDTH.div(2));
+    public static final Translation2d HUB_RED =
+        new Translation2d(FIELD_LENGTH.minus(Inches.of(182.11)), FIELD_WIDTH.div(2));
 
     public static final Pose2d LEFT_SHOOT_POS_BLUE =
         new Pose2d(
