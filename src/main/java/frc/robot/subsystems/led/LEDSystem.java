@@ -165,20 +165,20 @@ public class LEDSystem extends SubsystemBase {
     applyRequest(8, 91, 0, animationType);
   }
 
-  public void setRedSolid() {
-    ledController.clearAllAnimations();
-    ledController.setControl(new SolidColor(8, 91).withColor(new RGBWColor(Color.kRed)));
-  }
+  // public void setRedSolid() {
+  //   ledController.clearAllAnimations();
+  //   ledController.setControl(new SolidColor(8, 91).withColor(new RGBWColor(Color.kRed)));
+  // }
 
-  public void setBlueSolid() {
-    ledController.clearAllAnimations();
-    ledController.setControl(new SolidColor(8, 91).withColor(new RGBWColor(Color.kBlue)));
-  }
+  // public void setBlueSolid() {
+  //   ledController.clearAllAnimations();
+  //   ledController.setControl(new SolidColor(8, 91).withColor(new RGBWColor(Color.kBlue)));
+  // }
 
-  public void setRainbowAll() {
-    ledController.clearAllAnimations();
-    ledController.setControl(new RainbowAnimation(8, 91).withSlot(0));
-  }
+  // public void setRainbowAll() {
+  //   ledController.clearAllAnimations();
+  //   ledController.setControl(new RainbowAnimation(8, 91).withSlot(0));
+  // }
 
   @Override
   public void periodic() {

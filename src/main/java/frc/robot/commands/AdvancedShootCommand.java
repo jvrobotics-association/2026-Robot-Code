@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Tower;
+import frc.robot.subsystems.led.AnimationType;
 import frc.robot.subsystems.led.LEDSystem;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPitch;
@@ -113,13 +114,13 @@ public class AdvancedShootCommand extends Command {
       calculatedPitch = 0;
       calculatedShooterRPS = 0;
 
-      // if (alliance.get() == Alliance.Blue) {
-      //   ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlueInverted);
-      //   ledSystem.setEntireRightSide(AnimationType.FlowDirectionBlue);
-      // } else {
-      //   ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRedInverted);
-      //   ledSystem.setEntireRightSide(AnimationType.FlowDirectionRed);
-      // }
+      if (alliance.get() == Alliance.Blue) {
+        // ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlueInverted);
+        // ledSystem.setEntireRightSide(AnimationType.FlowDirectionBlue);
+      } else {
+        // ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRedInverted);
+        // ledSystem.setEntireRightSide(AnimationType.FlowDirectionRed);
+      }
 
       IN_RANGE_STATUS = "TOO CLOSE";
       IN_RANGE = false;
@@ -140,13 +141,13 @@ public class AdvancedShootCommand extends Command {
       calculatedPitch = 0;
       calculatedShooterRPS = 0;
 
-      // if (alliance.get() == Alliance.Blue) {
-      //   ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlue);
-      //   ledSystem.setEntireRightSide(AnimationType.FlowDirectionBlueInverted);
-      // } else {
-      //   ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRed);
-      //   ledSystem.setEntireRightSide(AnimationType.FlowDirectionRedInverted);
-      // }
+      if (alliance.get() == Alliance.Blue) {
+        // ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlue);
+        // ledSystem.setEntireRightSide(AnimationType.FlowDirectionBlueInverted);
+      } else {
+        // ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRed);
+        // ledSystem.setEntireRightSide(AnimationType.FlowDirectionRedInverted);
+      }
       IN_RANGE_STATUS = "TOO FAR";
       IN_RANGE = false;
     }

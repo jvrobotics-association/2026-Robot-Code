@@ -41,6 +41,7 @@ import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Tower;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeExtension;
+import frc.robot.subsystems.led.AnimationType;
 import frc.robot.subsystems.led.LEDSystem;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPitch;
@@ -229,8 +230,8 @@ public class RobotContainer {
     SignalLogger.stop();
 
     configureBindings();
-    disabledLedState();
-    }
+    // disabledLedState();
+  }
 
     
     /**
@@ -519,14 +520,13 @@ public class RobotContainer {
   }
 
   public void disabledLedState() {
-    ledSystem.setRainbowAll();
+    ledSystem.setAll(AnimationType.Rainbow);
   }
 
   public void enabledLedState() {
     updateAlliance();
     if (alliance == Alliance.Blue) {
-      ledSystem.setBlueSolid();
-    } else ledSystem.setRedSolid();
+      ledSystem.setAll(AnimationType.SolidBlue);
+    } else ledSystem.setAll(AnimationType.SolidRed);
   }
-
 }

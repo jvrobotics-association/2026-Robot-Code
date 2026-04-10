@@ -101,7 +101,7 @@ public class Robot extends LoggedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    robotContainer.disabledLedState();
+    // robotContainer.disabledLedState();
   }
 
   /** This function is called periodically when disabled. */
@@ -112,7 +112,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     robotContainer.updateHubTarget();
-    robotContainer.enabledLedState();
+    // robotContainer.enabledLedState();
     robotContainer.extendHopper();
     autonomousCommand = robotContainer.getAutonomousCommand();
 
@@ -138,7 +138,7 @@ public class Robot extends LoggedRobot {
     }
      MatchStatus.startTimer(); 
     robotContainer.updateHubTarget();
-    robotContainer.enabledLedState();
+    // robotContainer.enabledLedState();
   }
 
   /** This function is called periodically during operator control. */
