@@ -138,6 +138,7 @@ public final class Constants {
     public static final double MM_ACCELERATION = 15;
     public static final double MM_CRUISE_VEL = 5;
     public static final double TOLERANCE = 0.006;
+    public static final double MANUAL_SPEED = 0.002;
   }
 
   public final class IntakeConstants {

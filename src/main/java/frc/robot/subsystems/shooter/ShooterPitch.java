@@ -86,6 +86,31 @@ public class ShooterPitch extends SubsystemBase {
         <= ShooterPitchConstants.TOLERANCE;
   }
 
+  public void manUp(double speed) {
+
+    double currentPos = pitchMotor.getPosition().getValueAsDouble();
+    double newPos = currentPos + speed;
+
+    if (newPos >= ShooterPitchConstants.MAX_ROTATION
+        || newPos <= ShooterPitchConstants.MIN_ROTATION) {
+      return;
+    }
+
+    pitchMotor.setControl(positionRequest.withPosition(newPos));
+  }
+
+  public void manDown(double speed) {
+    double currentPos = pitchMotor.getPosition().getValueAsDouble();
+    double newPos = currentPos - speed;
+
+    if (newPos >= ShooterPitchConstants.MAX_ROTATION
+        || newPos <= ShooterPitchConstants.MIN_ROTATION) {
+      return;
+    }
+
+    pitchMotor.setControl(positionRequest.withPosition(newPos));
+  }
+
   @Override
   public void periodic() {
     Logger.recordOutput(

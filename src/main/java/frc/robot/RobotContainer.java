@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.ShooterPitchConstants;
 import frc.robot.commands.AdvancedShootCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -210,20 +211,20 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Forward)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Reverse)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     FollowPathCommand.warmupCommand().schedule();
     SignalLogger.enableAutoLogging(false);
@@ -339,7 +340,7 @@ public class RobotContainer {
                             .plus(Rotation2d.fromDegrees(180.0))),
                 new AdvancedShootCommand(
                     shooter,
-                    () -> operatorPanel.rightBumper().getAsBoolean(),
+                    () -> operatorPanel.y().getAsBoolean(),
                     pitch,
                     tower,
                     indexer,
@@ -404,7 +405,7 @@ public class RobotContainer {
 
     // Hopper In
     operatorPanel
-        .povRight()
+        .povLeft()
         .onTrue(
             Commands.sequence(
                 Commands.runOnce(intakeExt::fullRetract, intakeExt),
@@ -416,7 +417,7 @@ public class RobotContainer {
 
     // Hopper out
     operatorPanel
-        .povLeft()
+        .povRight()
         .onTrue(
             Commands.sequence(
                 Commands.runOnce(hopper::deploy, hopper),
@@ -428,14 +429,6 @@ public class RobotContainer {
 
     // Run the intake
     operatorPanel.b().whileTrue(runIntake);
-
-    // Manually outake fuel by running the indexer and intake in reverse
-    operatorPanel
-        .y()
-        .whileTrue(
-            Commands.parallel(
-                Commands.startEnd(() -> intake.runIntake(-0.5), intake::stopIntake, intake),
-                Commands.startEnd(indexer::reverseFeed, indexer::stop, indexer)));
 
     // Raise the intake arm so that balls in the front of the hopper are moved to the back
     operatorPanel.a().whileTrue(intakeBallBumper);
@@ -482,7 +475,7 @@ public class RobotContainer {
                         Commands.runEnd(tower::start, tower::stop, tower),
                         Commands.runEnd(indexer::feed, indexer::stop, indexer)))));
 
-    // Shoot command to shoot fuel to the other side of the field
+    // Shoot command to shoot fuel to the other side of the field (Shuttle)
     operatorPanel
         .rightBumper()
         .whileTrue(
@@ -498,6 +491,30 @@ public class RobotContainer {
 
     // Lock the drive modules to an X configuration to help avoid getting bumped around
     operatorPanel.x().whileTrue(xLockWheelsCommand);
+
+    // Manually raise the shooter pitch
+    operatorPanel.povUp().whileTrue(
+        Commands.runEnd(
+            () -> pitch.manUp(ShooterPitchConstants.MANUAL_SPEED),
+            () -> pitch.stop(),
+            pitch
+        ));
+
+    // Manually lower the shooter pitch
+    operatorPanel.povDown().whileTrue(
+        Commands.runEnd(
+            () -> pitch.manDown(ShooterPitchConstants.MANUAL_SPEED),
+            () -> pitch.stop(),
+            pitch
+        ));
+
+    // Manually outake fuel by running the indexer and intake in reverse
+    operatorPanel
+        .button(7)
+        .whileTrue(
+            Commands.parallel(
+                Commands.startEnd(() -> intake.runIntake(-0.5), intake::stopIntake, intake),
+                Commands.startEnd(indexer::reverseFeed, indexer::stop, indexer)));
   }
 
   public void updateAlliance() {
