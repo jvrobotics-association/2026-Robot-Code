@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Tower;
-import frc.robot.subsystems.led.AnimationType;
 import frc.robot.subsystems.led.LEDSystem;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPitch;
@@ -39,6 +38,9 @@ public class AdvancedShootCommand extends Command {
   private double calculatedPitch = 0.0;
   private double calculatedShooterRPS = 0.0;
   private boolean shooterReady = false;
+
+  private Boolean IN_RANGE = false;
+  private String IN_RANGE_STATUS = "NOT CALCULATED";
 
   /** Creates a new AdvancedShootCommand. */
   public AdvancedShootCommand(
@@ -88,6 +90,8 @@ public class AdvancedShootCommand extends Command {
       indexer.stop();
       tower.stop();
     }
+
+    Logger.recordOutput("AdvancedShootCommand/shooterReady", shooterReady);
   }
 
   // Called once the command ends or is interrupted.
@@ -97,6 +101,7 @@ public class AdvancedShootCommand extends Command {
     tower.stop();
     shooter.stop();
     shooterPitch.stop();
+    shooterReady = false;
   }
 
   private void calculateShot() {
@@ -108,30 +113,50 @@ public class AdvancedShootCommand extends Command {
       calculatedPitch = 0;
       calculatedShooterRPS = 0;
 
-      if (alliance.get() == Alliance.Blue) {
-        ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlue);
-      } else ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRed);
+      // if (alliance.get() == Alliance.Blue) {
+      //   ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlueInverted);
+      //   ledSystem.setEntireRightSide(AnimationType.FlowDirectionBlue);
+      // } else {
+      //   ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRedInverted);
+      //   ledSystem.setEntireRightSide(AnimationType.FlowDirectionRed);
+      // }
+
+      IN_RANGE_STATUS = "TOO CLOSE";
+      IN_RANGE = false;
 
     } else if (hubDistance >= 75.6 && hubDistance < 95.1) {
       calculatedPitch = ShooterConstants.CLOSE_PITCH;
       calculatedShooterRPS = ShooterConstants.CLOSE_SHOT.get(hubDistance);
-      ledSystem.setAll(AnimationType.SolidGreen);
+      // ledSystem.setAll(AnimationType.SolidGreen);
+      IN_RANGE_STATUS = "NEAR SHOT";
+      IN_RANGE = true;
     } else if (hubDistance >= 95.1 && hubDistance <= 118.9) {
       calculatedPitch = ShooterConstants.FAR_PITCH;
       calculatedShooterRPS = ShooterConstants.FAR_SHOT.get(hubDistance);
-      ledSystem.setAll(AnimationType.StrobeGreen);
+      // ledSystem.setAll(AnimationType.StrobeGreen);
+      IN_RANGE_STATUS = "FAR SHOT";
+      IN_RANGE = true;
     } else if (hubDistance > 118.9) {
       calculatedPitch = 0;
       calculatedShooterRPS = 0;
 
-      if (alliance.get() == Alliance.Blue) {
-        ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlueInverted);
-      } else ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRedInverted);
+      // if (alliance.get() == Alliance.Blue) {
+      //   ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlue);
+      //   ledSystem.setEntireRightSide(AnimationType.FlowDirectionBlueInverted);
+      // } else {
+      //   ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRed);
+      //   ledSystem.setEntireRightSide(AnimationType.FlowDirectionRedInverted);
+      // }
+      IN_RANGE_STATUS = "TOO FAR";
+      IN_RANGE = false;
     }
 
     Logger.recordOutput("AdvancedShootCommand/hubDistance", hubDistance);
     Logger.recordOutput("AdvancedShootCommand/calculatedPitch", calculatedPitch);
     Logger.recordOutput("AdvancedShootCommand/calculatedShooterRPS", calculatedShooterRPS);
+
+    Logger.recordOutput("AdvancedShootCommand/IN_RANGE", IN_RANGE);
+    Logger.recordOutput("AdvancedShootCommand/IN_RANGE_STATUS", IN_RANGE_STATUS);
   }
 
   @AutoLogOutput(key = "AdvancedShootCommand/isFacingTarget")
@@ -142,7 +167,9 @@ public class AdvancedShootCommand extends Command {
             .getAngle()
             .minus(pose.getRotation().plus(Rotation2d.fromDegrees(180)));
 
-    return Math.abs(error.getDegrees()) <= 1.0;
+    boolean facingTarget = Math.abs(error.getDegrees()) <= 2.0;
+    Logger.recordOutput("AdvancedShootCommand/isFacingTarget", facingTarget);
+    return facingTarget;
   }
 
   // Returns true when the command should end.

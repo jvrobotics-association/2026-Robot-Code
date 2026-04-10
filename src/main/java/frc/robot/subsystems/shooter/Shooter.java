@@ -107,6 +107,7 @@ public class Shooter extends SubsystemBase {
     Logger.recordOutput(
         "Shooter/TargetVelocityRPS", leftMotor.getClosedLoopReference().getValueAsDouble());
     Logger.recordOutput("Shooter/LeftActualRPS", leftMotor.getVelocity().getValueAsDouble());
+    Logger.recordOutput("Shooter/atTargetVelocity", atTargetVelocity());
     // Logger.recordOutput(
     //     "Shooter/LeftStatorCurrent", leftMotor.getStatorCurrent().getValueAsDouble());
     // Logger.recordOutput(

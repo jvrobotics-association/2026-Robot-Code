@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
@@ -38,7 +38,6 @@ import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Tower;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeExtension;
-import frc.robot.subsystems.led.AnimationType;
 import frc.robot.subsystems.led.LEDSystem;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPitch;
@@ -72,7 +71,7 @@ public class RobotContainer {
   private final Vision vision;
 
   private final CommandXboxController controller = new CommandXboxController(0);
-  private final CommandJoystick operatorPanel = new CommandJoystick(1);
+  private final CommandXboxController operatorPanel = new CommandXboxController(1);
 
   private Alliance alliance;
   private Translation2d hubTarget;
@@ -159,6 +158,31 @@ public class RobotContainer {
         break;
     }
 
+    NamedCommands.registerCommand(
+        "extendHopperIntake",
+        Commands.sequence(
+            Commands.runOnce(hopper::deploy, hopper),
+            Commands.waitSeconds(1.5),
+            Commands.runOnce(intakeExt::deploy, intakeExt),
+            Commands.waitSeconds(1),
+            Commands.runOnce(hopper::stop, hopper),
+            Commands.runOnce(intakeExt::stop, intakeExt)));
+
+    NamedCommands.registerCommand(
+        "runIntake", Commands.runOnce(() -> intake.runIntake(0.9), intake));
+
+    NamedCommands.registerCommand("stopIntake", Commands.runOnce(intake::stopIntake, intake));
+
+    NamedCommands.registerCommand(
+        "basicShoot",
+        Commands.parallel(
+            Commands.runEnd(shooter::staticShoot, shooter::stop, shooter),
+            Commands.sequence(
+                Commands.waitSeconds(1.5).until(shooter::atTargetVelocity),
+                Commands.parallel(
+                    Commands.runEnd(tower::start, tower::stop, tower),
+                    Commands.runEnd(indexer::feed, indexer::stop, indexer)))));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -183,6 +207,7 @@ public class RobotContainer {
     SignalLogger.stop();
 
     configureBindings();
+    disabledLedState();
   }
 
   /**
@@ -223,6 +248,11 @@ public class RobotContainer {
     // Runs the intake to intake fuel
     controller.leftTrigger(ControllerConstants.TRIGGER_THRESHOLD).whileTrue(runIntake);
 
+    // controller
+    //     .x()
+    //     .toggleOnTrue(Commands.runOnce(() -> ledSystem.setAll(AnimationType.Rainbow),
+    // ledSystem));
+
     // Aim the robot at the hub, this is mainly used for backup if the main shoot command is not
     // working
     controller
@@ -254,7 +284,7 @@ public class RobotContainer {
                             .plus(Rotation2d.fromDegrees(180.0))),
                 new AdvancedShootCommand(
                     shooter,
-                    () -> operatorPanel.button(14).getAsBoolean(),
+                    () -> operatorPanel.rightBumper().getAsBoolean(),
                     pitch,
                     tower,
                     indexer,
@@ -317,9 +347,9 @@ public class RobotContainer {
     //////// OPERATOR PANEL INPUTS ////////
     ///////////////////////////////////////
 
-    // Manually cycle the hopper/intake arm to retract
+    // Hopper In
     operatorPanel
-        .button(13)
+        .povRight()
         .onTrue(
             Commands.sequence(
                 Commands.runOnce(intakeExt::fullRetract, intakeExt),
@@ -331,7 +361,7 @@ public class RobotContainer {
 
     // Manually cycle the hopper/intake arm to extend
     operatorPanel
-        .button(6)
+        .povLeft()
         .onTrue(
             Commands.sequence(
                 Commands.runOnce(hopper::deploy, hopper),
@@ -342,11 +372,11 @@ public class RobotContainer {
                 Commands.runOnce(intakeExt::stop, intakeExt)));
 
     // Run the intake
-    operatorPanel.button(4).whileTrue(runIntake);
+    operatorPanel.b().whileTrue(runIntake);
 
     // Manually outake fuel by running the indexer and intake in reverse
     operatorPanel
-        .button(12)
+        .y()
         .whileTrue(
             Commands.parallel(
                 Commands.startEnd(() -> intake.runIntake(-0.5), intake::stopIntake, intake),
@@ -354,7 +384,7 @@ public class RobotContainer {
 
     // Raise the intake arm so that balls in the front of the hopper are moved to the back
     operatorPanel
-        .button(2)
+        .a()
         .whileTrue(
             Commands.sequence(
                     Commands.runOnce(() -> intake.runIntake(0.75)),
@@ -372,9 +402,39 @@ public class RobotContainer {
                       intakeExt.deploy();
                     }));
 
+    // Full intake extension retract
+    operatorPanel
+        .rightTrigger(ControllerConstants.TRIGGER_THRESHOLD)
+        .whileTrue(
+            Commands.sequence(
+                    Commands.runOnce(() -> intake.runIntake(0.75)),
+                    Commands.runOnce(intakeExt::fullRetract, intakeExt),
+                    Commands.waitSeconds(0.75),
+                    Commands.runOnce(intakeExt::deploy, intakeExt))
+                .finallyDo(
+                    () -> {
+                      intake.stopIntake();
+                      intakeExt.deploy();
+                    }));
+
+    // Full intake extension retract
+    operatorPanel
+        .leftTrigger(ControllerConstants.TRIGGER_THRESHOLD)
+        .whileTrue(
+            Commands.sequence(
+                    Commands.runOnce(() -> intake.runIntake(0.75)),
+                    Commands.runOnce(intakeExt::bumpRetract, intakeExt),
+                    Commands.waitSeconds(0.75),
+                    Commands.runOnce(intakeExt::deploy, intakeExt))
+                .finallyDo(
+                    () -> {
+                      intake.stopIntake();
+                      intakeExt.deploy();
+                    }));
+
     // Simple shoot command in the event the fancy one does not work
     operatorPanel
-        .button(1)
+        .leftBumper()
         .whileTrue(
             Commands.parallel(
                 Commands.runEnd(shooter::staticShoot, shooter::stop, shooter),
@@ -385,7 +445,7 @@ public class RobotContainer {
                         Commands.runEnd(indexer::feed, indexer::stop, indexer)))));
 
     // Lock the drive modules to an X configuration to help avoid getting bumped around
-    operatorPanel.button(10).whileTrue(xLockWheelsCommand);
+    operatorPanel.x().whileTrue(xLockWheelsCommand);
   }
 
   public void updateAlliance() {
@@ -407,13 +467,13 @@ public class RobotContainer {
   }
 
   public void disabledLedState() {
-    ledSystem.setAll(AnimationType.Rainbow);
+    ledSystem.setRainbowAll();
   }
 
   public void enabledLedState() {
     updateAlliance();
     if (alliance == Alliance.Blue) {
-      ledSystem.setAll(AnimationType.SolidBlue);
-    } else ledSystem.setAll(AnimationType.SolidGreen);
+      ledSystem.setBlueSolid();
+    } else ledSystem.setRedSolid();
   }
 }

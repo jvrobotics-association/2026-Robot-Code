@@ -94,5 +94,6 @@ public class ShooterPitch extends SubsystemBase {
         "ShooterPitch/ActualRotations", pitchMotor.getPosition().getValueAsDouble());
     Logger.recordOutput(
         "ShooterPitch/StatorCurrent", pitchMotor.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput("ShooterPitch/isAtPosition", isAtPosition());
   }
 }

@@ -18,6 +18,7 @@ import com.ctre.phoenix6.signals.StatusLedWhenActiveValue;
 import com.ctre.phoenix6.signals.StripTypeValue;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 public class LEDSystem extends SubsystemBase {
   private final CANdle ledController = new CANdle(4, "rio");
@@ -31,9 +32,9 @@ public class LEDSystem extends SubsystemBase {
 
     applyConfig(config);
 
-    ledController.clearAllAnimations();
-
-    ledController.optimizeBusUtilization();
+    for (int i = 0; i < 8; ++i) {
+      ledController.setControl(new EmptyAnimation(i));
+    }
   }
 
   private void applyConfig(CANdleConfiguration config) {
@@ -92,63 +93,73 @@ public class LEDSystem extends SubsystemBase {
                 .withSlot(slot)
                 .withDirection(AnimationDirectionValue.Forward)
                 .withColor(new RGBWColor(Color.kRed))
-                .withFrameRate(30));
+                .withFrameRate(100));
       case FlowDirectionRedInverted:
         ledController.setControl(
             new ColorFlowAnimation(indexStart, indexStop)
                 .withSlot(slot)
                 .withDirection(AnimationDirectionValue.Backward)
                 .withColor(new RGBWColor(Color.kRed))
-                .withFrameRate(30));
+                .withFrameRate(100));
       case FlowDirectionBlue:
         ledController.setControl(
             new ColorFlowAnimation(indexStart, indexStop)
                 .withSlot(slot)
                 .withDirection(AnimationDirectionValue.Forward)
                 .withColor(new RGBWColor(Color.kBlue))
-                .withFrameRate(30));
+                .withFrameRate(100));
       case FlowDirectionBlueInverted:
         ledController.setControl(
             new ColorFlowAnimation(indexStart, indexStop)
                 .withSlot(slot)
                 .withDirection(AnimationDirectionValue.Backward)
                 .withColor(new RGBWColor(Color.kBlue))
-                .withFrameRate(30));
+                .withFrameRate(1000));
     }
   }
 
   public void setRightShooterBar(AnimationType animationType) {
-    // TODO: Determine exact LED index for Right Shooter Bar
-    applyRequest(8, 15, 1, animationType);
+    applyRequest(8, 26, 0, animationType);
   }
 
   public void setRightHopperBar(AnimationType animationType) {
-    // TODO: Determine exact LED index for Right Hopper Bar
-    applyRequest(16, 20, 2, animationType);
+    applyRequest(27, 49, 0, animationType);
   }
 
   public void setLeftHopperBar(AnimationType animationType) {
-    // TODO: Determine exact LED index for Left Hopper Bar
-    applyRequest(21, 25, 3, animationType);
+    applyRequest(50, 72, 0, animationType);
   }
 
   public void setLeftShooterBar(AnimationType animationType) {
-    // TODO: Determine exact LED index for Left Shooter Bar
-    applyRequest(26, 30, 4, animationType);
+    applyRequest(73, 91, 0, animationType);
   }
 
   public void setEntireRightSide(AnimationType animationType) {
-    // TODO: Update the index range with the combined index range of Right Shooter and Hopper bars
-    applyRequest(8, 20, 5, animationType);
+    applyRequest(8, 49, 0, animationType);
   }
 
   public void setEntireLeftSide(AnimationType animationType) {
-    // TODO: Update the index range with the combined index range of Left Shooter and Hopper bars
-    applyRequest(21, 30, 6, animationType);
+    applyRequest(50, 91, 0, animationType);
   }
 
   public void setAll(AnimationType animationType) {
-    // TODO: Update the index range with the combined index range of all LEDs
-    applyRequest(8, 30, 6, animationType);
+    applyRequest(8, 91, 0, AnimationType.Rainbow);
+  }
+
+  public void setRedSolid() {
+    ledController.setControl(new SolidColor(8, 91).withColor(new RGBWColor(Color.kRed)));
+  }
+
+  public void setBlueSolid() {
+    ledController.setControl(new SolidColor(8, 91).withColor(new RGBWColor(Color.kBlue)));
+  }
+
+  public void setRainbowAll() {
+    ledController.setControl(new RainbowAnimation(8, 91).withSlot(0));
+  }
+
+  @Override
+  public void periodic() {
+    Logger.recordOutput("LED System/Applied Control", ledController.getAppliedControl().getName());
   }
 }

@@ -76,12 +76,10 @@ public final class Constants {
     public static final double PID_KV = 0.07;
     public static final double PID_KP = 8.1;
 
-    public static final double RPS_TOLERANCE = 0.2;
+    public static final double RPS_TOLERANCE = 1;
 
-    // Close shots are between 75.6 inches and X inches
-    // Pitch setpont: 0.0
     public static final double CLOSE_PITCH = 0.0;
-    public static final InterpolatingDoubleTreeMap CLOSE_SHOT =
+    public static final InterpolatingDoubleTreeMap CLOSE_SHOT_OLD =
         InterpolatingDoubleTreeMap.ofEntries(
             // Map.entry(DISTANCE, RPS)
             Map.entry(75.6, 45.0),
@@ -89,11 +87,7 @@ public final class Constants {
             Map.entry(85.2, 47.0),
             Map.entry(91.08, 50.5),
             Map.entry(95.1, 54.0));
-
-    // Medium shots are between 95.1 inches and 119 inches
-    // Pitch setpoint: 0.026
-    public static final double FAR_PITCH = 0.026;
-    public static final InterpolatingDoubleTreeMap FAR_SHOT =
+    public static final InterpolatingDoubleTreeMap FAR_SHOT_OLD =
         InterpolatingDoubleTreeMap.ofEntries(
             // Map.entry(DISTANCE, RPS)
             Map.entry(95.1, 47.0),
@@ -101,6 +95,29 @@ public final class Constants {
             Map.entry(100.5, 48.0),
             Map.entry(109.5, 49.5),
             Map.entry(118.5, 52.0));
+
+    // Close shots are between 75.6 inches and X inches
+    // Pitch setpont: 0.0
+    public static final InterpolatingDoubleTreeMap CLOSE_SHOT =
+        InterpolatingDoubleTreeMap.ofEntries(
+            // Map.entry(DISTANCE, RPS)
+            Map.entry(75.6, 44.0),
+            Map.entry(80.4, 45.0),
+            Map.entry(85.2, 46.0),
+            Map.entry(91.08, 49.5),
+            Map.entry(95.1, 53.0));
+
+    // Medium shots are between 95.1 inches and 119 inches
+    // Pitch setpoint: 0.026
+    public static final double FAR_PITCH = 0.026;
+    public static final InterpolatingDoubleTreeMap FAR_SHOT =
+        InterpolatingDoubleTreeMap.ofEntries(
+            // Map.entry(DISTANCE, RPS)
+            Map.entry(95.1, 46.0),
+            Map.entry(97.8, 46.0),
+            Map.entry(100.5, 47.0),
+            Map.entry(109.5, 48.5),
+            Map.entry(118.5, 51.0));
   }
 
   public final class ShooterPitchConstants {
@@ -118,7 +135,7 @@ public final class Constants {
     public static final double PID_KV = 0.1;
     public static final double MM_ACCELERATION = 15;
     public static final double MM_CRUISE_VEL = 5;
-    public static final double TOLERANCE = 0.002;
+    public static final double TOLERANCE = 0.006;
   }
 
   public final class IntakeConstants {
@@ -181,7 +198,7 @@ public final class Constants {
     }
 
     public static final double TOLERANCE_ROTATIONS = 0.003;
-    public static final double BUMP_ROTATIONS = 0.2;
+    public static final double BUMP_ROTATIONS = 0.15;
     public static final double FULL_RETRACTED_ROTATIONS = 0.003;
     public static final double DEPLOYED_ROTATIONS = 0.3525;
   }

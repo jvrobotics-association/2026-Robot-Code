@@ -109,8 +109,8 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    robotContainer.enabledLedState();
     robotContainer.updateHubTarget();
+    robotContainer.enabledLedState();
     robotContainer.extendHopper();
     autonomousCommand = robotContainer.getAutonomousCommand();
 
@@ -134,8 +134,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    robotContainer.enabledLedState();
     robotContainer.updateHubTarget();
+    robotContainer.enabledLedState();
   }
 
   /** This function is called periodically during operator control. */
