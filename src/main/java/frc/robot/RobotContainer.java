@@ -24,11 +24,10 @@ import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.ShooterPitchConstants;
-import frc.robot.commands.AdvancedShootCommand;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Hopper;
@@ -51,6 +50,7 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /*
@@ -84,6 +84,13 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
+
+  // Shooter calculation stuff
+  private double hubDistance = 0.0;
+  private double calculatedPitch = 0.0;
+  private double calculatedShooterRPS = 0.0;
+  private Boolean IN_RANGE = false;
+  private String IN_RANGE_STATUS = "NOT CALCULATED";
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -183,7 +190,7 @@ public class RobotContainer {
         Commands.parallel(
             Commands.runEnd(shooter::staticShoot, shooter::stop, shooter),
             Commands.sequence(
-                Commands.waitSeconds(1.5).until(shooter::atTargetVelocity),
+                Commands.waitSeconds(1.5),
                 Commands.parallel(
                     Commands.runEnd(tower::start, tower::stop, tower),
                     Commands.runEnd(indexer::feed, indexer::stop, indexer)))));
@@ -191,10 +198,10 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "bumpBalls",
         Commands.sequence(
-                Commands.waitSeconds(2),
+                Commands.waitSeconds(1),
                 Commands.runOnce(() -> intake.runIntake(0.75)),
                 Commands.runOnce(intakeExt::bumpRetract, intakeExt),
-                Commands.waitSeconds(2),
+                Commands.waitSeconds(1.5),
                 Commands.runOnce(intakeExt::fullRetract, intakeExt),
                 Commands.repeatingSequence(
                     Commands.waitSeconds(0.75),
@@ -231,7 +238,7 @@ public class RobotContainer {
     SignalLogger.stop();
 
     configureBindings();
-    // disabledLedState();
+    disabledLedState();
   }
 
   /**
@@ -325,6 +332,30 @@ public class RobotContainer {
                         .plus(Rotation2d.fromDegrees(180.0))));
 
     // Run the shoot command that automatically aligns the robot and shoots when ready
+    // controller
+    //     .rightTrigger(ControllerConstants.TRIGGER_THRESHOLD)
+    //     .whileTrue(
+    //         Commands.parallel(
+    //             DriveCommands.joystickDriveAtAngle(
+    //                 drive,
+    //                 () -> -controller.getLeftY(),
+    //                 () -> -controller.getLeftX(),
+    //                 () ->
+    //                     new Rotation2d(
+    //                             hubTarget.getX() - drive.getPose().getX(),
+    //                             hubTarget.getY() - drive.getPose().getY())
+    //                         .plus(Rotation2d.fromDegrees(180.0))),
+    //             new AdvancedShootCommand(
+    //                 shooter,
+    //                 () -> operatorPanel.y().getAsBoolean(),
+    //                 pitch,
+    //                 tower,
+    //                 indexer,
+    //                 ledSystem,
+    //                 drive::getPose,
+    //                 () -> hubTarget,
+    //                 () -> alliance)));
+
     controller
         .rightTrigger(ControllerConstants.TRIGGER_THRESHOLD)
         .whileTrue(
@@ -338,16 +369,16 @@ public class RobotContainer {
                                 hubTarget.getX() - drive.getPose().getX(),
                                 hubTarget.getY() - drive.getPose().getY())
                             .plus(Rotation2d.fromDegrees(180.0))),
-                new AdvancedShootCommand(
-                    shooter,
-                    () -> operatorPanel.y().getAsBoolean(),
-                    pitch,
-                    tower,
-                    indexer,
-                    ledSystem,
-                    drive::getPose,
-                    () -> hubTarget,
-                    () -> alliance)));
+                Commands.run(() -> calculateShot()),
+                Commands.sequence(
+                    Commands.parallel(
+                        Commands.runEnd(
+                            () -> shooter.runShooter(calculatedShooterRPS), shooter::stop, shooter),
+                        Commands.runEnd(() -> pitch.aim(calculatedPitch), pitch::stop, pitch)),
+                    Commands.waitSeconds(1).until(shooter::atTargetVelocity),
+                    Commands.parallel(
+                        Commands.runEnd(tower::start, tower::stop, tower),
+                        Commands.runEnd(indexer::feed, indexer::stop, indexer)))));
 
     // Drive with the robot heading locked straight, it will snap to whichever side of the robot is
     // already closest to that heading
@@ -493,20 +524,20 @@ public class RobotContainer {
     operatorPanel.x().whileTrue(xLockWheelsCommand);
 
     // Manually raise the shooter pitch
-    operatorPanel.povUp().whileTrue(
-        Commands.runEnd(
-            () -> pitch.manUp(ShooterPitchConstants.MANUAL_SPEED),
-            () -> pitch.stop(),
-            pitch
-        ));
+    operatorPanel
+        .povUp()
+        .whileTrue(
+            Commands.runEnd(
+                () -> pitch.manUp(ShooterPitchConstants.MANUAL_SPEED), () -> pitch.stop(), pitch));
 
     // Manually lower the shooter pitch
-    operatorPanel.povDown().whileTrue(
-        Commands.runEnd(
-            () -> pitch.manDown(ShooterPitchConstants.MANUAL_SPEED),
-            () -> pitch.stop(),
-            pitch
-        ));
+    operatorPanel
+        .povDown()
+        .whileTrue(
+            Commands.runEnd(
+                () -> pitch.manDown(ShooterPitchConstants.MANUAL_SPEED),
+                () -> pitch.stop(),
+                pitch));
 
     // Manually outake fuel by running the indexer and intake in reverse
     operatorPanel
@@ -544,5 +575,59 @@ public class RobotContainer {
     if (alliance == Alliance.Blue) {
       ledSystem.setAll(AnimationType.SolidBlue);
     } else ledSystem.setAll(AnimationType.SolidRed);
+  }
+
+  private void calculateShot() {
+    hubDistance =
+        Inches.convertFrom(drive.getPose().getTranslation().getDistance(hubTarget), Meters);
+
+    if (hubDistance < 75.6) {
+      calculatedPitch = 0;
+      calculatedShooterRPS = 0;
+
+      if (alliance == Alliance.Blue) {
+        // ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlueInverted);
+        // ledSystem.setEntireRightSide(AnimationType.FlowDirectionBlue);
+      } else {
+        // ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRedInverted);
+        // ledSystem.setEntireRightSide(AnimationType.FlowDirectionRed);
+      }
+
+      IN_RANGE_STATUS = "TOO CLOSE";
+      IN_RANGE = false;
+
+    } else if (hubDistance >= 75.6 && hubDistance < 95.1) {
+      calculatedPitch = ShooterConstants.CLOSE_PITCH;
+      calculatedShooterRPS = ShooterConstants.CLOSE_SHOT.get(hubDistance);
+      // ledSystem.setAll(AnimationType.SolidGreen);
+      IN_RANGE_STATUS = "NEAR SHOT";
+      IN_RANGE = true;
+    } else if (hubDistance >= 95.1 && hubDistance <= 118.9) {
+      calculatedPitch = ShooterConstants.FAR_PITCH;
+      calculatedShooterRPS = ShooterConstants.FAR_SHOT.get(hubDistance);
+      // ledSystem.setAll(AnimationType.StrobeGreen);
+      IN_RANGE_STATUS = "FAR SHOT";
+      IN_RANGE = true;
+    } else if (hubDistance > 118.9) {
+      calculatedPitch = 0;
+      calculatedShooterRPS = 0;
+
+      if (alliance == Alliance.Blue) {
+        // ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlue);
+        // ledSystem.setEntireRightSide(AnimationType.FlowDirectionBlueInverted);
+      } else {
+        // ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRed);
+        // ledSystem.setEntireRightSide(AnimationType.FlowDirectionRedInverted);
+      }
+      IN_RANGE_STATUS = "TOO FAR";
+      IN_RANGE = false;
+    }
+
+    Logger.recordOutput("AdvancedShootCommand/hubDistance", hubDistance);
+    Logger.recordOutput("AdvancedShootCommand/calculatedPitch", calculatedPitch);
+    Logger.recordOutput("AdvancedShootCommand/calculatedShooterRPS", calculatedShooterRPS);
+
+    Logger.recordOutput("AdvancedShootCommand/IN_RANGE", IN_RANGE);
+    Logger.recordOutput("AdvancedShootCommand/IN_RANGE_STATUS", IN_RANGE_STATUS);
   }
 }

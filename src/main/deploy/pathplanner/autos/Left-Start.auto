@@ -9,9 +9,9 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Left-Start"
+                  "name": "extendHopperIntake"
                 }
               },
               {
@@ -19,9 +19,15 @@
                 "data": {
                   "commands": [
                     {
-                      "type": "named",
+                      "type": "wait",
                       "data": {
-                        "name": "extendHopperIntake"
+                        "waitTime": 0.3
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Left-Start"
                       }
                     },
                     {

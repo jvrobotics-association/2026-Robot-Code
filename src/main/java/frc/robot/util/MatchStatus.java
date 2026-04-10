@@ -14,7 +14,7 @@ public class MatchStatus {
   private static final int TRANSITION_TIME = 10;
   private static final int SHIFT_TIME = 25;
   private static final int END_GAME = 30;
-  private static final int PREPARE_TIME = 10;
+  private static final int PREPARE_TIME = 8;
 
   private enum GameStates {
     NONE,
