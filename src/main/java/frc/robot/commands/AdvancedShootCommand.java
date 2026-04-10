@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.Tower;
-import frc.robot.subsystems.led.AnimationType;
 import frc.robot.subsystems.led.LEDSystem;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterPitch;

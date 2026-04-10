@@ -154,8 +154,8 @@ public class DriveCommands {
    * Field relative drive command that moves the robot closer to a target by a supplied remaining
    * distance while also holding a supplied angle with PID.
    *
-   * Assumes the supplied rotation points the BACK of the robot at the target.
-   * Translation will be commanded toward the target based on the supplied distance left.
+   * <p>Assumes the supplied rotation points the BACK of the robot at the target. Translation will
+   * be commanded toward the target based on the supplied distance left.
    */
   public static Command joystickDriveDistanceAtAngle(
       Drive drive, DoubleSupplier distanceLeftSupplier, Supplier<Rotation2d> rotationSupplier) {
