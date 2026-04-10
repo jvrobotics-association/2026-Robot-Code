@@ -151,6 +151,69 @@ public class DriveCommands {
   }
 
   /**
+   * Field relative drive command that moves the robot closer to a target by a supplied remaining
+   * distance while also holding a supplied angle with PID.
+   *
+   * Assumes the supplied rotation points the BACK of the robot at the target.
+   * Translation will be commanded toward the target based on the supplied distance left.
+   */
+  public static Command joystickDriveDistanceAtAngle(
+      Drive drive, DoubleSupplier distanceLeftSupplier, Supplier<Rotation2d> rotationSupplier) {
+
+    // Distance controller
+    ProfiledPIDController distanceController =
+        new ProfiledPIDController(3, 0.0, 0.05, new TrapezoidProfile.Constraints(1.5, 3));
+    distanceController.setTolerance(0.05);
+
+    // Angle controller
+    ProfiledPIDController angleController =
+        new ProfiledPIDController(
+            ANGLE_KP,
+            0.0,
+            ANGLE_KD,
+            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
+
+    return Commands.run(
+            () -> {
+              Rotation2d desiredRotation = rotationSupplier.get();
+
+              // Since desiredRotation points the BACK of the robot at the target,
+              // the field-relative direction toward the target is 180 deg opposite.
+              Rotation2d driveTowardTargetDirection =
+                  desiredRotation.minus(Rotation2d.fromDegrees(180.0));
+
+              // Distance left should be positive when we still need to move closer.
+              // Controller drives that error to zero.
+              double distanceSpeed =
+                  -distanceController.calculate(distanceLeftSupplier.getAsDouble(), 0.0);
+
+              distanceSpeed = MathUtil.clamp(distanceSpeed, -1.25, 1.25);
+
+              // Convert scalar speed into field-relative X/Y velocity
+              Translation2d linearVelocity =
+                  new Translation2d(distanceSpeed, driveTowardTargetDirection);
+
+              // Calculate angular speed
+              double omega =
+                  angleController.calculate(
+                      drive.getRotation().getRadians(), desiredRotation.getRadians());
+
+              // Convert to field relative speeds & send command
+              ChassisSpeeds speeds =
+                  new ChassisSpeeds(linearVelocity.getX(), linearVelocity.getY(), omega);
+
+              drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getRotation()));
+            },
+            drive)
+        .beforeStarting(
+            () -> {
+              distanceController.reset(distanceLeftSupplier.getAsDouble(), 0.0);
+              angleController.reset(drive.getRotation().getRadians());
+            });
+  }
+
+  /**
    * Measures the velocity feedforward constants for the drive motors.
    *
    * <p>This command should only be used in voltage control mode.
