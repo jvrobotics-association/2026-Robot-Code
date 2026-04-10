@@ -252,6 +252,23 @@ public class RobotContainer {
     // Locks the wheels to an X pattern to make the robot harder to move
     Command xLockWheelsCommand = Commands.runOnce(drive::stopWithX, drive);
 
+    // Bumps the balls in the hopper back to the shooter area
+    Command intakeBallBumper = Commands.sequence(
+                    Commands.runOnce(() -> intake.runIntake(0.75)),
+                    Commands.runOnce(intakeExt::bumpRetract, intakeExt),
+                    Commands.waitSeconds(2),
+                    Commands.runOnce(intakeExt::fullRetract, intakeExt),
+                    Commands.repeatingSequence(
+                        Commands.waitSeconds(0.75),
+                        Commands.runOnce(intakeExt::fullRetract, intakeExt),
+                        Commands.waitSeconds(0.75),
+                        Commands.runOnce(intakeExt::deploy, intakeExt)))
+                .finallyDo(
+                    () -> {
+                      intake.stopIntake();
+                      intakeExt.deploy();
+                    });
+
     ///////////////////////////////////
     //////// CONTROLLER INPUTS ////////
     ///////////////////////////////////
@@ -404,22 +421,7 @@ public class RobotContainer {
     // Raise the intake arm so that balls in the front of the hopper are moved to the back
     operatorPanel
         .a()
-        .whileTrue(
-            Commands.sequence(
-                    Commands.runOnce(() -> intake.runIntake(0.75)),
-                    Commands.runOnce(intakeExt::bumpRetract, intakeExt),
-                    Commands.waitSeconds(2),
-                    Commands.runOnce(intakeExt::fullRetract, intakeExt),
-                    Commands.repeatingSequence(
-                        Commands.waitSeconds(0.75),
-                        Commands.runOnce(intakeExt::fullRetract, intakeExt),
-                        Commands.waitSeconds(0.75),
-                        Commands.runOnce(intakeExt::deploy, intakeExt)))
-                .finallyDo(
-                    () -> {
-                      intake.stopIntake();
-                      intakeExt.deploy();
-                    }));
+        .whileTrue(intakeBallBumper);
 
     // Full intake extension retract
     operatorPanel
@@ -462,6 +464,25 @@ public class RobotContainer {
                     Commands.parallel(
                         Commands.runEnd(tower::start, tower::stop, tower),
                         Commands.runEnd(indexer::feed, indexer::stop, indexer)))));
+    
+    // Shoot command to shoot fuel to the other side of the field
+    operatorPanel.rightBumper().whileTrue(
+        Commands.parallel(
+            Commands.runEnd(shooter::shuttleShoot, shooter::stop, shooter),
+            Commands.runEnd(() -> pitch.aim(0.035), pitch::stop, pitch),
+            Commands.sequence(
+                Commands.waitSeconds(1.5).until(shooter::atTargetVelocity),
+                Commands.parallel(
+                    Commands.runEnd(tower::start, tower::stop, tower),
+                    Commands.runEnd(indexer::feed, indexer::stop, indexer),
+                    Commands.sequence(
+                        Commands.waitSeconds(2),
+                        intakeBallBumper
+                    )
+                )
+            )
+        )
+    );
 
     // Lock the drive modules to an X configuration to help avoid getting bumped around
     operatorPanel.x().whileTrue(xLockWheelsCommand);

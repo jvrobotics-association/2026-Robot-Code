@@ -97,6 +97,10 @@ public class Shooter extends SubsystemBase {
     leftMotor.setControl(leftVelocityRequest.withVelocity(ShooterConstants.CLOSE_SHOT.get(85.2)));
   }
 
+  public void shuttleShoot() {
+    leftMotor.setControl(leftVelocityRequest.withVelocity(ShooterConstants.SHUTTLE_SHOOT_SPEED));
+  }
+
   public void stop() {
     leftMotor.stopMotor();
     rightMotor.stopMotor();
