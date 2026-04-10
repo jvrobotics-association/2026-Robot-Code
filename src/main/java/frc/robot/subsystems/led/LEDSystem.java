@@ -47,74 +47,93 @@ public class LEDSystem extends SubsystemBase {
 
   private void applyRequest(int indexStart, int indexStop, int slot, AnimationType animationType) {
     switch (animationType) {
-      default:
-        ledController.setControl(new EmptyAnimation(slot));
-        ledController.setControl(new SolidColor(indexStart, indexStop).withColor(new RGBWColor()));
-        break;
       case Off:
         ledController.setControl(new EmptyAnimation(slot));
         ledController.setControl(new SolidColor(indexStart, indexStop).withColor(new RGBWColor()));
         break;
       case SolidGreen:
+        ledController.setControl(new EmptyAnimation(slot));
         ledController.setControl(
             new SolidColor(indexStart, indexStop).withColor(new RGBWColor(Color.kGreen)));
         break;
       case SolidBlue:
+        ledController.setControl(new EmptyAnimation(slot));
         ledController.setControl(
             new SolidColor(indexStart, indexStop).withColor(new RGBWColor(Color.kBlue)));
         break;
       case SolidRed:
+        ledController.setControl(new EmptyAnimation(slot));
         ledController.setControl(
             new SolidColor(indexStart, indexStop).withColor(new RGBWColor(Color.kRed)));
         break;
       case StrobeGreen:
+        ledController.setControl(new EmptyAnimation(slot));
         ledController.setControl(
             new StrobeAnimation(indexStart, indexStop)
                 .withSlot(slot)
                 .withColor(new RGBWColor(Color.kGreen))
                 .withFrameRate(10));
+        break;
       case StrobeBlue:
+        ledController.setControl(new EmptyAnimation(slot));
         ledController.setControl(
             new StrobeAnimation(indexStart, indexStop)
                 .withSlot(slot)
                 .withColor(new RGBWColor(Color.kBlue))
                 .withFrameRate(10));
+        break;
       case StrobeRed:
+        ledController.setControl(new EmptyAnimation(slot));
         ledController.setControl(
             new StrobeAnimation(indexStart, indexStop)
                 .withSlot(slot)
                 .withColor(new RGBWColor(Color.kRed))
                 .withFrameRate(10));
+        break;
       case Rainbow:
+        ledController.setControl(new EmptyAnimation(slot));
         ledController.setControl(new RainbowAnimation(indexStart, indexStop).withSlot(slot));
+        break;
       case FlowDirectionRed:
+        ledController.setControl(new EmptyAnimation(slot));
         ledController.setControl(
             new ColorFlowAnimation(indexStart, indexStop)
                 .withSlot(slot)
                 .withDirection(AnimationDirectionValue.Forward)
                 .withColor(new RGBWColor(Color.kRed))
                 .withFrameRate(100));
+        break;
       case FlowDirectionRedInverted:
+        ledController.setControl(new EmptyAnimation(slot));
         ledController.setControl(
             new ColorFlowAnimation(indexStart, indexStop)
                 .withSlot(slot)
                 .withDirection(AnimationDirectionValue.Backward)
                 .withColor(new RGBWColor(Color.kRed))
                 .withFrameRate(100));
+        break;
       case FlowDirectionBlue:
+        ledController.setControl(new EmptyAnimation(slot));
         ledController.setControl(
             new ColorFlowAnimation(indexStart, indexStop)
                 .withSlot(slot)
                 .withDirection(AnimationDirectionValue.Forward)
                 .withColor(new RGBWColor(Color.kBlue))
                 .withFrameRate(100));
+        break;
       case FlowDirectionBlueInverted:
+        ledController.setControl(new EmptyAnimation(slot));
         ledController.setControl(
             new ColorFlowAnimation(indexStart, indexStop)
                 .withSlot(slot)
                 .withDirection(AnimationDirectionValue.Backward)
                 .withColor(new RGBWColor(Color.kBlue))
                 .withFrameRate(1000));
+        break;
+      default:
+        ledController.setControl(new EmptyAnimation(slot));
+        ledController.setControl(new SolidColor(indexStart, indexStop).withColor(new RGBWColor()));
+        break;
     }
   }
 
@@ -143,18 +162,21 @@ public class LEDSystem extends SubsystemBase {
   }
 
   public void setAll(AnimationType animationType) {
-    applyRequest(8, 91, 0, AnimationType.Rainbow);
+    applyRequest(8, 91, 0, animationType);
   }
 
   public void setRedSolid() {
+    ledController.clearAllAnimations();
     ledController.setControl(new SolidColor(8, 91).withColor(new RGBWColor(Color.kRed)));
   }
 
   public void setBlueSolid() {
+    ledController.clearAllAnimations();
     ledController.setControl(new SolidColor(8, 91).withColor(new RGBWColor(Color.kBlue)));
   }
 
   public void setRainbowAll() {
+    ledController.clearAllAnimations();
     ledController.setControl(new RainbowAnimation(8, 91).withSlot(0));
   }
 
