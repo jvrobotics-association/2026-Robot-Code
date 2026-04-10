@@ -64,13 +64,13 @@ public class MatchStatus {
       return GameStates.TEST;
     } else if (matchTime.get() <= TRANSITION_TIME) {
       return GameStates.TRANSITION;
-    } else if (matchTime.get() <= SHIFT_TIME) {
+    } else if (matchTime.get() <= TRANSITION_TIME + SHIFT_TIME) {
       return GameStates.SHIFT_1;
-    } else if (matchTime.get() <= SHIFT_TIME * 2) {
+    } else if (matchTime.get() <= TRANSITION_TIME + SHIFT_TIME * 2) {
       return GameStates.SHIFT_2;
-    } else if (matchTime.get() <= SHIFT_TIME * 3) {
+    } else if (matchTime.get() <= TRANSITION_TIME + SHIFT_TIME * 3) {
       return GameStates.SHIFT_3;
-    } else if (matchTime.get() <= SHIFT_TIME * 4) {
+    } else if (matchTime.get() <= TRANSITION_TIME + SHIFT_TIME * 4) {
       return GameStates.SHIFT_4;
     } else if (matchTime.get() > TRANSITION_TIME + SHIFT_TIME * 4
         && matchTime.get() < TRANSITION_TIME + SHIFT_TIME * 4 + END_GAME) {
