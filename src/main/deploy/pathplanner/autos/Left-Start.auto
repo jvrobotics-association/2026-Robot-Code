@@ -39,41 +39,29 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "stopIntake"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 3.0
-                      }
-                    },
-                    {
-                      "type": "parallel",
-                      "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "basicShoot"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "bumpBalls"
-                            }
-                          }
-                        ]
+                        "waitTime": 7.0
                       }
                     }
                   ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "basicShoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "bumpBalls"
                 }
               }
             ]
