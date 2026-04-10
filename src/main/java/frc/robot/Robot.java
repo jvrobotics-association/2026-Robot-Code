@@ -138,15 +138,15 @@ public class Robot extends LoggedRobot {
     MatchStatus.startTimer();
     robotContainer.updateHubTarget();
     robotContainer.enabledLedState();
-
-    Logger.recordOutput("MatchStatus/HubActive", MatchStatus.isHubActive());
-    Logger.recordOutput("MatchStatus/ApproachingTimeToShoot", MatchStatus.approachingTimeToShoot());
-    Logger.recordOutput("MatchStatus/TimeTillActive", MatchStatus.timeTillActive());
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    Logger.recordOutput("MatchStatus/HubActive", MatchStatus.isHubActive());
+    Logger.recordOutput("MatchStatus/ApproachingTimeToShoot", MatchStatus.approachingTimeToShoot());
+    Logger.recordOutput("MatchStatus/TimeTillActive", MatchStatus.timeTillActive());
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
