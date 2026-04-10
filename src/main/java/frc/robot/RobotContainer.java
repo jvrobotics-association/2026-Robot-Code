@@ -183,6 +183,25 @@ public class RobotContainer {
                     Commands.runEnd(tower::start, tower::stop, tower),
                     Commands.runEnd(indexer::feed, indexer::stop, indexer)))));
 
+    NamedCommands.registerCommand(
+        "bumpBalls",
+        Commands.sequence(
+                Commands.waitSeconds(2),
+                Commands.runOnce(() -> intake.runIntake(0.75)),
+                Commands.runOnce(intakeExt::bumpRetract, intakeExt),
+                Commands.waitSeconds(2),
+                Commands.runOnce(intakeExt::fullRetract, intakeExt),
+                Commands.repeatingSequence(
+                    Commands.waitSeconds(0.75),
+                    Commands.runOnce(intakeExt::fullRetract, intakeExt),
+                    Commands.waitSeconds(0.75),
+                    Commands.runOnce(intakeExt::deploy, intakeExt)))
+            .finallyDo(
+                () -> {
+                  intake.stopIntake();
+                  intakeExt.deploy();
+                }));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -359,7 +378,7 @@ public class RobotContainer {
                 Commands.waitSeconds(5),
                 Commands.runOnce(hopper::stop, hopper)));
 
-    // Manually cycle the hopper/intake arm to extend
+    // Hopper out
     operatorPanel
         .povLeft()
         .onTrue(
@@ -417,7 +436,7 @@ public class RobotContainer {
                       intakeExt.deploy();
                     }));
 
-    // Full intake extension retract
+    // Bump intake extension retract
     operatorPanel
         .leftTrigger(ControllerConstants.TRIGGER_THRESHOLD)
         .whileTrue(
