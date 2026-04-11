@@ -479,6 +479,10 @@ public class RobotContainer {
                       intakeExt.deploy();
                     }));
 
+    operatorPanel
+        .start()
+        .whileTrue(Commands.runEnd(intakeExt::fullRetract, intakeExt::deploy, intakeExt));
+
     // Bump intake extension retract
     operatorPanel
         .leftTrigger(ControllerConstants.TRIGGER_THRESHOLD)
