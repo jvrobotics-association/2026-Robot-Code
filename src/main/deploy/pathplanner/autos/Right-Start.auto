@@ -25,21 +25,15 @@
                       }
                     },
                     {
-                      "type": "path",
-                      "data": {
-                        "pathName": "Right-Start"
-                      }
-                    },
-                    {
                       "type": "named",
                       "data": {
                         "name": "runIntake"
                       }
                     },
                     {
-                      "type": "wait",
+                      "type": "path",
                       "data": {
-                        "waitTime": 7.0
+                        "pathName": "Right-Start"
                       }
                     }
                   ]

@@ -101,6 +101,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledInit() {
     robotContainer.disabledLedState();
+    robotContainer.clearIntakeExtDefaultCommand();
   }
 
   /** This function is called periodically when disabled. */
@@ -138,6 +139,7 @@ public class Robot extends LoggedRobot {
     MatchStatus.startTimer();
     robotContainer.updateHubTarget();
     robotContainer.enabledLedState();
+    robotContainer.setIntakeExtDefaultCommand();
   }
 
   /** This function is called periodically during operator control. */

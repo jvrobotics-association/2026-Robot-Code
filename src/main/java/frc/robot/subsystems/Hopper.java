@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Hopper extends SubsystemBase {
@@ -85,6 +86,11 @@ public class Hopper extends SubsystemBase {
 
   public void stop() {
     hopperMotor.stopMotor();
+  }
+
+  public BooleanSupplier isExtended() {
+    return () ->
+        hopperMotor.getPosition().getValueAsDouble() >= HopperConstants.DEPLOYED_ROTATIONS - 0.2;
   }
 
   @Override

@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeExtensionConstants;
 import frc.robot.Constants.IntakeExtensionConstants.ExtensionEncoder;
 import frc.robot.Constants.IntakeExtensionConstants.ExtensionMotor;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeExtension extends SubsystemBase {
@@ -114,6 +115,10 @@ public class IntakeExtension extends SubsystemBase {
   public void deploy() {
     extensionMotor.setControl(
         positionRequest.withPosition(IntakeExtensionConstants.DEPLOYED_ROTATIONS));
+  }
+
+  public void smartDeploy(BooleanSupplier hopperExtended) {
+    if (hopperExtended.getAsBoolean()) deploy();
   }
 
   public void bumpRetract() {

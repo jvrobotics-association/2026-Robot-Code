@@ -370,15 +370,15 @@ public class RobotContainer {
                                 hubTarget.getY() - drive.getPose().getY())
                             .plus(Rotation2d.fromDegrees(180.0))),
                 Commands.run(() -> calculateShot()),
-                Commands.sequence(
-                    Commands.parallel(
-                        Commands.runEnd(
-                            () -> shooter.runShooter(calculatedShooterRPS), shooter::stop, shooter),
-                        Commands.runEnd(() -> pitch.aim(calculatedPitch), pitch::stop, pitch)),
-                    Commands.waitSeconds(1).until(shooter::atTargetVelocity),
-                    Commands.parallel(
-                        Commands.runEnd(tower::start, tower::stop, tower),
-                        Commands.runEnd(indexer::feed, indexer::stop, indexer)))));
+                Commands.parallel(
+                    Commands.runEnd(
+                        () -> shooter.runShooter(calculatedShooterRPS), shooter::stop, shooter),
+                    Commands.runEnd(() -> pitch.aim(calculatedPitch), pitch::stop, pitch),
+                    Commands.sequence(
+                        Commands.waitSeconds(1.3),
+                        Commands.parallel(
+                            Commands.runEnd(tower::start, tower::stop, tower),
+                            Commands.runEnd(indexer::feed, indexer::stop, indexer))))));
 
     // Drive with the robot heading locked straight, it will snap to whichever side of the robot is
     // already closest to that heading
@@ -629,5 +629,14 @@ public class RobotContainer {
 
     Logger.recordOutput("AdvancedShootCommand/IN_RANGE", IN_RANGE);
     Logger.recordOutput("AdvancedShootCommand/IN_RANGE_STATUS", IN_RANGE_STATUS);
+  }
+
+  public void setIntakeExtDefaultCommand() {
+    intakeExt.setDefaultCommand(
+        Commands.run(() -> intakeExt.smartDeploy(hopper.isExtended()), intakeExt));
+  }
+
+  public void clearIntakeExtDefaultCommand() {
+    intakeExt.removeDefaultCommand();
   }
 }
