@@ -369,7 +369,7 @@ public class RobotContainer {
                                 hubTarget.getX() - drive.getPose().getX(),
                                 hubTarget.getY() - drive.getPose().getY())
                             .plus(Rotation2d.fromDegrees(180.0))),
-                Commands.run(() -> calculateShot()),
+                Commands.runEnd(() -> calculateShot(), () -> enabledLedState()),
                 Commands.parallel(
                     Commands.runEnd(
                         () -> shooter.runShooter(calculatedShooterRPS), shooter::stop, shooter),
@@ -584,43 +584,29 @@ public class RobotContainer {
     if (hubDistance < 75.6) {
       calculatedPitch = 0;
       calculatedShooterRPS = 0;
-
-      if (alliance == Alliance.Blue) {
-        // ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlueInverted);
-        // ledSystem.setEntireRightSide(AnimationType.FlowDirectionBlue);
-      } else {
-        // ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRedInverted);
-        // ledSystem.setEntireRightSide(AnimationType.FlowDirectionRed);
-      }
-
       IN_RANGE_STATUS = "TOO CLOSE";
       IN_RANGE = false;
-
     } else if (hubDistance >= 75.6 && hubDistance < 95.1) {
       calculatedPitch = ShooterConstants.CLOSE_PITCH;
       calculatedShooterRPS = ShooterConstants.CLOSE_SHOT.get(hubDistance);
-      // ledSystem.setAll(AnimationType.SolidGreen);
       IN_RANGE_STATUS = "NEAR SHOT";
       IN_RANGE = true;
     } else if (hubDistance >= 95.1 && hubDistance <= 118.9) {
       calculatedPitch = ShooterConstants.FAR_PITCH;
       calculatedShooterRPS = ShooterConstants.FAR_SHOT.get(hubDistance);
-      // ledSystem.setAll(AnimationType.StrobeGreen);
       IN_RANGE_STATUS = "FAR SHOT";
       IN_RANGE = true;
     } else if (hubDistance > 118.9) {
       calculatedPitch = 0;
       calculatedShooterRPS = 0;
-
-      if (alliance == Alliance.Blue) {
-        // ledSystem.setEntireLeftSide(AnimationType.FlowDirectionBlue);
-        // ledSystem.setEntireRightSide(AnimationType.FlowDirectionBlueInverted);
-      } else {
-        // ledSystem.setEntireLeftSide(AnimationType.FlowDirectionRed);
-        // ledSystem.setEntireRightSide(AnimationType.FlowDirectionRedInverted);
-      }
       IN_RANGE_STATUS = "TOO FAR";
       IN_RANGE = false;
+    }
+
+    if (IN_RANGE_STATUS == "NEAR SHOT") {
+      ledSystem.setAll(AnimationType.SolidGreen);
+    } else if (IN_RANGE_STATUS == "FAR SHOT") {
+      ledSystem.setAll(AnimationType.StrobeGreen);
     }
 
     Logger.recordOutput("AdvancedShootCommand/hubDistance", hubDistance);
