@@ -28,7 +28,6 @@ import frc.robot.commands.AutoDriveUnderTrench;
 import frc.robot.commands.AutoDriveWithAlign;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -66,7 +65,6 @@ public class RobotContainer {
   private final Intake intake;
   private final IntakeExtension intakeExt;
   private final Hopper hopper;
-  private final Climber climber;
 
   @SuppressWarnings("unused")
   private final Vision vision;
@@ -108,7 +106,6 @@ public class RobotContainer {
         intake = new Intake();
         intakeExt = new IntakeExtension();
         hopper = new Hopper();
-        climber = new Climber();
 
         // midSystem =
         //     new MidSystem(
@@ -137,7 +134,6 @@ public class RobotContainer {
         intake = new Intake();
         intakeExt = new IntakeExtension();
         hopper = new Hopper();
-        climber = new Climber();
 
         // midSystem =
         //     new MidSystem(
@@ -162,7 +158,6 @@ public class RobotContainer {
         intake = new Intake();
         intakeExt = new IntakeExtension();
         hopper = new Hopper();
-        climber = new Climber();
 
         // Pass nulls or empty shells for Replay mode depending on your AdvantageKit setup
         // midSystem = new MidSystem(null, null, null, null, null, null, null, null, null, null);

@@ -11,7 +11,6 @@ import static edu.wpi.first.units.Units.Second;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -32,8 +31,6 @@ public class Shooter extends SubsystemBase {
       new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
   private final MotionMagicVelocityTorqueCurrentFOC rightVelocityRequest =
       new MotionMagicVelocityTorqueCurrentFOC(0).withSlot(0);
-
-  private final VoltageOut voltageRequest = new VoltageOut(0).withEnableFOC(true);
 
   /* State */
   private final LoggedNetworkBoolean LNNOverride =
