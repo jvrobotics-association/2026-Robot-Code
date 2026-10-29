@@ -191,13 +191,13 @@ public final class Constants {
   }
 
   public final class MidSystemConstants {
-    public static final double CALCS_PER_SECOND = 10.0; // TODO: Verify
+    public static final double CALCS_PER_SECOND = 10.0; 
     public static final double AIM_TOLERANCE_DEGREES = 3.0;
   }
 
   public final class RobotConstants {
-    public static final Distance FULL_WIDTH = Inches.of(25); // TODO: Verify // Frame plus bumper
-    public static final Distance FULL_LENGTH = Inches.of(30); // TODO: Verify // Frame plus bumper
+    public static final Distance FULL_WIDTH = Inches.of(25); 
+    public static final Distance FULL_LENGTH = Inches.of(30); 
   }
 
   public final class FieldConstants {
